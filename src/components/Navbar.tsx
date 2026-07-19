@@ -17,6 +17,7 @@ interface NavbarProps {
   onSearch: (query: string) => void;
   sampleCartCount: number;
   onToggleSampleCart: () => void;
+  websiteLogo?: { name: string; slogan: string };
 }
 
 export default function Navbar({ 
@@ -24,7 +25,8 @@ export default function Navbar({
   onTabChange, 
   onSearch,
   sampleCartCount,
-  onToggleSampleCart
+  onToggleSampleCart,
+  websiteLogo = { name: "COSBUILT", slogan: "ESTD 1999" }
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,7 +44,7 @@ export default function Navbar({
       <div className="bg-white border-b border-stone-200 text-stone-600 text-[11px] sm:text-xs py-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-3">
-            <span>Hotline: <strong>0988 486 486</strong></span>
+            <span>Hotline: <strong>0966 373 686</strong></span>
             <span className="text-stone-300">|</span>
             <span>TIẾNG VIỆT</span>
             <span className="text-stone-300">|</span>
@@ -74,10 +76,10 @@ export default function Navbar({
             className="flex flex-col items-start cursor-pointer select-none shrink-0"
           >
             <span className="text-2xl sm:text-3xl font-serif font-black tracking-widest text-stone-950 leading-none">
-              COSBUILT
+              {websiteLogo.name}
             </span>
             <span className="text-[9px] font-bold text-stone-400 tracking-[0.25em] uppercase mt-1 self-center">
-              — ESTD 1999 —
+              {websiteLogo.slogan}
             </span>
           </div>
 
@@ -160,6 +162,7 @@ export default function Navbar({
                   <button onClick={() => onTabChange("categories", "hair-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc tóc</button>
                   <button onClick={() => onTabChange("categories", "makeup")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Trang điểm</button>
                   <button onClick={() => onTabChange("categories", "personal-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc cá nhân</button>
+                  <button onClick={() => onTabChange("categories", "new-tech")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold text-emerald-green">Sản phẩm công nghệ mới ✨</button>
                 </div>
               </div>
 
@@ -237,6 +240,7 @@ export default function Navbar({
                     <button onClick={() => onTabChange("categories", "hair-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc tóc</button>
                     <button onClick={() => onTabChange("categories", "makeup")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Trang điểm</button>
                     <button onClick={() => onTabChange("categories", "personal-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc cá nhân</button>
+                    <button onClick={() => onTabChange("categories", "new-tech")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold text-emerald-green">Công nghệ mới ✨</button>
                   </div>
                 </div>
 

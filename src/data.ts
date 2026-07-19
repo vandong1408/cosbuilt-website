@@ -41,7 +41,8 @@ export const MENU_ITEMS: MenuItem[] = [
       { name: "Chăm sóc body", id: "body-care" },
       { name: "Chăm sóc tóc", id: "hair-care" },
       { name: "Trang điểm", id: "makeup" },
-      { name: "Chăm sóc cá nhân", id: "personal-care" }
+      { name: "Chăm sóc cá nhân", id: "personal-care" },
+      { name: "Công nghệ mới", id: "new-tech" }
     ]
   },
   { name: "BẢNG GIÁ GIA CÔNG", id: "pricing" },
@@ -283,6 +284,20 @@ export const MANUFACTURING_CATEGORIES: ManufacturingCategory[] = [
       "Xịt thơm miệng kháng khuẩn, gel rửa tay khô dưỡng ẩm"
     ],
     features: ["Nguyên liệu thiên nhiên lành tính", "Khử mùi và diệt khuẩn bằng hoạt chất sinh học tự nhiên", "Tuyệt đối an toàn cho trẻ nhỏ và mẹ bầu"]
+  },
+  {
+    id: "new-tech",
+    title: "Sản phẩm gia công theo công nghệ mới",
+    description: "Ứng dụng các công nghệ điều chế mỹ phẩm tiên tiến bậc nhất hiện nay (Exosome, Liposome bọc hoạt chất, công nghệ vi kim sinh học) giúp tăng khả năng hấp thụ gấp nhiều lần.",
+    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
+    subCategories: [
+      "Serum Exosome rau má phục hồi da tầng sâu cấp tốc",
+      "Kem dưỡng trẻ hóa Retinol bọc Liposome giải phóng chậm",
+      "Vi kim sinh học tảo biển trẻ hóa da căng bóng",
+      "Sản phẩm bọc hạt peptide kích hoạt collagen sinh học",
+      "Kem chống nắng vật lý màng lọc phân tử thế hệ mới"
+    ],
+    features: ["Bảo toàn tối đa hoạt chất khỏi oxy hóa", "Tăng khả năng thẩm thấu sâu gấp 10 lần thông thường", "Sản xuất trong phòng thí nghiệm vô trùng Class 100"]
   }
 ];
 
@@ -571,6 +586,46 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     description: "Dịch chiết xuất từ lá trầu không bản địa kết hợp cùng trà xanh, hoa cúc La Mã và Acid Lactic cân bằng độ pH hoàn hảo. Giúp làm sạch vùng kín dịu nhẹ, kháng khuẩn bảo vệ, khử mùi hiệu quả và dưỡng da mềm mại.",
     ingredients: "Dịch chiết lá trầu không, Chiết xuất trà xanh, Chiết xuất cúc La Mã, Lactic Acid (pH 4.5), Nano Bạc kháng khuẩn.",
     guidelines: "Làm ướt vùng kín, lấy một lượng nhỏ gel tạo bọt nhẹ nhàng trong lòng bàn tay và xoa rửa ngoài da trong 1 phút, sau đó rửa lại thật sạch bằng nước."
+  },
+  {
+    id: "exosome-serum",
+    title: "Serum Tế Bào Gốc Exosome Phục Hồi Tái Tạo Da Tầng Sâu (Mẫu thử công nghệ mới)",
+    category: "new-tech",
+    lab: "Advanced Clinical",
+    skinTypes: ["Dành cho da nhạy cảm", "Dành cho da khô", "Mọi loại da"],
+    rating: 5,
+    ratingValue: 4.95,
+    reviewsCount: 380,
+    originalPrice: 85000,
+    price: 68000,
+    discountPercent: 20,
+    badge: "CÔNG NGHỆ TẾ BÀO",
+    testedCount: 198,
+    hotPercent: 95,
+    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
+    description: "Ứng dụng đột phá công nghệ Exosome - chất truyền tin tế bào siêu nhỏ có kích thước nano chỉ bằng 1/1000 tế bào thông thường. Mang lại khả năng tái tạo các tế bào da hư tổn cấp tốc gấp 20 lần hoạt chất thông thường, củng cố màng bảo vệ da mỏng yếu.",
+    ingredients: "Exosome chiết xuất từ rau má hữu cơ, EGF/FGF peptide tinh khiết, Panthenol 10%, Hyaluronic Acid đa trọng lượng phân tử.",
+    guidelines: "Thoa 3-4 giọt lên da mặt sạch sau bước cân bằng ẩm. Vỗ nhẹ nhàng để hạt exosome siêu nhỏ len lỏi sâu vào tế bào da. Cực kỳ thích hợp dưỡng phục hồi sau liệu trình thẩm mỹ xâm lấn."
+  },
+  {
+    id: "retinol-liposome",
+    title: "Kem Trẻ Hóa Da Retinol Bọc Liposome Giải Phóng Chậm (Mẫu thử công nghệ mới)",
+    category: "new-tech",
+    lab: "Advanced Clinical",
+    skinTypes: ["Mọi loại da", "Dành cho da khô"],
+    rating: 5,
+    ratingValue: 4.88,
+    reviewsCount: 245,
+    originalPrice: 92000,
+    price: 75000,
+    discountPercent: 18,
+    badge: "RETINOL BỌC LIPOSOME",
+    testedCount: 132,
+    hotPercent: 88,
+    image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600",
+    description: "Retinol tinh khiết được bao bọc trong cấu trúc màng Liposome sinh học hai lớp siêu bền vững. Công nghệ này giúp hoạt chất không bị oxy hóa phân hủy bởi ánh sáng và nhiệt độ, đồng thời giải phóng chậm Retinol trên bề mặt da suốt 8h để triệt tiêu hoàn toàn kích ứng, mẩn đỏ đặc trưng của retinol truyền thống.",
+    ingredients: "Retinol 1% tinh khiết bọc Liposome, Ceramide NP 1%, Squalane thực vật, chiết xuất sâm đỏ Thụy Sĩ.",
+    guidelines: "Sử dụng vào buổi tối sau bước serum dưỡng ẩm. Lấy lượng kem nhỏ bằng hạt đậu thoa mỏng và mát xa đều vùng mặt. Khuyến nghị bắt đầu sử dụng 2-3 lần/tuần để da thích nghi."
   }
 ];
 

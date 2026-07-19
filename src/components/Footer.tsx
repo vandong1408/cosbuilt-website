@@ -142,6 +142,14 @@ export default function Footer({ onTabChange }: FooterProps) {
                   <CheckCircle className="w-3 h-3 text-stone-600" /> Vệ sinh cá nhân (Dung dịch vệ sinh...)
                 </button>
               </li>
+              <li>
+                <button 
+                  onClick={() => onTabChange("categories", "new-tech")}
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left text-emerald-green"
+                >
+                  <CheckCircle className="w-3 h-3 text-emerald-green" /> Gia công công nghệ mới (Exosome, Liposome...)
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -154,7 +162,7 @@ export default function Footer({ onTabChange }: FooterProps) {
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-satin-gold shrink-0 mt-0.5" />
                 <span>
-                  <strong>Trụ sở chính:</strong> Tòa nhà Cosbuilt Lab, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh.
+                  <strong>Trụ sở chính:</strong> 110/2/2F Đường số 30, Phường An Nhơn, TP. Hồ Chí Minh, Việt Nam.
                 </span>
               </div>
               <div className="flex items-start gap-2">
@@ -165,7 +173,7 @@ export default function Footer({ onTabChange }: FooterProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-satin-gold shrink-0" />
-                <span>Hotline: (+84) 975 951 143</span>
+                <span>Hotline: (+84) 966 373 686</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-satin-gold shrink-0" />

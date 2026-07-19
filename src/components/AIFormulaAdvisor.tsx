@@ -102,6 +102,7 @@ export default function AIFormulaAdvisor() {
                 <option value="Chăm sóc tóc">Chăm sóc tóc (Hair Care)</option>
                 <option value="Trang điểm">Trang điểm (Makeup)</option>
                 <option value="Chăm sóc cá nhân">Chăm sóc vệ sinh cá nhân</option>
+                <option value="Sản phẩm gia công theo công nghệ mới">Gia công công nghệ mới (Exosome, Liposome...)</option>
               </select>
             </div>
 

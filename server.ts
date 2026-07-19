@@ -178,20 +178,64 @@ function mapRowsToImages(rows: any[]) {
 // Local cache configuration paths
 const CONFIG_FILE_PATH = path.join(process.cwd(), "sheets_config.json");
 
+const DEFAULT_IMAGES = [
+  {
+    title: "Dây chuyền chiết rót mỹ phẩm tự động",
+    category: "nhà máy",
+    description: "Hệ thống chiết rót công nghệ tự động hóa khép kín nhập khẩu từ Đức và Hàn Quốc, chuẩn CGMP ASEAN.",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600"
+  },
+  {
+    title: "Phòng thí nghiệm nghiên cứu R&D vô trùng",
+    category: "R&D",
+    description: "Nơi đội ngũ tiến sĩ, thạc sĩ sinh hóa nghiên cứu, phát triển và thử nghiệm các công thức mỹ phẩm đột phá.",
+    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
+  },
+  {
+    title: "Hệ thống bồn nhũ hóa hút chân không đồng hóa",
+    category: "nhà máy",
+    description: "Bồn khuấy trộn nhũ hóa siêu mịn giúp chất kem đạt độ đồng đều tối đa và giữ trạng thái ổn định lâu dài.",
+    image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600"
+  },
+  {
+    title: "Thử nghiệm lâm sàng và kiểm tra kích ứng da",
+    category: "R&D",
+    description: "Các công thức mẫu thử được kiểm nghiệm lâm sàng nghiêm ngặt nhằm đảm bảo an toàn tuyệt đối trước khi công bố.",
+    image: "https://images.unsplash.com/photo-1527799822341-478a783b83d0?q=80&w=600"
+  },
+  {
+    title: "Kho nguyên liệu thô nhập khẩu đạt chuẩn",
+    category: "nhà máy",
+    description: "Nguồn nguyên liệu thô nhập khẩu chính ngạch trực tiếp từ Nhật Bản, Thụy Sĩ, Pháp, lưu giữ trong điều kiện tối ưu.",
+    image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=600"
+  },
+  {
+    title: "Quy trình đóng gói màng co vô trùng hoàn thiện",
+    category: "đóng gói",
+    description: "Sản phẩm được làm sạch bụi lọ, đóng màng co vô trùng và in hạn sử dụng tự động trước khi xuất xưởng.",
+    image: "https://images.unsplash.com/photo-1556229174-5e42a09e45af?q=80&w=600"
+  }
+];
+
 function loadSheetsConfig() {
   try {
     if (fs.existsSync(CONFIG_FILE_PATH)) {
       const data = fs.readFileSync(CONFIG_FILE_PATH, "utf-8");
-      return JSON.parse(data);
+      const config = JSON.parse(data);
+      if (!config.images || config.images.length === 0) {
+        config.images = DEFAULT_IMAGES;
+      }
+      return config;
     }
   } catch (error) {
     console.error("Error reading sheets config:", error);
   }
   return {
     spreadsheetId: "",
+    webAppUrl: "",
     lastSynced: "",
     articles: [],
-    images: []
+    images: DEFAULT_IMAGES
   };
 }
 
@@ -203,11 +247,46 @@ function saveSheetsConfig(config: any) {
   }
 }
 
+// Helper to sync changes to Google Sheets Apps Script Web App
+async function syncToGoogleSheets(action: "add" | "update" | "delete" | "sync", sheetName: "Bài viết" | "Hình ảnh", index?: number, data?: any) {
+  const config = loadSheetsConfig();
+  const webAppUrl = config.webAppUrl;
+  if (!webAppUrl) {
+    console.log("No Google Sheets Web App URL configured. Skipping remote sync.");
+    return false;
+  }
+  
+  try {
+    console.log(`Syncing action "${action}" to Google Sheets tab "${sheetName}"`);
+    const res = await fetch(webAppUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action,
+        sheetName,
+        index,
+        data
+      })
+    });
+    if (res.ok) {
+      const result = await res.json();
+      console.log("Remote Google Sheets sync result:", result);
+      return result.success;
+    } else {
+      console.error("Failed to sync to Google Sheets, status code:", res.status);
+    }
+  } catch (error) {
+    console.error("Failed to sync to Google Sheets remote endpoint:", error);
+  }
+  return false;
+}
+
 // Sheets config API endpoints
 app.get("/api/sheets/config", (req, res) => {
   const config = loadSheetsConfig();
   res.json({
     spreadsheetId: config.spreadsheetId,
+    webAppUrl: config.webAppUrl || "",
     lastSynced: config.lastSynced,
     hasArticles: (config.articles || []).length > 0,
     hasImages: (config.images || []).length > 0
@@ -215,23 +294,77 @@ app.get("/api/sheets/config", (req, res) => {
 });
 
 app.post("/api/sheets/config", (req, res) => {
-  const { spreadsheetId: inputId } = req.body;
-  if (!inputId) {
-    return res.status(400).json({ error: "Vui lòng nhập Spreadsheet ID hoặc URL" });
-  }
-  const id = extractSpreadsheetId(inputId);
+  const { spreadsheetId: inputId, webAppUrl } = req.body;
   let config = loadSheetsConfig();
-  config.spreadsheetId = id;
+  
+  if (inputId !== undefined) {
+    config.spreadsheetId = extractSpreadsheetId(inputId);
+  }
+  if (webAppUrl !== undefined) {
+    config.webAppUrl = webAppUrl.trim();
+  }
+  
   saveSheetsConfig(config);
-  res.json({ success: true, spreadsheetId: id, message: "Đã lưu cấu hình Google Sheet thành công!" });
+  res.json({ 
+    success: true, 
+    spreadsheetId: config.spreadsheetId, 
+    webAppUrl: config.webAppUrl || "",
+    message: "Đã lưu cấu hình Google Sheet thành công!" 
+  });
 });
 
 app.get("/api/sheets/data", (req, res) => {
   const config = loadSheetsConfig();
   res.json({
     articles: config.articles || [],
-    images: config.images || []
+    images: config.images || [],
+    logos: config.logos || [],
+    websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" }
   });
+});
+
+app.post("/api/sheets/data", async (req, res) => {
+  try {
+    const { articles, images, logos, websiteLogo, actionInfo } = req.body;
+    let config = loadSheetsConfig();
+    
+    if (articles !== undefined) config.articles = articles;
+    if (images !== undefined) config.images = images;
+    if (logos !== undefined) config.logos = logos;
+    if (websiteLogo !== undefined) config.websiteLogo = websiteLogo;
+    
+    saveSheetsConfig(config);
+    
+    // Background sync to Google Sheets via Web App if configured
+    if (actionInfo && config.webAppUrl) {
+      const { action, sheetName, index, data } = actionInfo;
+      syncToGoogleSheets(action, sheetName, index, data).catch(err => {
+        console.error("Background sync to Google Sheets failed:", err);
+      });
+    } else if (config.webAppUrl) {
+      // Direct full sync if complete arrays were updated without explicit action info
+      if (articles !== undefined) {
+        syncToGoogleSheets("sync", "Bài viết", undefined, articles).catch(err => console.error(err));
+      }
+      if (images !== undefined) {
+        syncToGoogleSheets("sync", "Hình ảnh", undefined, images).catch(err => console.error(err));
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: "Cập nhật dữ liệu hệ thống thành công!",
+      data: {
+        articles: config.articles || [],
+        images: config.images || [],
+        logos: config.logos || [],
+        websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" }
+      }
+    });
+  } catch (error: any) {
+    console.error("Failed to update custom data:", error);
+    res.status(500).json({ error: "Không thể lưu dữ liệu", details: error.message });
+  }
 });
 
 app.post("/api/sheets/sync", async (req, res) => {
@@ -292,6 +425,37 @@ app.post("/api/sheets/sync", async (req, res) => {
   } catch (error: any) {
     console.error("Sheets sync failed:", error);
     res.status(500).json({ error: "Đã xảy ra lỗi khi đồng bộ", details: error.message });
+  }
+});
+
+app.post("/api/sheets/setup", async (req, res) => {
+  try {
+    const config = loadSheetsConfig();
+    const webAppUrl = config.webAppUrl;
+    if (!webAppUrl) {
+      return res.status(400).json({ error: "Chưa cấu hình URL của Google Apps Script Web App." });
+    }
+    
+    console.log("Triggering auto-setup for Google Sheet via Web App...");
+    const response = await fetch(webAppUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "setup",
+        articles: config.articles || [],
+        images: config.images || []
+      })
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      res.json(result);
+    } else {
+      res.status(400).json({ error: `Apps Script trả về lỗi, status: ${response.status}` });
+    }
+  } catch (error: any) {
+    console.error("Failed to run sheets setup:", error);
+    res.status(500).json({ error: "Không thể tự động khởi tạo bảng", details: error.message });
   }
 });
 

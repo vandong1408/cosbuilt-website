@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { 
   Users, 
   Search, 
@@ -16,16 +16,45 @@ import {
   Info,
   Calendar,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Lock,
+  User,
+  LogOut,
+  Plus,
+  Edit3,
+  Briefcase,
+  Check,
+  Save,
+  Sparkles,
+  ArrowUpToLine
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { 
+  initAuth, 
+  googleSignIn, 
+  googleLogout, 
+  getAccessToken 
+} from "../firebase";
+import { 
+  extractSpreadsheetId, 
+  createNewSpreadsheet, 
+  setupSpreadsheetTables, 
+  syncSpreadsheetData, 
+  appendSheetRow, 
+  updateSheetRow, 
+  deleteSheetRow 
+} from "../lib/sheetsService";
 
 interface CRMDashboardProps {
   customBlogPosts: any[];
   customImages: any[];
+  customLogos: any[];
+  websiteLogo: any;
   sheetsConfig: any;
   setCustomBlogPosts: (posts: any[]) => void;
   setCustomImages: (images: any[]) => void;
+  setCustomLogos: (logos: any[]) => void;
+  setWebsiteLogo: (logo: any) => void;
   setSheetsConfig: (config: any) => void;
   onTabChange: (tab: string) => void;
 }
@@ -33,12 +62,231 @@ interface CRMDashboardProps {
 export default function CRMDashboard({
   customBlogPosts,
   customImages,
+  customLogos,
+  websiteLogo,
   sheetsConfig,
   setCustomBlogPosts,
   setCustomImages,
+  setCustomLogos,
+  setWebsiteLogo,
   setSheetsConfig,
   onTabChange
 }: CRMDashboardProps) {
+  // Admin Authentication State
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem("cosbuilt_admin_logged_in") === "true";
+  });
+  const [usernameInput, setUsernameInput] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  const handleLogin = (e: FormEvent) => {
+    e.preventDefault();
+    // Default account as admin / 1234
+    if (usernameInput.trim().toLowerCase() === "admin" && passwordInput.trim() === "1234") {
+      setIsLoggedIn(true);
+      localStorage.setItem("cosbuilt_admin_logged_in", "true");
+      setLoginError("");
+    } else {
+      setLoginError("Tên đăng nhập hoặc mật khẩu quản trị không chính xác.");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("cosbuilt_admin_logged_in");
+    setUsernameInput("");
+    setPasswordInput("");
+  };
+
+  // Modals & State for CRUD
+  const [editingBlogPost, setEditingBlogPost] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [editingImage, setEditingImage] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [isEditingWebsiteLogo, setIsEditingWebsiteLogo] = useState(false);
+  const [tempWebsiteLogo, setTempWebsiteLogo] = useState({ name: websiteLogo?.name || "COSBUILT", slogan: websiteLogo?.slogan || "ESTD 1999" });
+  const [actionMessage, setActionMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
+  const [isSavingContent, setIsSavingContent] = useState(false);
+
+  // Initialize tempWebsiteLogo whenever websiteLogo updates
+  useEffect(() => {
+    if (websiteLogo) {
+      setTempWebsiteLogo({ name: websiteLogo.name, slogan: websiteLogo.slogan });
+    }
+  }, [websiteLogo]);
+
+  // Sync / Save dynamic changes helper
+  const saveAllContent = async (
+    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any },
+    actionInfo?: { action: "add" | "update" | "delete"; sheetName: "Bài viết" | "Hình ảnh"; index?: number; data?: any }
+  ) => {
+    setIsSavingContent(true);
+    setActionMessage({ text: "Đang lưu thay đổi vào hệ thống...", type: "" });
+    try {
+      // 1. Save locally to server database cache first
+      const res = await fetch("/api/sheets/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const result = await res.json();
+        if (result.success) {
+          if (payload.articles !== undefined) setCustomBlogPosts(result.data.articles);
+          if (payload.images !== undefined) setCustomImages(result.data.images);
+          if (payload.logos !== undefined) setCustomLogos(result.data.logos);
+          if (payload.websiteLogo !== undefined) setWebsiteLogo(result.data.websiteLogo);
+          
+          // 2. If logged in with Google and a Spreadsheet ID exists, perform direct sync!
+          if (actionInfo && googleToken && sheetsConfig.spreadsheetId) {
+            setActionMessage({ text: "Đang tự động đồng bộ sang Google Sheet...", type: "" });
+            try {
+              const spreadsheetId = sheetsConfig.spreadsheetId;
+              const { action, sheetName, index, data } = actionInfo;
+              
+              if (sheetName === "Bài viết") {
+                const rowValues = [
+                  data.title || "",
+                  data.category || "",
+                  data.summary || "",
+                  data.content || "",
+                  data.image || "",
+                  data.author || "",
+                  data.date || ""
+                ];
+                if (action === "add") {
+                  await appendSheetRow(spreadsheetId, googleToken, "Bài viết", rowValues);
+                } else if (action === "update" && index !== undefined) {
+                  await updateSheetRow(spreadsheetId, googleToken, "Bài viết", index, rowValues);
+                } else if (action === "delete" && index !== undefined) {
+                  await deleteSheetRow(spreadsheetId, googleToken, "Bài viết", index);
+                }
+              } else if (sheetName === "Hình ảnh") {
+                const rowValues = [
+                  data.title || "",
+                  data.category || "",
+                  data.description || "",
+                  data.image || ""
+                ];
+                if (action === "add") {
+                  await appendSheetRow(spreadsheetId, googleToken, "Hình ảnh", rowValues);
+                } else if (action === "update" && index !== undefined) {
+                  await updateSheetRow(spreadsheetId, googleToken, "Hình ảnh", index, rowValues);
+                } else if (action === "delete" && index !== undefined) {
+                  await deleteSheetRow(spreadsheetId, googleToken, "Hình ảnh", index);
+                }
+              }
+              setActionMessage({ text: "Đã lưu thay đổi vào hệ thống và đồng bộ Google Sheet thành công! 📊", type: "success" });
+            } catch (sheetErr: any) {
+              console.error("Direct sheets write failed:", sheetErr);
+              setActionMessage({ 
+                text: `Đã lưu website thành công, nhưng lỗi đồng bộ sang Google Sheet: ${sheetErr.message}.`, 
+                type: "error" 
+              });
+              setTimeout(() => setActionMessage({ text: "", type: "" }), 6000);
+              return true;
+            }
+          } else {
+            setActionMessage({ text: "Đã lưu thay đổi thành công vào hệ thống!", type: "success" });
+          }
+          setTimeout(() => setActionMessage({ text: "", type: "" }), 3000);
+          return true;
+        }
+      }
+      setActionMessage({ text: "Không thể lưu thay đổi. Vui lòng thử lại.", type: "error" });
+    } catch (err: any) {
+      console.error(err);
+      setActionMessage({ text: "Lỗi kết nối máy chủ: " + err.message, type: "error" });
+    } finally {
+      setIsSavingContent(false);
+    }
+    return false;
+  };
+
+  const handleSaveBlogPost = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingBlogPost) return;
+    const { index, isNew, data } = editingBlogPost;
+    let newPosts = [...customBlogPosts];
+    let actionDetails: any;
+    if (isNew) {
+      newPosts.push(data);
+      actionDetails = { action: "add", sheetName: "Bài viết", data };
+    } else {
+      newPosts[index] = data;
+      actionDetails = { action: "update", sheetName: "Bài viết", index, data };
+    }
+    const success = await saveAllContent({ articles: newPosts }, actionDetails);
+    if (success) {
+      setEditingBlogPost(null);
+    }
+  };
+
+  const handleDeleteBlogPost = async (index: number) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) return;
+    let newPosts = [...customBlogPosts];
+    const deletedItem = newPosts[index];
+    newPosts.splice(index, 1);
+    await saveAllContent({ articles: newPosts }, { action: "delete", sheetName: "Bài viết", index, data: deletedItem });
+  };
+
+  const handleSaveImage = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingImage) return;
+    const { index, isNew, data } = editingImage;
+    let newImages = [...customImages];
+    let actionDetails: any;
+    if (isNew) {
+      newImages.push(data);
+      actionDetails = { action: "add", sheetName: "Hình ảnh", data };
+    } else {
+      newImages[index] = data;
+      actionDetails = { action: "update", sheetName: "Hình ảnh", index, data };
+    }
+    const success = await saveAllContent({ images: newImages }, actionDetails);
+    if (success) {
+      setEditingImage(null);
+    }
+  };
+
+  const handleDeleteImage = async (index: number) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa hình ảnh này không?")) return;
+    let newImages = [...customImages];
+    const deletedItem = newImages[index];
+    newImages.splice(index, 1);
+    await saveAllContent({ images: newImages }, { action: "delete", sheetName: "Hình ảnh", index, data: deletedItem });
+  };
+
+  const handleSavePartnerLogo = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingPartnerLogo) return;
+    const { index, isNew, data } = editingPartnerLogo;
+    let newLogos = [...customLogos];
+    if (isNew) {
+      newLogos.push(data);
+    } else {
+      newLogos[index] = data;
+    }
+    const success = await saveAllContent({ logos: newLogos });
+    if (success) {
+      setEditingPartnerLogo(null);
+    }
+  };
+
+  const handleDeletePartnerLogo = async (index: number) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa đối tác này không?")) return;
+    let newLogos = [...customLogos];
+    newLogos.splice(index, 1);
+    await saveAllContent({ logos: newLogos });
+  };
+
+  const handleSaveWebsiteLogo = async () => {
+    const success = await saveAllContent({ websiteLogo: tempWebsiteLogo });
+    if (success) {
+      setIsEditingWebsiteLogo(false);
+    }
+  };
+
   const [activeSubTab, setActiveSubTab] = useState<"leads" | "sheets" | "content">("leads");
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,7 +296,13 @@ export default function CRMDashboard({
   // Sheet sync states
   const [sheetInput, setSheetInput] = useState(sheetsConfig.spreadsheetId || "");
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSettingUp, setIsSettingUp] = useState(false);
   const [syncMessage, setSyncMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
+  const [instructionTab, setInstructionTab] = useState<"read" | "write">("read");
+
+  // Google Sheets Direct Integration state
+  const [googleUser, setGoogleUser] = useState<any | null>(null);
+  const [googleToken, setGoogleToken] = useState<string | null>(null);
   
   // Selected lead for detail/editing modal
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
@@ -78,6 +332,21 @@ export default function CRMDashboard({
       setSheetInput(sheetsConfig.spreadsheetId);
     }
   }, [sheetsConfig]);
+
+  // Hook up Firebase Auth to listen for Google login
+  useEffect(() => {
+    const unsubscribe = initAuth(
+      (user, token) => {
+        setGoogleUser(user);
+        setGoogleToken(token);
+      },
+      () => {
+        setGoogleUser(null);
+        setGoogleToken(null);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   // Handle lead select
   const handleSelectLead = (lead: any) => {
@@ -126,60 +395,223 @@ export default function CRMDashboard({
     }
   };
 
-  // Sheets sync action
-  const handleSyncSheets = async () => {
-    if (!sheetInput.trim()) {
-      setSyncMessage({ text: "Vui lòng nhập đường dẫn Google Sheet hợp lệ.", type: "error" });
+  // Google sign in / sign out handlers
+  const handleGoogleSignIn = async () => {
+    setIsSyncing(true);
+    setSyncMessage({ text: "Đang kết nối tài khoản Google của bạn...", type: "" });
+    try {
+      const result = await googleSignIn();
+      if (result) {
+        setGoogleUser(result.user);
+        setGoogleToken(result.accessToken);
+        setSyncMessage({ 
+          text: `Kết nối thành công! Đã đăng nhập bằng tài khoản: ${result.user.displayName || result.user.email}.`, 
+          type: "success" 
+        });
+      }
+    } catch (err: any) {
+      console.error("Google login failed:", err);
+      setSyncMessage({ text: `Kết nối thất bại: ${err.message || "Không thể truy cập tài khoản Google."}`, type: "error" });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleGoogleSignOut = async () => {
+    try {
+      await googleLogout();
+      setGoogleUser(null);
+      setGoogleToken(null);
+      setSyncMessage({ text: "Đã ngắt kết nối tài khoản Google.", type: "success" });
+    } catch (err: any) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+  // Creates a brand new Spreadsheet completely automatically on the admin's Google Drive
+  const handleCreateAndSetupNewSheet = async () => {
+    if (!googleToken) {
+      setSyncMessage({ text: "Vui lòng kết nối tài khoản Google của bạn trước.", type: "error" });
       return;
     }
-    setIsSyncing(true);
-    setSyncMessage({ text: "", type: "" });
+    setIsSettingUp(true);
+    setSyncMessage({ text: "Đang tạo Google Sheet mới trên Drive của bạn...", type: "" });
     try {
-      // First save configuration
+      const newSheet = await createNewSpreadsheet("COSBUILT - Hệ thống Website CMS", googleToken);
+      const spreadsheetId = newSheet.spreadsheetId;
+      
+      setSyncMessage({ text: "Đang tự động khởi tạo tab 'Bài viết' & 'Hình ảnh' cùng cột tiêu đề...", type: "" });
+      
+      // Setup the tables and upload current list of posts and images so they are backed up right away
+      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages);
+      
+      // Save configuration
       const configRes = await fetch("/api/sheets/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ spreadsheetId: sheetInput })
+        body: JSON.stringify({ spreadsheetId })
       });
       if (!configRes.ok) throw new Error("Không thể lưu cấu hình");
+      
+      setSheetsConfig({
+        spreadsheetId,
+        lastSynced: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
+        hasArticles: customBlogPosts.length > 0,
+        hasImages: customImages.length > 0
+      });
+      setSheetInput(spreadsheetId);
+      setSyncMessage({
+        text: `Tự động tạo bảng Google Sheet thành công! 🎉 Đã tải lên ${customBlogPosts.length} bài viết và ${customImages.length} ảnh hoạt động lên Sheet mới của bạn.`,
+        type: "success"
+      });
+    } catch (err: any) {
+      console.error("Failed to automatically create and setup sheet:", err);
+      setSyncMessage({ text: `Tạo bảng tự động thất bại: ${err.message}`, type: "error" });
+    } finally {
+      setIsSettingUp(false);
+    }
+  };
 
-      // Then trigger sync
-      const syncRes = await fetch("/api/sheets/sync", {
+  // Sets up headers & tables on an existing sheet the user pasted
+  const handleSetupExistingSheet = async () => {
+    const spreadsheetId = extractSpreadsheetId(sheetInput);
+    if (!spreadsheetId) {
+      setSyncMessage({ text: "Vui lòng nhập đường dẫn hoặc ID Google Sheet.", type: "error" });
+      return;
+    }
+    if (!googleToken) {
+      setSyncMessage({ text: "Vui lòng kết nối tài khoản Google trước.", type: "error" });
+      return;
+    }
+    setIsSettingUp(true);
+    setSyncMessage({ text: "Đang khởi tạo các tab 'Bài viết' & 'Hình ảnh' trên Google Sheet của bạn...", type: "" });
+    try {
+      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages);
+      
+      // Save configuration
+      const configRes = await fetch("/api/sheets/config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ spreadsheetId: sheetInput })
+        body: JSON.stringify({ spreadsheetId })
       });
-      const data = await syncRes.json();
-      if (syncRes.ok && data.success) {
-        setSyncMessage({ 
-          text: `Đồng bộ thành công! Đã tải ${data.articlesCount} bài viết và ${data.imagesCount} hình ảnh.`, 
-          type: "success" 
-        });
-        
-        // Update parent/local states
-        setSheetsConfig({
-          spreadsheetId: data.spreadsheetId,
-          lastSynced: data.lastSynced,
-          hasArticles: data.articlesCount > 0,
-          hasImages: data.imagesCount > 0
-        });
+      if (!configRes.ok) throw new Error("Không thể lưu cấu hình");
+      
+      setSheetsConfig({
+        spreadsheetId,
+        lastSynced: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
+        hasArticles: customBlogPosts.length > 0,
+        hasImages: customImages.length > 0
+      });
+      setSyncMessage({
+        text: "Tự động khởi tạo cấu trúc bảng trên Google Sheet thành công! ⚡ Đã tải lên các bài viết và hình ảnh ban đầu.",
+        type: "success"
+      });
+    } catch (err: any) {
+      console.error("Failed to setup existing sheet:", err);
+      setSyncMessage({ text: `Khởi tạo bảng thất bại: ${err.message}`, type: "error" });
+    } finally {
+      setIsSettingUp(false);
+    }
+  };
 
-        // Reload the data from backend
-        const dataRes = await fetch("/api/sheets/data");
-        if (dataRes.ok) {
-          const freshData = await dataRes.json();
-          if (freshData.articles && freshData.articles.length > 0) {
-            setCustomBlogPosts(freshData.articles);
-          }
-          if (freshData.images && freshData.images.length > 0) {
-            setCustomImages(freshData.images);
-          }
+  // Sync Google Sheets data directly to website using client-side Sheets API
+  const handleSyncSheets = async () => {
+    const spreadsheetId = extractSpreadsheetId(sheetInput);
+    if (!spreadsheetId) {
+      setSyncMessage({ text: "Vui lòng nhập đường dẫn hoặc ID Google Sheet.", type: "error" });
+      return;
+    }
+    if (!googleToken) {
+      setSyncMessage({ text: "Vui lòng kết nối tài khoản Google của bạn trước.", type: "error" });
+      return;
+    }
+    setIsSyncing(true);
+    setSyncMessage({ text: "Đang đọc và đồng bộ dữ liệu từ Google Sheet về Website...", type: "" });
+    try {
+      // 1. Fetch data directly from sheets
+      const sheetData = await syncSpreadsheetData(spreadsheetId, googleToken);
+      
+      // 2. Save to local backend database
+      const saveRes = await fetch("/api/sheets/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          articles: sheetData.articles,
+          images: sheetData.images
+        })
+      });
+      
+      if (saveRes.ok) {
+        const result = await saveRes.json();
+        if (result.success) {
+          setCustomBlogPosts(result.data.articles);
+          setCustomImages(result.data.images);
+          
+          // Update configuration in server
+          const nowStr = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+          await fetch("/api/sheets/config", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ spreadsheetId })
+          });
+          
+          setSheetsConfig((prev: any) => ({
+            ...prev,
+            spreadsheetId,
+            lastSynced: nowStr,
+            hasArticles: result.data.articles.length > 0,
+            hasImages: result.data.images.length > 0
+          }));
+          
+          setSyncMessage({
+            text: `Đồng bộ thành công! Đã tải xuống ${result.data.articles.length} bài viết và ${result.data.images.length} hình ảnh về Website. ✨`,
+            type: "success"
+          });
+        } else {
+          throw new Error("Không thể lưu dữ liệu đồng bộ vào website.");
         }
       } else {
-        setSyncMessage({ text: data.error || "Không thể đồng bộ dữ liệu.", type: "error" });
+        throw new Error("Lỗi kết nối máy chủ.");
       }
-    } catch (e: any) {
-      setSyncMessage({ text: `Lỗi kết nối: ${e.message}`, type: "error" });
+    } catch (err: any) {
+      console.error("Direct sheets sync failed:", err);
+      setSyncMessage({ text: `Đồng bộ thất bại: ${err.message}`, type: "error" });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Push / overwrite all current website data to Google Sheets
+  const handlePushToSheets = async () => {
+    const spreadsheetId = extractSpreadsheetId(sheetInput);
+    if (!spreadsheetId) {
+      setSyncMessage({ text: "Vui lòng nhập đường dẫn hoặc ID Google Sheet.", type: "error" });
+      return;
+    }
+    if (!googleToken) {
+      setSyncMessage({ text: "Vui lòng kết nối tài khoản Google của bạn trước.", type: "error" });
+      return;
+    }
+    setIsSyncing(true);
+    setSyncMessage({ text: "Đang tiến hành tải tất cả dữ liệu từ website lên Google Sheet...", type: "" });
+    try {
+      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages);
+      
+      const nowStr = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+      setSheetsConfig((prev: any) => ({
+        ...prev,
+        lastSynced: nowStr,
+        hasArticles: customBlogPosts.length > 0,
+        hasImages: customImages.length > 0
+      }));
+      
+      setSyncMessage({
+        text: `Đã đẩy toàn bộ ${customBlogPosts.length} bài viết và ${customImages.length} hình ảnh hiện tại từ Website lên Google Sheet thành công! 📊`,
+        type: "success"
+      });
+    } catch (err: any) {
+      console.error("Direct sheets push failed:", err);
+      setSyncMessage({ text: `Đẩy dữ liệu lên Google Sheet thất bại: ${err.message}`, type: "error" });
     } finally {
       setIsSyncing(false);
     }
@@ -218,6 +650,100 @@ export default function CRMDashboard({
   const inProgressLeads = leads.filter(l => l.status === "Đang liên hệ").length;
   const completedLeads = leads.filter(l => l.status === "Đã hoàn thành").length;
 
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4 selection:bg-emerald-green-light selection:text-emerald-green-dark">
+        {/* Decorative ambient background spots */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-green/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white border border-stone-200 rounded-3xl max-w-md w-full shadow-xl relative overflow-hidden p-8 space-y-6 text-left z-10"
+        >
+          {/* Logo / Header */}
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-emerald-green-light text-emerald-green rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
+              <Lock className="w-5 h-5" />
+            </div>
+            <h2 className="font-serif font-black text-2xl text-stone-950 tracking-tight">COSBUILT ADMIN</h2>
+            <p className="text-stone-500 text-xs font-light">
+              Hệ thống Quản lý khách hàng (CRM) và Biên tập nội dung Website (CMS).
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">Tên đăng nhập</label>
+              <div className="relative">
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input
+                  type="text"
+                  required
+                  placeholder="Nhập tên đăng nhập (Ví dụ: admin)"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-xs sm:text-sm focus:border-emerald-green focus:outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">Mật khẩu bảo mật</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input
+                  type="password"
+                  required
+                  placeholder="Nhập mật khẩu quản trị"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-xs sm:text-sm focus:border-emerald-green focus:outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            {loginError && (
+              <p className="text-red-600 text-xs font-semibold bg-red-50 border border-red-100 p-3 rounded-xl leading-snug">
+                ⚠️ {loginError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer tracking-wider uppercase"
+            >
+              <span>Đăng nhập hệ thống</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </form>
+
+          {/* Info banner with user credentials helper */}
+          <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100/60 text-[11px] text-amber-800 leading-normal flex gap-2">
+            <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <strong>Tài khoản đăng nhập quản trị viên:</strong><br />
+              • Tên đăng nhập: <code className="font-mono bg-white/80 px-1 py-0.5 rounded font-bold">admin</code><br />
+              • Mật khẩu: <code className="font-mono bg-white/80 px-1 py-0.5 rounded font-bold">1234</code>
+            </div>
+          </div>
+
+          <div className="pt-2 text-center">
+            <button
+              type="button"
+              onClick={() => onTabChange("home")}
+              className="text-stone-400 hover:text-stone-700 text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1"
+            >
+              Quay lại trang chủ website
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-stone-50 flex flex-col">
       {/* Premium Back-office Navigation Bar */}
@@ -255,6 +781,15 @@ export default function CRMDashboard({
             >
               <span>Quay lại Website</span>
               <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Log out Button */}
+            <button
+              onClick={handleLogout}
+              className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 hover:border-red-500/25 transition-all px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Đăng xuất</span>
             </button>
           </div>
         </div>
@@ -334,7 +869,7 @@ export default function CRMDashboard({
         {[
           { id: "leads", label: "YÊU CẦU TƯ VẤN (CRM)", icon: Users },
           { id: "sheets", label: "ĐỒNG BỘ GOOGLE SHEET", icon: FileSpreadsheet },
-          { id: "content", label: "BÀI VIẾT & HÌNH ẢNH HIỆN TẠI", icon: Layers }
+          { id: "content", label: "BIÊN TẬP NỘI DUNG (CMS)", icon: Layers }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -487,133 +1022,277 @@ export default function CRMDashboard({
 
         {/* SHEETS SYNC PANEL */}
         {activeSubTab === "sheets" && (
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left pt-2">
-            {/* Left: Sync Control Panel */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-emerald-green">
-                    <FileSpreadsheet className="w-6 h-6" />
-                    <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900">Đồng Bộ Bài Viết & Thư Viện Ảnh</h3>
-                  </div>
-                  <p className="text-stone-500 text-xs sm:text-sm font-light leading-relaxed">
-                    Sử dụng Google Sheets làm hệ quản trị nội dung (CMS) cho website. Bạn có thể dễ dàng đăng bài viết mới hoặc hình ảnh hoạt động của nhà máy.
-                  </p>
-                </div>
+          <section className="space-y-6 text-left pt-2">
+            {/* Status Alert & Sync Feedback Banner */}
+            {syncMessage.text && (
+              <div className={`p-4 rounded-xl text-xs flex gap-2 items-start border ${
+                syncMessage.type === "success" 
+                  ? "bg-emerald-green/5 border-emerald-green/20 text-emerald-green-dark font-medium" 
+                  : "bg-red-50 border-red-100 text-red-700 font-medium"
+              }`}>
+                <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{syncMessage.text}</span>
+              </div>
+            )}
 
-                <div className="space-y-4 pt-2">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">
-                      Đường dẫn (URL) hoặc ID của Google Sheet
-                    </label>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input 
-                        type="text" 
-                        value={sheetInput}
-                        onChange={(e) => setSheetInput(e.target.value)}
-                        placeholder="https://docs.google.com/spreadsheets/d/1BxiMVs.../edit"
-                        className="flex-1 border border-stone-300 rounded-xl px-4 py-3 text-xs sm:text-sm focus:border-emerald-green focus:ring-2 focus:ring-emerald-green/15 focus:outline-hidden transition-all bg-stone-50/50"
-                      />
-                      <button
-                        onClick={handleSyncSheets}
-                        disabled={isSyncing}
-                        className="bg-emerald-green hover:bg-emerald-green-dark disabled:bg-stone-400 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
-                      >
-                        {isSyncing ? (
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <RefreshCw className="w-4 h-4" />
-                        )}
-                        <span>{isSyncing ? "Đang đồng bộ..." : "Đồng Bộ Ngay"}</span>
-                      </button>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Left Column: Connection & Account Controls */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-emerald-green">
+                      <FileSpreadsheet className="w-6 h-6" />
+                      <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900 font-medium">Kết Nối Google Sheets 📊</h3>
                     </div>
+                    <p className="text-stone-500 text-xs sm:text-sm font-light leading-relaxed">
+                      Sử dụng Google Sheets làm hệ quản trị nội dung (CMS) trực tiếp cho website. Hệ thống sẽ tự động đồng bộ dữ liệu hai chiều và cập nhật bài viết, hình ảnh trong thời gian thực.
+                    </p>
                   </div>
 
-                  {syncMessage.text && (
-                    <div className={`p-4 rounded-xl text-xs flex gap-2 items-start border ${
-                      syncMessage.type === "success" 
-                        ? "bg-emerald-green/5 border-emerald-green/20 text-emerald-green-dark font-medium" 
-                        : "bg-red-50 border-red-100 text-red-700"
-                    }`}>
-                      <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                      <span>{syncMessage.text}</span>
+                  {/* Google Authentication Section */}
+                  <div className="pt-2 border-t border-stone-100">
+                    <h4 className="text-xs font-bold text-stone-700 uppercase tracking-wider mb-3">1. Tài khoản Google</h4>
+                    
+                    {!googleUser ? (
+                      <div className="space-y-3">
+                        <p className="text-xs text-stone-500 font-light leading-relaxed">
+                          Hãy kết nối với tài khoản Google chứa Trang tính của bạn. Quy trình an toàn 100% nhờ xác thực Google OAuth.
+                        </p>
+                        <button
+                          onClick={handleGoogleSignIn}
+                          disabled={isSyncing}
+                          className="w-full flex items-center justify-center gap-3 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-sm px-4 py-3 rounded-xl transition-all shadow-2xs hover:shadow-xs cursor-pointer disabled:bg-stone-100 disabled:text-stone-400"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24">
+                            <path
+                              fill="#EA4335"
+                              d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.62 14.94 1 12 1 7.35 1 3.39 3.65 1.5 7.5l3.81 2.96c.92-2.73 3.47-4.42 6.69-4.42z"
+                            />
+                            <path
+                              fill="#4285F4"
+                              d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.44c-.28 1.48-1.12 2.73-2.38 3.58l3.7 2.87c2.16-1.99 3.43-4.91 3.43-8.6z"
+                            />
+                            <path
+                              fill="#FBBC05"
+                              d="M5.31 14.54c-.24-.72-.38-1.5-.38-2.3s.14-1.58.38-2.3L1.5 6.98C.54 8.9 0 11.05 0 13.3c0 2.25.54 4.4 1.5 6.32l3.81-2.96.01-.12z"
+                            />
+                            <path
+                              fill="#34A853"
+                              d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.7-2.87c-1.03.69-2.35 1.1-4.26 1.1-3.22 0-5.77-1.69-6.69-4.42l-3.81 2.96C3.39 20.35 7.35 23 12 23z"
+                            />
+                          </svg>
+                          <span>{isSyncing ? "Đang kết nối..." : "Kết nối với Google"}</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="bg-stone-50 p-4 rounded-2xl border border-stone-200 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          {googleUser.photoURL ? (
+                            <img 
+                              src={googleUser.photoURL} 
+                              alt="Avatar" 
+                              referrerPolicy="no-referrer"
+                              className="w-10 h-10 rounded-full border border-stone-300"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-emerald-green-light text-emerald-green-dark flex items-center justify-center font-bold text-sm">
+                              {googleUser.displayName?.charAt(0) || "G"}
+                            </div>
+                          )}
+                          <div className="text-left">
+                            <div className="font-bold text-xs text-stone-900">{googleUser.displayName || "Người dùng Google"}</div>
+                            <div className="text-[11px] text-stone-500 font-mono">{googleUser.email}</div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleGoogleSignOut}
+                          className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                          title="Đăng xuất khỏi Google"
+                        >
+                          <LogOut className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Google Sheet Connection and Setup Section */}
+                  {googleUser && (
+                    <div className="space-y-4 pt-4 border-t border-stone-100">
+                      <h4 className="text-xs font-bold text-stone-700 uppercase tracking-wider">2. Thiết lập Google Sheet</h4>
+                      
+                      {/* Sub-Option A: Automatic 1-Click creation */}
+                      <div className="bg-emerald-green/5 p-4 rounded-2xl border border-emerald-green/15 space-y-3">
+                        <div className="flex items-start gap-2">
+                          <Sparkles className="w-4 h-4 text-emerald-green shrink-0 mt-0.5" />
+                          <div className="space-y-1">
+                            <span className="font-bold text-xs text-stone-900 block">Lựa chọn 1: Tạo mới Google Sheet tự động (Khuyên dùng) ✨</span>
+                            <p className="text-[11px] text-stone-600 font-light leading-relaxed">
+                              Chỉ cần 1 click, hệ thống sẽ tự động tạo một Google Sheet hoàn toàn mới trên Google Drive của bạn, khởi tạo các bảng và tải lên toàn bộ bài viết, ảnh mẫu lên Sheet.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleCreateAndSetupNewSheet}
+                          disabled={isSettingUp}
+                          className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:bg-stone-300"
+                        >
+                          {isSettingUp ? (
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5" />
+                          )}
+                          <span>{isSettingUp ? "Đang xử lý..." : "Tự Động Tạo Sheet Mới & Tải Lên 🆕"}</span>
+                        </button>
+                      </div>
+
+                      {/* Sub-Option B: Connect Existing Spreadsheet */}
+                      <div className="space-y-2 pt-2">
+                        <span className="font-bold text-xs text-stone-900 block">Lựa chọn 2: Sử dụng Google Sheet đã có của bạn</span>
+                        <p className="text-[11px] text-stone-500 font-light leading-relaxed">
+                          Dán link Google Sheet đã có của bạn vào đây, sau đó nhấp nút bên cạnh để hệ thống khởi tạo các tab "Bài viết" và "Hình ảnh" cùng dữ liệu ban đầu.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <input 
+                            type="text" 
+                            value={sheetInput}
+                            onChange={(e) => setSheetInput(e.target.value)}
+                            placeholder="Nhập link Google Sheet của bạn tại đây..."
+                            className="flex-1 border border-stone-300 rounded-xl px-3.5 py-2.5 text-xs focus:border-emerald-green focus:ring-2 focus:ring-emerald-green/15 focus:outline-hidden transition-all bg-stone-50/50"
+                          />
+                          <button
+                            onClick={handleSetupExistingSheet}
+                            disabled={isSettingUp || !sheetInput.trim()}
+                            className="bg-stone-950 hover:bg-stone-900 disabled:bg-stone-200 disabled:text-stone-400 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+                          >
+                            {isSettingUp ? (
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                            )}
+                            <span>Khởi Tạo Bảng ⚡</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {/* Connection Status Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-stone-150">
-                  <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 text-center">
-                    <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Trạng thái</span>
-                    <span className="text-xs font-bold text-stone-800 mt-1 block">
-                      {sheetsConfig.spreadsheetId ? "🟢 Đã kết nối" : "⚪ Chưa kết nối"}
-                    </span>
-                  </div>
-                  <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 text-center">
-                    <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Tổng tài nguyên</span>
-                    <span className="text-xs font-bold text-stone-800 mt-1 block">
-                      {customBlogPosts.length} bài viết | {customImages.length} ảnh
-                    </span>
-                  </div>
-                  <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 text-center">
-                    <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Đồng bộ gần nhất</span>
-                    <span className="text-xs font-bold text-stone-800 mt-1 block truncate" title={sheetsConfig.lastSynced || "Chưa đồng bộ"}>
-                      {sheetsConfig.lastSynced || "N/A"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sheet Columns Schema */}
-              <div className="bg-stone-900 text-stone-100 p-6 rounded-3xl space-y-4">
-                <h4 className="font-serif font-bold text-base flex items-center gap-2 text-emerald-green">
-                  <span>Mẫu Cấu Trúc Google Sheet chuẩn</span>
-                </h4>
-                <p className="text-xs text-stone-300 font-light leading-relaxed">
-                  Thiết lập Google Sheet với hai trang tính (sheet) con được đổi tên đúng ký tự sau:
-                </p>
-                <div className="space-y-4 pt-1 text-xs text-left">
-                  <div className="space-y-1.5">
-                    <span className="text-emerald-green font-bold text-[10px] uppercase tracking-wider">Trang tính 1: "Bài viết" (Articles)</span>
-                    <div className="bg-white/5 p-3 rounded-lg font-mono text-[10px] text-stone-200 overflow-x-auto whitespace-nowrap scrollbar-none border border-white/5">
-                      Tiêu đề | Danh mục | Tóm tắt | Nội dung | Ngày | Tác giả | Hình ảnh
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <span className="text-emerald-green font-bold text-[10px] uppercase tracking-wider">Trang tính 2: "Hình ảnh" (Images)</span>
-                    <div className="bg-white/5 p-3 rounded-lg font-mono text-[10px] text-stone-200 overflow-x-auto whitespace-nowrap scrollbar-none border border-white/5">
-                      Tiêu đề | Danh mục | Hình ảnh | Mô tả
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Setup Guidance */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-2xs space-y-5">
-                <h4 className="font-serif font-bold text-lg text-stone-900 border-b border-stone-100 pb-3">
-                  Hướng dẫn thiết lập 5 bước
-                </h4>
-                
-                <div className="space-y-4">
-                  {[
-                    { step: "1", title: "Mở Google Trang tính", desc: "Tạo một bảng tính Google Sheet trống hoàn toàn mới trong tài khoản Google của bạn." },
-                    { step: "2", title: "Đổi tên các Trang tính", desc: "Ở góc dưới màn hình Google Sheet, đổi tên 2 trang tính (sheet) thành: 'Bài viết' và 'Hình ảnh'." },
-                    { step: "3", title: "Thiết lập dòng tiêu đề", desc: "Tại dòng 1, nhập chính xác các tên cột mẫu ở ô màu đen bên cạnh làm tiêu đề. Sau đó nhập dữ liệu từ dòng số 2." },
-                    { step: "4", title: "Chia sẻ quyền truy cập công khai", desc: "Bấm 'Chia sẻ' (Share) -> Thay đổi quyền truy cập thành 'Bất kỳ ai có liên kết đều có thể xem' (Anyone with link can view)." },
-                    { step: "5", title: "Kết nối & Đồng bộ", desc: "Sao chép toàn bộ đường link trình duyệt của Google Sheet dán vào ô bên trái và bấm 'Đồng Bộ Ngay' để lưu dữ liệu lên hệ thống!" }
-                  ].map((stepItem, idx) => (
-                    <div key={idx} className="flex gap-4 text-left">
-                      <div className="w-6 h-6 bg-emerald-green-light text-emerald-green-dark rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                        {stepItem.step}
+                {/* Spreadsheet Info Badge if spreadsheetId exists */}
+                {sheetsConfig.spreadsheetId && (
+                  <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+                    <h4 className="text-xs font-bold text-stone-700 uppercase tracking-wider border-b border-stone-100 pb-2">3. Trạng thái và Hành động</h4>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-stone-50 p-3 rounded-xl border border-stone-150">
+                        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">ID Google Sheet</span>
+                        <span className="text-xs font-mono font-bold text-stone-800 mt-1 block truncate" title={sheetsConfig.spreadsheetId}>
+                          {sheetsConfig.spreadsheetId}
+                        </span>
                       </div>
-                      <div className="space-y-1">
-                        <h5 className="font-bold text-xs text-stone-900">{stepItem.title}</h5>
-                        <p className="text-stone-500 text-[11px] leading-relaxed font-light">{stepItem.desc}</p>
+                      <div className="bg-stone-50 p-3 rounded-xl border border-stone-150">
+                        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Đồng bộ cuối</span>
+                        <span className="text-xs font-bold text-stone-800 mt-1 block truncate">
+                          {sheetsConfig.lastSynced || "Chưa có"}
+                        </span>
                       </div>
                     </div>
-                  ))}
+
+                    <div className="space-y-2 pt-1">
+                      <a 
+                        href={`https://docs.google.com/spreadsheets/d/${sheetsConfig.spreadsheetId}`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="w-full bg-white hover:bg-stone-50 text-stone-700 border border-stone-300 font-bold text-xs px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-3xs"
+                      >
+                        <FileSpreadsheet className="w-4 h-4 text-emerald-green" />
+                        <span>Mở Trang Tính Trên Drive ↗</span>
+                      </a>
+                      
+                      {googleToken && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <button
+                            onClick={handleSyncSheets}
+                            disabled={isSyncing}
+                            className="bg-stone-900 hover:bg-stone-850 text-white font-bold text-xs px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:bg-stone-200 disabled:text-stone-400"
+                            title="Tải dữ liệu từ Google Sheet về cập nhật cho Website"
+                          >
+                            {isSyncing ? (
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-4 h-4 text-emerald-green" />
+                            )}
+                            <span>Đồng bộ về Web 🔄</span>
+                          </button>
+
+                          <button
+                            onClick={handlePushToSheets}
+                            disabled={isSyncing}
+                            className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-green/10 disabled:bg-stone-200 disabled:text-stone-400"
+                            title="Ghi đè tất cả bài viết và hình ảnh hiện tại từ Website lên Google Sheet"
+                          >
+                            {isSyncing ? (
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <ArrowUpToLine className="w-4 h-4" />
+                            )}
+                            <span>Đẩy dữ liệu lên Sheet ⬆️</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <p className="text-[11px] text-stone-400 text-center font-light leading-relaxed">
+                      💡 Mẹo: Nhấn <strong>"Đồng bộ về Web 🔄"</strong> để cập nhật bài viết từ Sheet về Web, hoặc nhấn <strong>"Đẩy dữ liệu lên Sheet ⬆️"</strong> để tải ngược lại tất cả bài viết từ Web lên Sheet!
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Schema and Instructions */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="bg-stone-900 text-stone-100 p-6 sm:p-8 rounded-3xl space-y-4">
+                  <div className="flex items-center gap-2 text-emerald-green">
+                    <Database className="w-5 h-5" />
+                    <h4 className="font-serif font-bold text-base sm:text-lg">Cấu Trúc Bảng Dữ Liệu</h4>
+                  </div>
+                  <p className="text-xs text-stone-300 font-light leading-relaxed">
+                    Khi khởi tạo, Google Sheet của bạn sẽ được thiết lập tự động gồm hai trang tính (sheet) con với cấu trúc cột chuẩn xác để phục vụ cho website CMS:
+                  </p>
+                  <div className="space-y-4 pt-2 text-xs text-left">
+                    <div className="space-y-1.5">
+                      <span className="text-emerald-green font-bold text-[10px] uppercase tracking-wider block">Trang tính 1: "Bài viết" (Blog Posts)</span>
+                      <div className="bg-white/5 p-3 rounded-lg font-mono text-[10px] text-stone-200 overflow-x-auto whitespace-nowrap scrollbar-none border border-white/5">
+                        Tiêu đề | Danh mục | Tóm tắt | Nội dung | Hình ảnh | Tác giả | Ngày
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <span className="text-emerald-green font-bold text-[10px] uppercase tracking-wider block">Trang tính 2: "Hình ảnh" (Activities Library)</span>
+                      <div className="bg-white/5 p-3 rounded-lg font-mono text-[10px] text-stone-200 overflow-x-auto whitespace-nowrap scrollbar-none border border-white/5">
+                        Tiêu đề | Danh mục | Mô tả | Hình ảnh
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-3xs space-y-4">
+                  <h4 className="font-serif font-bold text-sm text-stone-950">Ưu điểm của đồng bộ trực tiếp (OAuth API)</h4>
+                  <div className="space-y-3.5">
+                    {[
+                      { title: "Bảo mật & Trực tiếp", desc: "Không cần triển khai các Web App công khai hay lộ mã nguồn. Mọi thao tác đều được bảo vệ bởi giao thức Google OAuth." },
+                      { title: "Đồng bộ thời gian thực", desc: "Khi bạn Thêm, Sửa hoặc Xóa bài viết/hình ảnh trong phần 'Quản lý Nội dung', hệ thống sẽ tự động gửi cập nhật và ghi trực tiếp lên Sheet của bạn ngay lập tức." },
+                      { title: "Tiết kiệm thời gian", desc: "Không cần am hiểu kỹ thuật để cấu hình các tiện ích mở rộng phức tạp. Chỉ cần 1 click và sẵn sàng vận hành." }
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex gap-3 text-left">
+                        <div className="w-5 h-5 bg-emerald-green-light text-emerald-green-dark rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                          ✓
+                        </div>
+                        <div className="space-y-0.5">
+                          <h5 className="font-bold text-xs text-stone-900">{item.title}</h5>
+                          <p className="text-stone-500 text-[11px] leading-relaxed font-light">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -623,19 +1302,127 @@ export default function CRMDashboard({
         {/* SYNCED CONTENT MANAGER */}
         {activeSubTab === "content" && (
           <div className="space-y-8 text-left">
-            {/* Synced Articles Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b border-stone-150 pb-3">
-                <BookOpen className="w-5 h-5 text-emerald-green" />
-                <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Bài Viết Đã Đồng Bộ</h3>
-                <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
-                  {customBlogPosts.length} bài viết
-                </span>
+            {/* Action feedback banner */}
+            {actionMessage.text && (
+              <div className={`p-4 rounded-xl text-xs flex gap-2 items-start border ${
+                actionMessage.type === "success" 
+                  ? "bg-emerald-green/5 border-emerald-green/20 text-emerald-green-dark font-medium" 
+                  : actionMessage.type === "error"
+                    ? "bg-red-50 border-red-100 text-red-700"
+                    : "bg-stone-50 border-stone-200 text-stone-600 animate-pulse"
+              }`}>
+                <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{actionMessage.text}</span>
+              </div>
+            )}
+
+            {/* 1. Main Website Logo Config Card */}
+            <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-3xs space-y-4">
+              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-emerald-green" />
+                  <h3 className="font-serif font-bold text-lg text-stone-900">Logo & Slogan chính của Website</h3>
+                </div>
+                {!isEditingWebsiteLogo ? (
+                  <button
+                    onClick={() => {
+                      setTempWebsiteLogo({ name: websiteLogo?.name || "COSBUILT", slogan: websiteLogo?.slogan || "ESTD 1999" });
+                      setIsEditingWebsiteLogo(true);
+                    }}
+                    className="border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    Sửa Logo
+                  </button>
+                ) : null}
+              </div>
+
+              {isEditingWebsiteLogo ? (
+                <div className="space-y-4 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Tên hiển thị (Logo Text)</label>
+                      <input
+                        type="text"
+                        value={tempWebsiteLogo.name}
+                        onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, name: e.target.value }))}
+                        className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Slogan / Năm thành lập</label>
+                      <input
+                        type="text"
+                        value={tempWebsiteLogo.slogan}
+                        onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, slogan: e.target.value }))}
+                        className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      onClick={() => setIsEditingWebsiteLogo(false)}
+                      className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      onClick={handleSaveWebsiteLogo}
+                      disabled={isSavingContent}
+                      className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      Lưu Logo
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Tên hiển thị hiện tại</div>
+                    <div className="font-serif font-black text-2xl text-stone-900 tracking-widest mt-1 uppercase">{websiteLogo?.name || "COSBUILT"}</div>
+                    <div className="text-[10px] font-bold text-stone-400 mt-1 uppercase tracking-widest">{websiteLogo?.slogan || "— ESTD 1999 —"}</div>
+                  </div>
+                  <div className="text-xs text-stone-500 font-light max-w-sm">
+                    Tên thương hiệu và slogan này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 2. Synced Articles Section */}
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-emerald-green" />
+                  <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Bài Viết (Tin tức & Xu hướng)</h3>
+                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
+                    {customBlogPosts.length} bài viết
+                  </span>
+                </div>
+                <button
+                  onClick={() => setEditingBlogPost({
+                    index: -1,
+                    isNew: true,
+                    data: {
+                      title: "",
+                      category: "cẩm nang",
+                      summary: "",
+                      content: "",
+                      date: new Date().toLocaleDateString("vi-VN"),
+                      author: "Cosbuilt",
+                      image: ""
+                    }
+                  })}
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Thêm Bài Viết
+                </button>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {customBlogPosts.map((post, index) => (
-                  <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-2xs transition-all">
+                  <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-2xs transition-all relative group">
                     <img 
                       src={post.image || "https://images.unsplash.com/photo-1556228578-0d85b1a4a5a3?q=80&w=400"} 
                       alt={post.title} 
@@ -646,7 +1433,7 @@ export default function CRMDashboard({
                       <span className="text-[9px] font-bold text-emerald-green uppercase tracking-wider block bg-emerald-green-light px-2 py-0.5 rounded w-fit">
                         {post.category}
                       </span>
-                      <h4 className="font-bold text-stone-900 text-xs sm:text-sm line-clamp-1">{post.title}</h4>
+                      <h4 className="font-bold text-stone-900 text-xs sm:text-sm line-clamp-1 pr-14">{post.title}</h4>
                       <p className="text-stone-500 text-[11px] leading-snug line-clamp-2 font-light">{post.summary}</p>
                       <div className="flex items-center gap-3 text-[10px] text-stone-400 pt-1">
                         <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {post.date}</span>
@@ -654,29 +1441,64 @@ export default function CRMDashboard({
                         <span>Tác giả: {post.author || "Cosbuilt"}</span>
                       </div>
                     </div>
+
+                    {/* CRUD hover overlay controls */}
+                    <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200/60 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
+                      <button
+                        onClick={() => setEditingBlogPost({ index, isNew: false, data: { ...post } })}
+                        className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                        title="Sửa bài"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteBlogPost(index)}
+                        className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                        title="Xóa bài"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Synced Images Section */}
+            {/* 3. Synced Images Section */}
             <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-2 border-b border-stone-150 pb-3">
-                <Image className="w-5 h-5 text-emerald-green" />
-                <h3 className="font-serif font-bold text-lg text-stone-900">Thư Viện Ảnh Đã Đồng Bộ</h3>
-                <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
-                  {customImages.length} hình ảnh
-                </span>
+              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                <div className="flex items-center gap-2">
+                  <Image className="w-5 h-5 text-emerald-green" />
+                  <h3 className="font-serif font-bold text-lg text-stone-900">Thư Viện Ảnh Hoạt Động (Gallery)</h3>
+                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
+                    {customImages.length} hình ảnh
+                  </span>
+                </div>
+                <button
+                  onClick={() => setEditingImage({
+                    index: -1,
+                    isNew: true,
+                    data: {
+                      title: "",
+                      category: "nhà máy",
+                      image: "",
+                      description: ""
+                    }
+                  })}
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Thêm Hình Ảnh
+                </button>
               </div>
 
               {customImages.length === 0 ? (
                 <div className="text-center py-8 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
-                  Chưa có hình ảnh nào được đồng bộ từ Google Sheet. Tab "ALBUM HOẠT ĐỘNG" hiện đang sử dụng thư viện mẫu.
+                  Chưa có hình ảnh nào. Hãy thêm ảnh mới để hiển thị trong Album Hoạt Động.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {customImages.map((img, index) => (
-                    <div key={index} className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-3xs group">
+                    <div key={index} className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-3xs group relative">
                       <div className="aspect-video relative bg-stone-100 overflow-hidden">
                         <img 
                           src={img.image} 
@@ -687,6 +1509,24 @@ export default function CRMDashboard({
                         <span className="absolute top-2 left-2 bg-stone-900/70 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase">
                           {img.category}
                         </span>
+
+                        {/* Action controls */}
+                        <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200/60 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
+                          <button
+                            onClick={() => setEditingImage({ index, isNew: false, data: { ...img } })}
+                            className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                            title="Sửa ảnh"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteImage(index)}
+                            className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                            title="Xóa ảnh"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
                       <div className="p-3 space-y-0.5 text-left">
                         <h5 className="font-bold text-xs text-stone-950 truncate">{img.title}</h5>
@@ -698,6 +1538,53 @@ export default function CRMDashboard({
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* 4. Partner Logos Section */}
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-emerald-green" />
+                  <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Đối Tác & Thương Hiệu</h3>
+                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
+                    {customLogos.length} đối tác
+                  </span>
+                </div>
+                <button
+                  onClick={() => setEditingPartnerLogo({ index: -1, isNew: true, data: { name: "", type: "" } })}
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Thêm Đối Tác
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {customLogos.map((logo, index) => (
+                  <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-emerald-green transition-all shadow-3xs">
+                    <div className="space-y-1 text-left">
+                      <h5 className="font-bold text-xs text-stone-900 pr-12 truncate">{logo.name}</h5>
+                      <span className="text-[10px] text-stone-400 block truncate">{logo.type}</span>
+                    </div>
+                    
+                    <div className="absolute top-2.5 right-2.5 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-150 opacity-0 group-hover:opacity-100 transition-all duration-150">
+                      <button
+                        onClick={() => setEditingPartnerLogo({ index, isNew: false, data: { ...logo } })}
+                        className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                        title="Sửa đối tác"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => handleDeletePartnerLogo(index)}
+                        className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                        title="Xóa đối tác"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -820,6 +1707,289 @@ export default function CRMDashboard({
                   <span>Lưu cập nhật</span>
                 </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* CMS: EDIT BLOG POST MODAL */}
+        {editingBlogPost && (
+          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-stone-150 max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="p-6 border-b border-stone-150 flex justify-between items-center bg-stone-50">
+                <h3 className="font-serif font-bold text-lg text-stone-950">
+                  {editingBlogPost.isNew ? "Thêm Bài Viết Mới" : "Sửa Bài Viết"}
+                </h3>
+                <button
+                  onClick={() => setEditingBlogPost(null)}
+                  className="p-1.5 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveBlogPost} className="flex-1 overflow-y-auto p-6 space-y-4 text-left text-xs sm:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tiêu đề bài viết</label>
+                    <input
+                      type="text"
+                      required
+                      value={editingBlogPost.data.title}
+                      onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, title: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Danh mục</label>
+                    <select
+                      value={editingBlogPost.data.category}
+                      onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, category: e.target.value as any } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none cursor-pointer font-bold"
+                    >
+                      <option value="cẩm nang">📖 Cẩm nang</option>
+                      <option value="xu hướng">📈 Xu hướng</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tác giả</label>
+                    <input
+                      type="text"
+                      required
+                      value={editingBlogPost.data.author}
+                      onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, author: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Ngày đăng</label>
+                    <input
+                      type="text"
+                      required
+                      value={editingBlogPost.data.date}
+                      onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, date: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đường dẫn ảnh bìa (URL)</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://images.unsplash.com/..."
+                    value={editingBlogPost.data.image}
+                    onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tóm tắt ngắn gọn</label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={editingBlogPost.data.summary}
+                    onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, summary: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none resize-none font-light"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Nội dung chi tiết (Markdown / Văn bản)</label>
+                  <textarea
+                    required
+                    rows={6}
+                    placeholder="Nhập nội dung chi tiết bài viết..."
+                    value={editingBlogPost.data.content}
+                    onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, content: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none resize-none font-light font-mono text-[11px]"
+                  />
+                </div>
+
+                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-3 justify-end -mx-6 -mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setEditingBlogPost(null)}
+                    className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingContent}
+                    className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shadow-2xs"
+                  >
+                    {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                    <span>Lưu bài viết</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* CMS: EDIT IMAGE MODAL */}
+        {editingImage && (
+          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-stone-150 max-w-md w-full shadow-2xl overflow-hidden flex flex-col"
+            >
+              <div className="p-6 border-b border-stone-150 flex justify-between items-center bg-stone-50">
+                <h3 className="font-serif font-bold text-lg text-stone-950">
+                  {editingImage.isNew ? "Thêm Hình Ảnh Hoạt Động" : "Sửa Hình Ảnh"}
+                </h3>
+                <button
+                  onClick={() => setEditingImage(null)}
+                  className="p-1.5 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveImage} className="p-6 space-y-4 text-left text-xs sm:text-sm">
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tiêu đề ảnh</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingImage.data.title}
+                    onChange={(e) => setEditingImage(prev => prev ? { ...prev, data: { ...prev.data, title: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Danh mục hiển thị</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ví dụ: nhà máy, sản phẩm, sự kiện..."
+                    value={editingImage.data.category}
+                    onChange={(e) => setEditingImage(prev => prev ? { ...prev, data: { ...prev.data, category: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đường dẫn hình ảnh (URL)</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://images.unsplash.com/..."
+                    value={editingImage.data.image}
+                    onChange={(e) => setEditingImage(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Mô tả ngắn</label>
+                  <input
+                    type="text"
+                    value={editingImage.data.description || ""}
+                    onChange={(e) => setEditingImage(prev => prev ? { ...prev, data: { ...prev.data, description: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-3 justify-end -mx-6 -mb-6 pt-3 mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEditingImage(null)}
+                    className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingContent}
+                    className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shadow-2xs"
+                  >
+                    {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                    <span>Lưu ảnh</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* CMS: EDIT PARTNER LOGO MODAL */}
+        {editingPartnerLogo && (
+          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-stone-150 max-w-xs w-full shadow-2xl overflow-hidden flex flex-col"
+            >
+              <div className="p-5 border-b border-stone-150 flex justify-between items-center bg-stone-50">
+                <h3 className="font-serif font-bold text-sm text-stone-950">
+                  {editingPartnerLogo.isNew ? "Thêm Đối Tác Mới" : "Sửa Đối Tác"}
+                </h3>
+                <button
+                  onClick={() => setEditingPartnerLogo(null)}
+                  className="p-1 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSavePartnerLogo} className="p-5 space-y-4 text-left text-xs">
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên đối tác / Thương hiệu</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ví dụ: Luxury Spa Group"
+                    value={editingPartnerLogo.data.name}
+                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, name: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Phân loại / Mô tả</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ví dụ: Thương hiệu Spa cao cấp"
+                    value={editingPartnerLogo.data.type}
+                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, type: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-5 -mb-5 pt-3 mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEditingPartnerLogo(null)}
+                    className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingContent}
+                    className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1 shadow-2xs"
+                  >
+                    {isSavingContent ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                    <span>Lưu đối tác</span>
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}
