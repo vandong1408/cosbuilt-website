@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Montserrat", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  
+  --color-emerald-green: #9C1C40; /* Luxury Crimson Burgundy from screenshot */
+  --color-emerald-green-dark: #7B1230; /* Deep Burgundy */
+  --color-emerald-green-light: #FDF2F4; /* Light luxury burgundy background tint */
+  --color-satin-gold: #F59E0B; /* Bright Warm Gold from Avésa star rating & badges */
+  --color-satin-gold-dark: #D97706; /* Deep gold */
+  --color-satin-gold-light: #FEF3C7; /* Soft yellow/gold tint */
+}
+
+/* Custom scrollbar and smooth transitions */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #FAF8F5; /* Elegant cream silk bg */
+  color: #1c1917;
+}

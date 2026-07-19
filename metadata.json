@@ -1,0 +1,6 @@
+{
+  "name": "Cosbuilt - Gia công mỹ phẩm hàng đầu",
+  "description": "Trang web gia công mỹ phẩm chuyên nghiệp, trọn gói, đạt chuẩn CGMP ASEAN của thương hiệu Cosbuilt, tích hợp hệ thống tính giá và nghiên cứu công thức tự động bằng AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
