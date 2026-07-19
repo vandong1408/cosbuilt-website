@@ -112,7 +112,7 @@ export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) 
                   onClick={() => onTabChange("categories", "facial-care")}
                   className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
                 >
-                  <CheckCircle className="w-3 h-3 text-stone-600" /> Chăm sóc da mặt (Serum, kem dưỡng...)
+                  <CheckCircle className="w-3 h-3 text-stone-600" /> Chăm sóc da mặt
                 </button>
               </li>
               <li>
@@ -120,7 +120,7 @@ export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) 
                   onClick={() => onTabChange("categories", "body-care")}
                   className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
                 >
-                  <CheckCircle className="w-3 h-3 text-stone-600" /> Chăm sóc cơ thể (Sữa tắm, lotion...)
+                  <CheckCircle className="w-3 h-3 text-stone-600" /> Chăm sóc cơ thể
                 </button>
               </li>
               <li>
@@ -128,7 +128,7 @@ export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) 
                   onClick={() => onTabChange("categories", "hair-care")}
                   className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
                 >
-                  <CheckCircle className="w-3 h-3 text-stone-600" /> Chăm sóc tóc (Dầu gội bưởi, xịt mọc tóc)
+                  <CheckCircle className="w-3 h-3 text-stone-600" /> Chăm sóc tóc
                 </button>
               </li>
               <li>
@@ -136,7 +136,7 @@ export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) 
                   onClick={() => onTabChange("categories", "makeup")}
                   className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
                 >
-                  <CheckCircle className="w-3 h-3 text-stone-600" /> Son môi & Trang điểm (Son kem lì, cushion)
+                  <CheckCircle className="w-3 h-3 text-stone-600" /> Son môi & Trang điểm
                 </button>
               </li>
               <li>
@@ -144,15 +144,15 @@ export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) 
                   onClick={() => onTabChange("categories", "personal-care")}
                   className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
                 >
-                  <CheckCircle className="w-3 h-3 text-stone-600" /> Vệ sinh cá nhân (Dung dịch vệ sinh...)
+                  <CheckCircle className="w-3 h-3 text-stone-600" /> Vệ sinh cá nhân
                 </button>
               </li>
               <li>
                 <button 
                   onClick={() => onTabChange("categories", "new-tech")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left text-emerald-green"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
                 >
-                  <CheckCircle className="w-3 h-3 text-emerald-green" /> Gia công công nghệ mới (Exosome, Liposome...)
+                  <CheckCircle className="w-3 h-3 text-stone-600" /> Gia công công nghệ mới
                 </button>
               </li>
             </ul>
