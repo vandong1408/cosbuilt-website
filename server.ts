@@ -9,7 +9,11 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+// Serve uploaded images statically
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // Initialize Gemini SDK with telemetry header
 const apiKey = process.env.GEMINI_API_KEY;
@@ -31,6 +35,42 @@ import fs from "fs";
 // 1. Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", brand: "cosbuilt" });
+});
+
+// 1.1 Native image upload endpoint
+app.post("/api/upload", (req, res) => {
+  try {
+    const { filename, base64 } = req.body;
+    if (!filename || !base64) {
+      return res.status(400).json({ error: "Thiếu tên file hoặc dữ liệu hình ảnh (base64)." });
+    }
+
+    // Ensure upload directory exists
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    // Clean up base64 string (remove prefix)
+    const cleanBase64 = base64.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(cleanBase64, "base64");
+
+    // Generate unique filename
+    const ext = path.extname(filename) || ".png";
+    const baseName = path.basename(filename, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
+    const uniqueFilename = `${baseName}_${Date.now()}${ext}`;
+    const filePath = path.join(uploadDir, uniqueFilename);
+
+    // Save file to disk
+    fs.writeFileSync(filePath, buffer);
+
+    // Return relative URL
+    const fileUrl = `/uploads/${uniqueFilename}`;
+    res.json({ success: true, url: fileUrl });
+  } catch (error: any) {
+    console.error("Upload error:", error);
+    res.status(500).json({ error: "Lỗi lưu file ảnh.", details: error.message });
+  }
 });
 
 // --- GOOGLE SHEETS INTEGRATION CONFIG AND SYNCHRONIZATION ---
@@ -175,8 +215,119 @@ function mapRowsToImages(rows: any[]) {
   }).filter(item => item.image);
 }
 
+// Map CSV row objects to products
+function mapRowsToProducts(rows: any[]) {
+  const idKeys = ["id", "mã", "ma"];
+  const titleKeys = ["title", "tiêu đề", "tieu de", "name", "tên", "tên sản phẩm", "ten san pham"];
+  const categoryKeys = ["category", "danh mục", "danh muc", "phân loại", "phan loai"];
+  const labKeys = ["lab", "phòng lab", "phong lab", "phòng thí nghiệm", "phong thi nghiem"];
+  const skinTypesKeys = ["skintype", "skintypes", "loại da", "loai da", "da"];
+  const ratingKeys = ["rating", "đánh giá", "danh gia", "sao", "rate"];
+  const ratingValueKeys = ["ratingvalue", "điểm đánh giá", "diem danh gia", "điểm", "diem"];
+  const reviewsCountKeys = ["reviewscount", "số đánh giá", "so gia", "lượt đánh giá", "luot danh gia", "reviews"];
+  const originalPriceKeys = ["originalprice", "giá gốc", "gia goc", "giá cũ", "gia cu"];
+  const priceKeys = ["price", "giá", "gia", "giá bán", "gia ban", "giá khuyến mãi", "gia khuyen mai"];
+  const discountPercentKeys = ["discountpercent", "phần trăm giảm giá", "phan tram giam gia", "% giảm", "% giam"];
+  const badgeKeys = ["badge", "nhãn", "nhan", "thẻ", "the", "tag", "nhãn dán", "nhan dan"];
+  const testedCountKeys = ["testedcount", "số lượt test", "so luot test", "số mẫu thử", "so mau thu"];
+  const hotPercentKeys = ["hotpercent", "phần trăm hot", "phan tram hot", "độ hot", "do hot", "% hot"];
+  const imageKeys = ["image", "hình ảnh", "hinh anh", "ảnh", "anh", "url", "link", "picture"];
+  const descriptionKeys = ["description", "mô tả", "mo ta", "giới thiệu", "gioi thieu"];
+  const ingredientsKeys = ["ingredients", "thành phần", "thanh phan", "công thức", "cong thuc"];
+  const guidelinesKeys = ["guidelines", "hướng dẫn", "huong dan", "cách dùng", "cach dung", "sử dụng", "su dung"];
+
+  return rows.map(row => {
+    const skinTypesStr = findColumnValue(row, skinTypesKeys) || "Mọi loại da";
+    const skinTypes = skinTypesStr.split(",").map((s: string) => s.trim()).filter(Boolean);
+    const priceVal = Number(findColumnValue(row, priceKeys)) || 0;
+    return {
+      id: findColumnValue(row, idKeys) || ("product_" + Math.random().toString(36).substring(2, 9)),
+      title: findColumnValue(row, titleKeys) || "Sản phẩm mới",
+      category: findColumnValue(row, categoryKeys) || "makeup",
+      lab: findColumnValue(row, labKeys) || "Cosbuilt LAB",
+      skinTypes: skinTypes,
+      rating: Number(findColumnValue(row, ratingKeys)) || 5,
+      ratingValue: Number(findColumnValue(row, ratingValueKeys)) || 4.8,
+      reviewsCount: Number(findColumnValue(row, reviewsCountKeys)) || 120,
+      originalPrice: Number(findColumnValue(row, originalPriceKeys)) || 0,
+      price: priceVal,
+      discountPercent: Number(findColumnValue(row, discountPercentKeys)) || 0,
+      badge: findColumnValue(row, badgeKeys) || "",
+      testedCount: Number(findColumnValue(row, testedCountKeys)) || 25,
+      hotPercent: Number(findColumnValue(row, hotPercentKeys)) || 50,
+      image: findColumnValue(row, imageKeys) || "https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=600",
+      description: findColumnValue(row, descriptionKeys) || "",
+      ingredients: findColumnValue(row, ingredientsKeys) || "",
+      guidelines: findColumnValue(row, guidelinesKeys) || ""
+    };
+  }).filter(item => item.title);
+}
+
 // Local cache configuration paths
 const CONFIG_FILE_PATH = path.join(process.cwd(), "sheets_config.json");
+
+const DEFAULT_PRODUCTS = [
+  {
+    id: "lip-tint",
+    title: "Son Kem Lì Velvet Lip Tint Siêu Mịn Môi (Mẫu thử gia công)",
+    category: "makeup",
+    lab: "Premium Eco",
+    skinTypes: ["Mọi loại da", "Dành cho da khô", "Dành cho da nhạy cảm"],
+    rating: 5,
+    ratingValue: 4.8,
+    reviewsCount: 220,
+    originalPrice: 20000,
+    price: 16000,
+    discountPercent: 20,
+    badge: "LÊN MÀU CHUẨN",
+    testedCount: 28,
+    hotPercent: 28,
+    image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=600",
+    description: "Công thức son kem bùn bọc nước độc đáo mang kết cấu xốp mịn như nhung. Màu lên chuẩn sắc chỉ sau một lần quẹt, nhẹ tênh không gây khô môi hay lộ rãnh môi nhờ chứa dầu bơ và Vitamin E giữ ẩm sâu. Độ bám màu lên đến 8 tiếng.",
+    ingredients: "Dầu bơ ép lạnh hữu cơ, Vitamin E tự nhiên, Màu khoáng tiêu chuẩn FDA Mỹ, Sáp ong trắng tinh khiết.",
+    guidelines: "Thoa một lớp mỏng lên môi, bặm nhẹ và đợi 30 giây để lớp son tự set màu. Cảm nhận độ xốp, mướt mịn và khả năng giữ màu sau khi ăn uống nhẹ."
+  },
+  {
+    id: "cushion",
+    title: "Phấn Nước Cushion Che Phủ Hoàn Hảo & Kiềm Dầu SPF50 (Mẫu thử gia công)",
+    category: "makeup",
+    lab: "Premium Eco",
+    skinTypes: ["Mọi loại da", "Dành cho da dầu mụn", "Dành cho da nhạy cảm"],
+    rating: 5,
+    ratingValue: 4.7,
+    reviewsCount: 140,
+    originalPrice: 42000,
+    price: 35000,
+    discountPercent: 16,
+    badge: "CHE PHỦ 100%",
+    testedCount: 73,
+    hotPercent: 73,
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
+    description: "Cushion thế hệ mới tích hợp màng lọc chống nắng vật lý phổ rộng và hạt phấn nano siêu mịn. Mang lại lớp nền mỏng nhẹ tự nhiên nhưng che phủ hoàn hảo các khuyết điểm, mụn thâm, lỗ chân lông to và kiểm soát dầu thừa suốt 12 tiếng.",
+    ingredients: "Chiết xuất tràm trà, Niacinamide 2%, Zinc Oxide, Titanium Dioxide, Vitamin B5 phục hồi.",
+    guidelines: "Dùng bông mút dặm nhẹ phấn lên da mặt từ trong ra ngoài. Cảm nhận độ che phủ, tính kiềm dầu và độ mỏng nhẹ không bí bách của lớp nền."
+  },
+  {
+    id: "serum-b5",
+    title: "Serum B5 & Exosome phục hồi da chuyên sâu (Mẫu thử gia công)",
+    category: "facial-care",
+    lab: "Advanced Clinical",
+    skinTypes: ["Dành cho da nhạy cảm", "Dành cho da khô", "Mọi loại da"],
+    rating: 5,
+    ratingValue: 4.9,
+    reviewsCount: 310,
+    originalPrice: 55000,
+    price: 45000,
+    discountPercent: 18,
+    badge: "PHỤC HỒI CẤP TỐC",
+    testedCount: 154,
+    hotPercent: 85,
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600",
+    description: "Công thức phục hồi tế bào thế hệ mới kết hợp Panthenol (Vitamin B5) nồng độ cao và hoạt chất Exosome siêu nhỏ chiết xuất từ rau má. Giúp làm dịu mẩn đỏ tức thì, kích thích tăng sinh collagen tự thân và củng cố hàng rào bảo vệ da mạnh mẽ.",
+    ingredients: "Panthenol 10%, Exosome chiết xuất rau má, Centella Asiatica Extract, Hyaluronic Acid đa tầng, Ceramide NP.",
+    guidelines: "Thoa 3-4 giọt lên da mặt sạch sau bước toner. Vỗ nhẹ để dưỡng chất thẩm thấu sâu. Phù hợp sử dụng sau các liệu trình laser, peel da hoặc treatment nặng."
+  }
+];
 
 const DEFAULT_IMAGES = [
   {
@@ -225,6 +376,9 @@ function loadSheetsConfig() {
       if (!config.images || config.images.length === 0) {
         config.images = DEFAULT_IMAGES;
       }
+      if (!config.products || config.products.length === 0) {
+        config.products = DEFAULT_PRODUCTS;
+      }
       return config;
     }
   } catch (error) {
@@ -235,7 +389,8 @@ function loadSheetsConfig() {
     webAppUrl: "",
     lastSynced: "",
     articles: [],
-    images: DEFAULT_IMAGES
+    images: DEFAULT_IMAGES,
+    products: DEFAULT_PRODUCTS
   };
 }
 
@@ -248,7 +403,7 @@ function saveSheetsConfig(config: any) {
 }
 
 // Helper to sync changes to Google Sheets Apps Script Web App
-async function syncToGoogleSheets(action: "add" | "update" | "delete" | "sync", sheetName: "Bài viết" | "Hình ảnh", index?: number, data?: any) {
+async function syncToGoogleSheets(action: "add" | "update" | "delete" | "sync", sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm", index?: number, data?: any) {
   const config = loadSheetsConfig();
   const webAppUrl = config.webAppUrl;
   if (!webAppUrl) {
@@ -319,19 +474,21 @@ app.get("/api/sheets/data", (req, res) => {
     articles: config.articles || [],
     images: config.images || [],
     logos: config.logos || [],
-    websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" }
+    websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
+    products: config.products || []
   });
 });
 
 app.post("/api/sheets/data", async (req, res) => {
   try {
-    const { articles, images, logos, websiteLogo, actionInfo } = req.body;
+    const { articles, images, logos, websiteLogo, products, actionInfo } = req.body;
     let config = loadSheetsConfig();
     
     if (articles !== undefined) config.articles = articles;
     if (images !== undefined) config.images = images;
     if (logos !== undefined) config.logos = logos;
     if (websiteLogo !== undefined) config.websiteLogo = websiteLogo;
+    if (products !== undefined) config.products = products;
     
     saveSheetsConfig(config);
     
@@ -349,6 +506,9 @@ app.post("/api/sheets/data", async (req, res) => {
       if (images !== undefined) {
         syncToGoogleSheets("sync", "Hình ảnh", undefined, images).catch(err => console.error(err));
       }
+      if (products !== undefined) {
+        syncToGoogleSheets("sync", "Sản phẩm", undefined, products).catch(err => console.error(err));
+      }
     }
     
     res.json({
@@ -358,7 +518,8 @@ app.post("/api/sheets/data", async (req, res) => {
         articles: config.articles || [],
         images: config.images || [],
         logos: config.logos || [],
-        websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" }
+        websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
+        products: config.products || []
       }
     });
   } catch (error: any) {
@@ -401,8 +562,19 @@ app.post("/api/sheets/sync", async (req, res) => {
     } else {
       console.log("No images sheet found or read failed, fallback to defaults.");
     }
+
+    // 3. Fetch Products / Formula Products
+    const productsCSV = await fetchSheetWithFallbacks(spreadsheetId, ["Sản phẩm", "Products", "Sheet3"]);
+    let products: any[] = [];
+    if (productsCSV) {
+      const rows = parseSheetCSV(productsCSV);
+      products = mapRowsToProducts(rows);
+      console.log(`Synced ${products.length} products from sheet.`);
+    } else {
+      console.log("No products sheet found or read failed, fallback to defaults.");
+    }
     
-    if (!articlesCSV && !imagesCSV) {
+    if (!articlesCSV && !imagesCSV && !productsCSV) {
       return res.status(400).json({ 
         error: "Không thể đọc dữ liệu từ Google Sheet. Hãy kiểm tra chắc chắn rằng bạn đã bật chế độ chia sẻ: 'Bất kỳ ai có liên kết đều có thể xem' (Anyone with link can view)." 
       });
@@ -412,6 +584,7 @@ app.post("/api/sheets/sync", async (req, res) => {
     config.lastSynced = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
     if (articles.length > 0) config.articles = articles;
     if (images.length > 0) config.images = images;
+    if (products.length > 0) config.products = products;
     
     saveSheetsConfig(config);
     
@@ -420,7 +593,8 @@ app.post("/api/sheets/sync", async (req, res) => {
       message: "Đồng bộ dữ liệu thành công!",
       lastSynced: config.lastSynced,
       articlesCount: articles.length,
-      imagesCount: images.length
+      imagesCount: images.length,
+      productsCount: products.length
     });
   } catch (error: any) {
     console.error("Sheets sync failed:", error);
@@ -443,7 +617,8 @@ app.post("/api/sheets/setup", async (req, res) => {
       body: JSON.stringify({
         action: "setup",
         articles: config.articles || [],
-        images: config.images || []
+        images: config.images || [],
+        products: config.products || []
       })
     });
     

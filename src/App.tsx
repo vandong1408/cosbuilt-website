@@ -101,15 +101,43 @@ export default function App() {
   const [customImages, setCustomImages] = useState<any[]>([]);
   const [customLogos, setCustomLogos] = useState<any[]>(ABOUT_SECTIONS.partners.logos);
   const [websiteLogo, setWebsiteLogo] = useState<any>({ name: "COSBUILT", slogan: "ESTD 1999" });
+  const [customProducts, setCustomProducts] = useState<FormulaProduct[]>(FORMULA_PRODUCTS);
   const [sheetsConfig, setSheetsConfig] = useState<any>({
     spreadsheetId: "",
     lastSynced: "",
     hasArticles: false,
-    hasImages: false
+    hasImages: false,
+    hasProducts: false
   });
   const [isSyncing, setIsSyncing] = useState(false);
   const [sheetInput, setSheetInput] = useState("");
   const [syncMessage, setSyncMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
+
+  const [isAdminMode, setIsAdminMode] = useState(() => {
+    return localStorage.getItem("cosbuilt_admin_logged_in") === "true" || localStorage.getItem("cosbuilt_admin_mode") === "true";
+  });
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("admin") === "true" || params.get("mode") === "admin") {
+      setIsAdminMode(true);
+      localStorage.setItem("cosbuilt_admin_mode", "true");
+      // Clean up the URL query params so they are not visible in the address bar
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, []);
+
+  const handleToggleAdminMode = () => {
+    const nextVal = !isAdminMode;
+    setIsAdminMode(nextVal);
+    if (nextVal) {
+      localStorage.setItem("cosbuilt_admin_mode", "true");
+    } else {
+      localStorage.removeItem("cosbuilt_admin_mode");
+      localStorage.removeItem("cosbuilt_admin_logged_in");
+    }
+  };
 
   // Load sheets configuration, data, and CRM leads on component mount
   useEffect(() => {
@@ -138,6 +166,9 @@ export default function App() {
           }
           if (data.websiteLogo) {
             setWebsiteLogo(data.websiteLogo);
+          }
+          if (data.products && data.products.length > 0) {
+            setCustomProducts(data.products);
           }
         }
       } catch (error) {
@@ -382,6 +413,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
           sampleCartCount={sampleCart.length}
           onToggleSampleCart={handleToggleSampleCart}
           websiteLogo={websiteLogo}
+          isAdminMode={isAdminMode}
         />
       )}
 
@@ -963,9 +995,20 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 pt-6">
                         {customLogos.map((logo, idx) => (
-                          <div key={idx} className="bg-white p-5 rounded-xl border border-stone-150 flex flex-col items-center justify-center space-y-1 text-center shadow-2xs hover:border-emerald-green transition-all">
-                            <span className="font-bold text-xs text-stone-800 block">{logo.name}</span>
-                            <span className="text-[9px] text-stone-400 uppercase tracking-widest block">{logo.type}</span>
+                          <div key={idx} className="bg-white p-5 rounded-xl border border-stone-150 flex flex-col items-center justify-center space-y-1 text-center shadow-2xs hover:border-emerald-green transition-all min-h-[90px]">
+                            {logo.image ? (
+                              <img 
+                                src={logo.image} 
+                                alt={logo.name} 
+                                className="h-10 max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              <>
+                                <span className="font-bold text-xs text-stone-800 block">{logo.name}</span>
+                                <span className="text-[9px] text-stone-400 uppercase tracking-widest block">{logo.type}</span>
+                              </>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1069,7 +1112,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
           {/* DANH MỤC GIA CÔNG / CATEGORIES */}
           {activeTab === "categories" && (() => {
             // Interactive Filtering Logic
-            const filteredProducts = FORMULA_PRODUCTS.filter(prod => {
+            const filteredProducts = customProducts.filter(prod => {
               // 1. Filter by Category
               if (selectedCategory !== "all" && prod.category !== selectedCategory) return false;
 
@@ -2018,16 +2061,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <div className="flex gap-2.5 items-start">
                       <MapPin className="w-5 h-5 text-emerald-green shrink-0 mt-0.5" />
                       <div className="space-y-0.5">
-                        <strong className="text-stone-900 block">Văn phòng đại diện:</strong>
-                        <span className="text-stone-500 leading-relaxed font-light">110/2/2F Đường số 30, Phường An Nhơn, TP. Hồ Chí Minh, Việt Nam.</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2.5 items-start">
-                      <Building2 className="w-5 h-5 text-emerald-green shrink-0 mt-0.5" />
-                      <div className="space-y-0.5">
-                        <strong className="text-stone-900 block">Tọa độ Nhà máy CGMP:</strong>
-                        <span className="text-stone-500 leading-relaxed font-light">Lô A7, KCN Hiệp Phước, Nhà Bè, TP. Hồ Chí Minh.</span>
+                        <strong className="text-stone-900 block">Địa chỉ văn phòng:</strong>
+                        <span className="text-stone-500 leading-relaxed font-light">Văn phòng số 2.40 khu văn phòng, tòa nhà The Prince Residence, số 19-21 Nguyễn Văn Trỗi, Phường Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam.</span>
                       </div>
                     </div>
 
@@ -2043,9 +2078,9 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   {/* Clean Aesthetic Map placeholder with real design */}
                   <div className="bg-stone-100 border border-stone-250 rounded-2xl p-4 text-center text-xs text-stone-500 font-light space-y-2 relative overflow-hidden h-48 flex flex-col justify-center items-center">
                     <MapPin className="w-8 h-8 text-emerald-green mb-1" />
-                    <span className="font-bold text-stone-800 block text-xs">Bản đồ vị trí nhà máy Cosbuilt</span>
-                    <span className="text-[11px]">Khu Công Nghiệp Hiệp Phước, Nhà Bè, TP.HCM</span>
-                    <span className="text-[10px] bg-white border border-stone-200 text-stone-700 px-2.5 py-1 rounded-full shadow-2xs font-semibold uppercase tracking-wider">Đoạn đường chính ngạch</span>
+                    <span className="font-bold text-stone-800 block text-xs">Bản đồ vị trí văn phòng Cosbuilt</span>
+                    <span className="text-[11px]">The Prince Residence, 19-21 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM</span>
+                    <span className="text-[10px] bg-white border border-stone-200 text-stone-700 px-2.5 py-1 rounded-full shadow-2xs font-semibold uppercase tracking-wider">Trụ sở công ty</span>
                   </div>
                 </div>
 
@@ -2196,13 +2231,20 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 customImages={customImages}
                 customLogos={customLogos}
                 websiteLogo={websiteLogo}
+                customProducts={customProducts}
                 sheetsConfig={sheetsConfig}
                 setCustomBlogPosts={setCustomBlogPosts}
                 setCustomImages={setCustomImages}
                 setCustomLogos={setCustomLogos}
                 setWebsiteLogo={setWebsiteLogo}
+                setCustomProducts={setCustomProducts}
                 setSheetsConfig={setSheetsConfig}
                 onTabChange={handleTabChange}
+                onLogin={() => setIsAdminMode(true)}
+                onLogout={() => {
+                  setIsAdminMode(false);
+                  localStorage.removeItem("cosbuilt_admin_mode");
+                }}
               />
             </motion.div>
           )}
@@ -2592,7 +2634,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
         )}
       </AnimatePresence>
 
-      {activeTab !== "crm" && <Footer onTabChange={handleTabChange} />}
+      {activeTab !== "crm" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} />}
     </div>
   );
 }

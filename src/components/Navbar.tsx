@@ -17,7 +17,8 @@ interface NavbarProps {
   onSearch: (query: string) => void;
   sampleCartCount: number;
   onToggleSampleCart: () => void;
-  websiteLogo?: { name: string; slogan: string };
+  websiteLogo?: { name: string; slogan: string; image?: string };
+  isAdminMode?: boolean;
 }
 
 export default function Navbar({ 
@@ -26,7 +27,8 @@ export default function Navbar({
   onSearch,
   sampleCartCount,
   onToggleSampleCart,
-  websiteLogo = { name: "COSBUILT", slogan: "ESTD 1999" }
+  websiteLogo = { name: "COSBUILT", slogan: "ESTD 1999" },
+  isAdminMode = false
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,13 +57,17 @@ export default function Navbar({
           </div>
           <div className="flex items-center gap-3 text-[11px] sm:text-xs">
             <span className="hidden md:inline">Miễn phí chuyển phát mẫu thử toàn quốc</span>
-            <span className="hidden md:inline text-stone-300">|</span>
-            <button 
-              onClick={() => onTabChange("crm")}
-              className="border border-emerald-green bg-emerald-green/5 text-emerald-green hover:bg-emerald-green hover:text-white transition-all px-3 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase flex items-center gap-1 cursor-pointer"
-            >
-              QUẢN TRỊ CRM
-            </button>
+            {isAdminMode && (
+              <>
+                <span className="hidden md:inline text-stone-300">|</span>
+                <button 
+                  onClick={() => onTabChange("crm")}
+                  className="border border-emerald-green bg-emerald-green/5 text-emerald-green hover:bg-emerald-green hover:text-white transition-all px-3 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase flex items-center gap-1 cursor-pointer"
+                >
+                  QUẢN TRỊ CRM
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -73,14 +79,25 @@ export default function Navbar({
           {/* Logo */}
           <div 
             onClick={() => onTabChange("home")}
-            className="flex flex-col items-start cursor-pointer select-none shrink-0"
+            className="flex items-center cursor-pointer select-none shrink-0"
           >
-            <span className="text-2xl sm:text-3xl font-serif font-black tracking-widest text-stone-950 leading-none">
-              {websiteLogo.name}
-            </span>
-            <span className="text-[9px] font-bold text-stone-400 tracking-[0.25em] uppercase mt-1 self-center">
-              {websiteLogo.slogan}
-            </span>
+            {websiteLogo.image ? (
+              <img 
+                src={websiteLogo.image} 
+                alt={websiteLogo.name} 
+                className="h-10 sm:h-12 w-auto object-contain max-w-[180px]"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="flex flex-col items-start">
+                <span className="text-2xl sm:text-3xl font-serif font-black tracking-widest text-stone-950 leading-none">
+                  {websiteLogo.name}
+                </span>
+                <span className="text-[9px] font-bold text-stone-400 tracking-[0.25em] uppercase mt-1 self-center">
+                  {websiteLogo.slogan}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Luxury Search Bar (Matching image theme with satin gold highlight button) */}
@@ -371,14 +388,16 @@ export default function Navbar({
             >
               Liên Hệ
             </button>
-            <button
-              onClick={() => { onTabChange("crm"); setMobileMenuOpen(false); }}
-              className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-all ${
-                activeTab === "crm" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
-              }`}
-            >
-              Quản Trị CRM
-            </button>
+            {isAdminMode && (
+              <button
+                onClick={() => { onTabChange("crm"); setMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-all ${
+                  activeTab === "crm" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
+                }`}
+              >
+                Quản Trị CRM
+              </button>
+            )}
           </div>
 
           {/* No promotional button */}

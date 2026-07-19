@@ -73,13 +73,14 @@ export async function createNewSpreadsheet(title: string, accessToken: string): 
 }
 
 /**
- * Automatically creates sheets "Bài viết" and "Hình ảnh" in the Spreadsheet and writes headers & default values.
+ * Automatically creates sheets "Bài viết", "Hình ảnh" and "Sản phẩm" in the Spreadsheet and writes headers & default values.
  */
 export async function setupSpreadsheetTables(
   spreadsheetId: string,
   accessToken: string,
   currentArticles: GoogleArticle[],
-  currentImages: GoogleImage[]
+  currentImages: GoogleImage[],
+  currentProducts: any[] = []
 ) {
   // 1. Fetch metadata to check existing sheets
   const meta = await fetchSpreadsheetMetadata(spreadsheetId, accessToken);
@@ -89,6 +90,7 @@ export async function setupSpreadsheetTables(
   const requests: any[] = [];
   const hasArticles = sheetTitles.includes("Bài viết");
   const hasImages = sheetTitles.includes("Hình ảnh");
+  const hasProducts = sheetTitles.includes("Sản phẩm");
 
   if (!hasArticles) {
     requests.push({
@@ -101,6 +103,13 @@ export async function setupSpreadsheetTables(
     requests.push({
       addSheet: {
         properties: { title: "Hình ảnh" }
+      }
+    });
+  }
+  if (!hasProducts) {
+    requests.push({
+      addSheet: {
+        properties: { title: "Sản phẩm" }
       }
     });
   }
@@ -124,13 +133,35 @@ export async function setupSpreadsheetTables(
   // 3. Write Headers
   const articleHeaders = [["Tiêu đề", "Phân loại", "Tóm tắt", "Nội dung", "Hình ảnh", "Tác giả", "Ngày"]];
   const imageHeaders = [["Tiêu đề", "Phân loại", "Mô tả", "Hình ảnh"]];
+  const productHeaders = [[
+    "ID",
+    "Tên sản phẩm",
+    "Danh mục",
+    "Phòng LAB",
+    "Loại da",
+    "Đánh giá",
+    "Điểm đánh giá",
+    "Số lượt đánh giá",
+    "Giá gốc",
+    "Giá bán",
+    "Phần trăm giảm giá",
+    "Nhãn dán",
+    "Số lượt test",
+    "Phần trăm hot",
+    "Hình ảnh",
+    "Mô tả sản phẩm",
+    "Thành phần",
+    "Cách sử dụng"
+  ]];
 
   await writeSheetValues(spreadsheetId, accessToken, "Bài viết!A1:G1", articleHeaders);
   await writeSheetValues(spreadsheetId, accessToken, "Hình ảnh!A1:D1", imageHeaders);
+  await writeSheetValues(spreadsheetId, accessToken, "Sản phẩm!A1:R1", productHeaders);
 
   // Clear any existing content from row 2 to 1000 to prevent stale leftover rows
   await clearSheetValues(spreadsheetId, accessToken, "Bài viết!A2:G1000");
   await clearSheetValues(spreadsheetId, accessToken, "Hình ảnh!A2:D1000");
+  await clearSheetValues(spreadsheetId, accessToken, "Sản phẩm!A2:R1000");
 
   // 4. Write all current content from the website
   if (currentArticles.length > 0) {
@@ -154,6 +185,30 @@ export async function setupSpreadsheetTables(
       img.image || ""
     ]);
     await writeSheetValues(spreadsheetId, accessToken, "Hình ảnh!A2", imageRows);
+  }
+
+  if (currentProducts.length > 0) {
+    const productRows = currentProducts.map(p => [
+      p.id || "",
+      p.title || "",
+      p.category || "",
+      p.lab || "Cosbuilt LAB",
+      Array.isArray(p.skinTypes) ? p.skinTypes.join(", ") : (p.skinTypes || "Mọi loại da"),
+      p.rating !== undefined ? Number(p.rating) : 5,
+      p.ratingValue !== undefined ? Number(p.ratingValue) : 4.8,
+      p.reviewsCount !== undefined ? Number(p.reviewsCount) : 120,
+      p.originalPrice !== undefined ? Number(p.originalPrice) : 0,
+      p.price !== undefined ? Number(p.price) : 0,
+      p.discountPercent !== undefined ? Number(p.discountPercent) : 0,
+      p.badge || "",
+      p.testedCount !== undefined ? Number(p.testedCount) : 25,
+      p.hotPercent !== undefined ? Number(p.hotPercent) : 50,
+      p.image || "",
+      p.description || "",
+      p.ingredients || "",
+      p.guidelines || ""
+    ]);
+    await writeSheetValues(spreadsheetId, accessToken, "Sản phẩm!A2", productRows);
   }
 
   return true;
@@ -200,7 +255,7 @@ export async function writeSheetValues(
 }
 
 /**
- * Fetches all records from both sheets ("Bài viết" and "Hình ảnh") and returns formatted arrays.
+ * Fetches all records from all sheets ("Bài viết", "Hình ảnh", and "Sản phẩm") and returns formatted arrays.
  */
 export async function syncSpreadsheetData(spreadsheetId: string, accessToken: string) {
   // Fetch metadata first to see if tabs exist
@@ -209,6 +264,7 @@ export async function syncSpreadsheetData(spreadsheetId: string, accessToken: st
 
   let articles: GoogleArticle[] = [];
   let images: GoogleImage[] = [];
+  let products: any[] = [];
 
   // 1. Fetch articles
   if (sheetsList.includes("Bài viết")) {
@@ -249,7 +305,43 @@ export async function syncSpreadsheetData(spreadsheetId: string, accessToken: st
     }
   }
 
-  return { articles, images };
+  // 3. Fetch products
+  if (sheetsList.includes("Sản phẩm")) {
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent("Sản phẩm!A2:R")}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const rows = data.values || [];
+      products = rows.map((row: any) => {
+        const skinTypesStr = row[4] || "Mọi loại da";
+        const skinTypes = skinTypesStr.split(",").map((s: string) => s.trim()).filter(Boolean);
+        return {
+          id: row[0] || ("product_" + Math.random().toString(36).substring(2, 9)),
+          title: row[1] || "Sản phẩm mới",
+          category: row[2] || "makeup",
+          lab: row[3] || "Cosbuilt LAB",
+          skinTypes: skinTypes,
+          rating: row[5] !== undefined && row[5] !== "" ? Number(row[5]) : 5,
+          ratingValue: row[6] !== undefined && row[6] !== "" ? Number(row[6]) : 4.8,
+          reviewsCount: row[7] !== undefined && row[7] !== "" ? Number(row[7]) : 120,
+          originalPrice: row[8] !== undefined && row[8] !== "" ? Number(row[8]) : 0,
+          price: row[9] !== undefined && row[9] !== "" ? Number(row[9]) : 0,
+          discountPercent: row[10] !== undefined && row[10] !== "" ? Number(row[10]) : 0,
+          badge: row[11] || "",
+          testedCount: row[12] !== undefined && row[12] !== "" ? Number(row[12]) : 25,
+          hotPercent: row[13] !== undefined && row[13] !== "" ? Number(row[13]) : 50,
+          image: row[14] || "",
+          description: row[15] || "",
+          ingredients: row[16] || "",
+          guidelines: row[17] || ""
+        };
+      }).filter((item: any) => item.title);
+    }
+  }
+
+  return { articles, images, products };
 }
 
 /**
@@ -258,7 +350,7 @@ export async function syncSpreadsheetData(spreadsheetId: string, accessToken: st
 export async function appendSheetRow(
   spreadsheetId: string,
   accessToken: string,
-  sheetName: "Bài viết" | "Hình ảnh",
+  sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm",
   values: any[]
 ) {
   const range = `${sheetName}!A:A`;
@@ -285,12 +377,13 @@ export async function appendSheetRow(
 export async function updateSheetRow(
   spreadsheetId: string,
   accessToken: string,
-  sheetName: "Bài viết" | "Hình ảnh",
+  sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm",
   index: number,
   values: any[]
 ) {
   const rowNum = index + 2;
-  const range = `${sheetName}!A${rowNum}:${sheetName === "Bài viết" ? "G" : "D"}${rowNum}`;
+  const lastCol = sheetName === "Bài viết" ? "G" : (sheetName === "Sản phẩm" ? "R" : "D");
+  const range = `${sheetName}!A${rowNum}:${lastCol}${rowNum}`;
   return await writeSheetValues(spreadsheetId, accessToken, range, [values]);
 }
 
@@ -300,7 +393,7 @@ export async function updateSheetRow(
 export async function deleteSheetRow(
   spreadsheetId: string,
   accessToken: string,
-  sheetName: "Bài viết" | "Hình ảnh",
+  sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm",
   index: number
 ) {
   try {
@@ -349,7 +442,8 @@ export async function deleteSheetRow(
     console.error("Failed to delete sheet row using deleteDimension:", error);
     // Fallback: Clear values in that row instead
     const rowNum = index + 2;
-    const range = `${sheetName}!A${rowNum}:${sheetName === "Bài viết" ? "G" : "D"}${rowNum}`;
+    const lastCol = sheetName === "Bài viết" ? "G" : (sheetName === "Sản phẩm" ? "R" : "D");
+    const range = `${sheetName}!A${rowNum}:${lastCol}${rowNum}`;
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:clear`;
     
     const res = await fetch(url, {

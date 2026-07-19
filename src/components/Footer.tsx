@@ -11,9 +11,10 @@ import {
 
 interface FooterProps {
   onTabChange: (tabId: string, subId?: string) => void;
+  onToggleAdminMode?: () => void;
 }
 
-export default function Footer({ onTabChange }: FooterProps) {
+export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) {
   return (
     <footer className="bg-stone-950 text-stone-300 border-t border-stone-800">
       {/* Top Banner Accent */}
@@ -24,7 +25,11 @@ export default function Footer({ onTabChange }: FooterProps) {
           
           {/* Company Brief */}
           <div className="space-y-4 text-left">
-            <div className="flex items-center gap-2 cursor-pointer select-none">
+            <div 
+              onDoubleClick={onToggleAdminMode}
+              className="flex items-center gap-2 cursor-pointer select-none"
+              title="Double click to toggle admin mode"
+            >
               <div className="w-9 h-9 bg-emerald-green rounded-lg flex items-center justify-center border border-satin-gold/20 shadow-md">
                 <span className="text-satin-gold font-serif font-bold text-base tracking-wider">cb</span>
               </div>
@@ -156,19 +161,13 @@ export default function Footer({ onTabChange }: FooterProps) {
           {/* Headquarters & Factories info */}
           <div className="space-y-4 text-left">
             <h4 className="text-white font-bold text-xs tracking-wider uppercase border-b border-stone-800 pb-2">
-              Văn phòng & Nhà máy
+              Văn phòng
             </h4>
             <div className="space-y-3 text-xs text-stone-400 leading-relaxed font-light">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-satin-gold shrink-0 mt-0.5" />
                 <span>
-                  <strong>Trụ sở chính:</strong> 110/2/2F Đường số 30, Phường An Nhơn, TP. Hồ Chí Minh, Việt Nam.
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-satin-gold shrink-0 mt-0.5" />
-                <span>
-                  <strong>Nhà máy CGMP:</strong> Lô A7, Đường Số 4, KCN Hiệp Phước, Nhà Bè, TP. Hồ Chí Minh.
+                  <strong>Địa chỉ:</strong> Văn phòng số 2.40 khu văn phòng, tòa nhà The Prince Residence, số 19-21 Nguyễn Văn Trỗi, Phường Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam.
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -186,7 +185,11 @@ export default function Footer({ onTabChange }: FooterProps) {
 
         {/* Bottom copyright and disclaimer */}
         <div className="border-t border-stone-900 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-stone-500 text-[11px]">
-          <div>
+          <div 
+            onDoubleClick={onToggleAdminMode}
+            className="cursor-default select-none"
+            title="Double click to toggle admin mode"
+          >
             © 2026 <strong>cosbuilt Co., Ltd.</strong> All rights reserved. Tiêu chuẩn quốc tế CGMP ASEAN.
           </div>
           <div className="flex gap-6">

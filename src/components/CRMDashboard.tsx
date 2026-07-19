@@ -26,7 +26,8 @@ import {
   Check,
   Save,
   Sparkles,
-  ArrowUpToLine
+  ArrowUpToLine,
+  Upload
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
@@ -50,13 +51,17 @@ interface CRMDashboardProps {
   customImages: any[];
   customLogos: any[];
   websiteLogo: any;
+  customProducts: any[];
   sheetsConfig: any;
   setCustomBlogPosts: (posts: any[]) => void;
   setCustomImages: (images: any[]) => void;
   setCustomLogos: (logos: any[]) => void;
   setWebsiteLogo: (logo: any) => void;
+  setCustomProducts: (products: any[]) => void;
   setSheetsConfig: (config: any) => void;
   onTabChange: (tab: string) => void;
+  onLogin?: () => void;
+  onLogout?: () => void;
 }
 
 export default function CRMDashboard({
@@ -64,13 +69,17 @@ export default function CRMDashboard({
   customImages,
   customLogos,
   websiteLogo,
+  customProducts,
   sheetsConfig,
   setCustomBlogPosts,
   setCustomImages,
   setCustomLogos,
   setWebsiteLogo,
+  setCustomProducts,
   setSheetsConfig,
-  onTabChange
+  onTabChange,
+  onLogin,
+  onLogout
 }: CRMDashboardProps) {
   // Admin Authentication State
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -87,6 +96,7 @@ export default function CRMDashboard({
       setIsLoggedIn(true);
       localStorage.setItem("cosbuilt_admin_logged_in", "true");
       setLoginError("");
+      if (onLogin) onLogin();
     } else {
       setLoginError("Tên đăng nhập hoặc mật khẩu quản trị không chính xác.");
     }
@@ -97,28 +107,38 @@ export default function CRMDashboard({
     localStorage.removeItem("cosbuilt_admin_logged_in");
     setUsernameInput("");
     setPasswordInput("");
+    if (onLogout) onLogout();
   };
 
   // Modals & State for CRUD
   const [editingBlogPost, setEditingBlogPost] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [editingImage, setEditingImage] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [editingProduct, setEditingProduct] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [isEditingWebsiteLogo, setIsEditingWebsiteLogo] = useState(false);
-  const [tempWebsiteLogo, setTempWebsiteLogo] = useState({ name: websiteLogo?.name || "COSBUILT", slogan: websiteLogo?.slogan || "ESTD 1999" });
+  const [tempWebsiteLogo, setTempWebsiteLogo] = useState({ 
+    name: websiteLogo?.name || "COSBUILT", 
+    slogan: websiteLogo?.slogan || "ESTD 1999",
+    image: websiteLogo?.image || ""
+  });
   const [actionMessage, setActionMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
   const [isSavingContent, setIsSavingContent] = useState(false);
 
   // Initialize tempWebsiteLogo whenever websiteLogo updates
   useEffect(() => {
     if (websiteLogo) {
-      setTempWebsiteLogo({ name: websiteLogo.name, slogan: websiteLogo.slogan });
+      setTempWebsiteLogo({ 
+        name: websiteLogo.name, 
+        slogan: websiteLogo.slogan,
+        image: websiteLogo.image || ""
+      });
     }
   }, [websiteLogo]);
 
   // Sync / Save dynamic changes helper
   const saveAllContent = async (
-    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any },
-    actionInfo?: { action: "add" | "update" | "delete"; sheetName: "Bài viết" | "Hình ảnh"; index?: number; data?: any }
+    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any; products?: any[] },
+    actionInfo?: { action: "add" | "update" | "delete"; sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm"; index?: number; data?: any }
   ) => {
     setIsSavingContent(true);
     setActionMessage({ text: "Đang lưu thay đổi vào hệ thống...", type: "" });
@@ -136,6 +156,7 @@ export default function CRMDashboard({
           if (payload.images !== undefined) setCustomImages(result.data.images);
           if (payload.logos !== undefined) setCustomLogos(result.data.logos);
           if (payload.websiteLogo !== undefined) setWebsiteLogo(result.data.websiteLogo);
+          if (payload.products !== undefined) setCustomProducts(result.data.products);
           
           // 2. If logged in with Google and a Spreadsheet ID exists, perform direct sync!
           if (actionInfo && googleToken && sheetsConfig.spreadsheetId) {
@@ -174,6 +195,34 @@ export default function CRMDashboard({
                   await updateSheetRow(spreadsheetId, googleToken, "Hình ảnh", index, rowValues);
                 } else if (action === "delete" && index !== undefined) {
                   await deleteSheetRow(spreadsheetId, googleToken, "Hình ảnh", index);
+                }
+              } else if (sheetName === "Sản phẩm") {
+                const rowValues = [
+                  data.id || "",
+                  data.title || "",
+                  data.category || "",
+                  data.lab || "",
+                  data.skinTypes ? data.skinTypes.join(", ") : "",
+                  data.rating !== undefined ? String(data.rating) : "",
+                  data.ratingValue !== undefined ? String(data.ratingValue) : "",
+                  data.reviewsCount !== undefined ? String(data.reviewsCount) : "",
+                  data.originalPrice !== undefined ? String(data.originalPrice) : "",
+                  data.price !== undefined ? String(data.price) : "",
+                  data.discountPercent !== undefined ? String(data.discountPercent) : "",
+                  data.badge || "",
+                  data.testedCount !== undefined ? String(data.testedCount) : "",
+                  data.hotPercent !== undefined ? String(data.hotPercent) : "",
+                  data.image || "",
+                  data.description || "",
+                  data.ingredients || "",
+                  data.guidelines || ""
+                ];
+                if (action === "add") {
+                  await appendSheetRow(spreadsheetId, googleToken, "Sản phẩm", rowValues);
+                } else if (action === "update" && index !== undefined) {
+                  await updateSheetRow(spreadsheetId, googleToken, "Sản phẩm", index, rowValues);
+                } else if (action === "delete" && index !== undefined) {
+                  await deleteSheetRow(spreadsheetId, googleToken, "Sản phẩm", index);
                 }
               }
               setActionMessage({ text: "Đã lưu thay đổi vào hệ thống và đồng bộ Google Sheet thành công! 📊", type: "success" });
@@ -257,6 +306,33 @@ export default function CRMDashboard({
     await saveAllContent({ images: newImages }, { action: "delete", sheetName: "Hình ảnh", index, data: deletedItem });
   };
 
+  const handleSaveProduct = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    const { index, isNew, data } = editingProduct;
+    let newProducts = [...customProducts];
+    let actionDetails: any;
+    if (isNew) {
+      newProducts.push(data);
+      actionDetails = { action: "add", sheetName: "Sản phẩm", data };
+    } else {
+      newProducts[index] = data;
+      actionDetails = { action: "update", sheetName: "Sản phẩm", index, data };
+    }
+    const success = await saveAllContent({ products: newProducts }, actionDetails);
+    if (success) {
+      setEditingProduct(null);
+    }
+  };
+
+  const handleDeleteProduct = async (index: number) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
+    let newProducts = [...customProducts];
+    const deletedItem = newProducts[index];
+    newProducts.splice(index, 1);
+    await saveAllContent({ products: newProducts }, { action: "delete", sheetName: "Sản phẩm", index, data: deletedItem });
+  };
+
   const handleSavePartnerLogo = async (e: FormEvent) => {
     e.preventDefault();
     if (!editingPartnerLogo) return;
@@ -309,6 +385,46 @@ export default function CRMDashboard({
   const [adminNotes, setAdminNotes] = useState("");
   const [leadStatus, setLeadStatus] = useState("");
   const [isSavingLead, setIsSavingLead] = useState(false);
+
+  // Image Upload helper state & function
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    setIsUploading(true);
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        try {
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              filename: file.name,
+              base64: reader.result as string
+            })
+          });
+          if (!res.ok) {
+            throw new Error(`Server returned status ${res.status}`);
+          }
+          const data = await res.json();
+          if (data.success && data.url) {
+            resolve(data.url);
+          } else {
+            throw new Error(data.error || "Không thể lưu file ảnh.");
+          }
+        } catch (err: any) {
+          reject(err);
+        } finally {
+          setIsUploading(false);
+        }
+      };
+      reader.onerror = (error) => {
+        setIsUploading(false);
+        reject(error);
+      };
+    });
+  };
 
   // Fetch leads
   const fetchLeads = async () => {
@@ -440,10 +556,10 @@ export default function CRMDashboard({
       const newSheet = await createNewSpreadsheet("COSBUILT - Hệ thống Website CMS", googleToken);
       const spreadsheetId = newSheet.spreadsheetId;
       
-      setSyncMessage({ text: "Đang tự động khởi tạo tab 'Bài viết' & 'Hình ảnh' cùng cột tiêu đề...", type: "" });
+      setSyncMessage({ text: "Đang tự động khởi tạo tab 'Bài viết', 'Hình ảnh' & 'Sản phẩm' cùng cột tiêu đề...", type: "" });
       
-      // Setup the tables and upload current list of posts and images so they are backed up right away
-      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages);
+      // Setup the tables and upload current list of posts, images, and products so they are backed up right away
+      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages, customProducts);
       
       // Save configuration
       const configRes = await fetch("/api/sheets/config", {
@@ -457,11 +573,12 @@ export default function CRMDashboard({
         spreadsheetId,
         lastSynced: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
         hasArticles: customBlogPosts.length > 0,
-        hasImages: customImages.length > 0
+        hasImages: customImages.length > 0,
+        hasProducts: customProducts.length > 0
       });
       setSheetInput(spreadsheetId);
       setSyncMessage({
-        text: `Tự động tạo bảng Google Sheet thành công! 🎉 Đã tải lên ${customBlogPosts.length} bài viết và ${customImages.length} ảnh hoạt động lên Sheet mới của bạn.`,
+        text: `Tự động tạo bảng Google Sheet thành công! 🎉 Đã tải lên ${customBlogPosts.length} bài viết, ${customImages.length} ảnh hoạt động và ${customProducts.length} sản phẩm lên Sheet mới của bạn.`,
         type: "success"
       });
     } catch (err: any) {
@@ -484,9 +601,9 @@ export default function CRMDashboard({
       return;
     }
     setIsSettingUp(true);
-    setSyncMessage({ text: "Đang khởi tạo các tab 'Bài viết' & 'Hình ảnh' trên Google Sheet của bạn...", type: "" });
+    setSyncMessage({ text: "Đang khởi tạo các tab 'Bài viết', 'Hình ảnh' & 'Sản phẩm' trên Google Sheet của bạn...", type: "" });
     try {
-      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages);
+      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages, customProducts);
       
       // Save configuration
       const configRes = await fetch("/api/sheets/config", {
@@ -500,10 +617,11 @@ export default function CRMDashboard({
         spreadsheetId,
         lastSynced: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
         hasArticles: customBlogPosts.length > 0,
-        hasImages: customImages.length > 0
+        hasImages: customImages.length > 0,
+        hasProducts: customProducts.length > 0
       });
       setSyncMessage({
-        text: "Tự động khởi tạo cấu trúc bảng trên Google Sheet thành công! ⚡ Đã tải lên các bài viết và hình ảnh ban đầu.",
+        text: "Tự động khởi tạo cấu trúc bảng trên Google Sheet thành công! ⚡ Đã tải lên các bài viết, hình ảnh và sản phẩm ban đầu.",
         type: "success"
       });
     } catch (err: any) {
@@ -537,7 +655,8 @@ export default function CRMDashboard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           articles: sheetData.articles,
-          images: sheetData.images
+          images: sheetData.images,
+          products: sheetData.products
         })
       });
       
@@ -546,6 +665,7 @@ export default function CRMDashboard({
         if (result.success) {
           setCustomBlogPosts(result.data.articles);
           setCustomImages(result.data.images);
+          setCustomProducts(result.data.products);
           
           // Update configuration in server
           const nowStr = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
@@ -560,11 +680,12 @@ export default function CRMDashboard({
             spreadsheetId,
             lastSynced: nowStr,
             hasArticles: result.data.articles.length > 0,
-            hasImages: result.data.images.length > 0
+            hasImages: result.data.images.length > 0,
+            hasProducts: result.data.products.length > 0
           }));
           
           setSyncMessage({
-            text: `Đồng bộ thành công! Đã tải xuống ${result.data.articles.length} bài viết và ${result.data.images.length} hình ảnh về Website. ✨`,
+            text: `Đồng bộ thành công! Đã tải xuống ${result.data.articles.length} bài viết, ${result.data.images.length} hình ảnh, và ${result.data.products.length} sản phẩm về Website. ✨`,
             type: "success"
           });
         } else {
@@ -595,18 +716,19 @@ export default function CRMDashboard({
     setIsSyncing(true);
     setSyncMessage({ text: "Đang tiến hành tải tất cả dữ liệu từ website lên Google Sheet...", type: "" });
     try {
-      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages);
+      await setupSpreadsheetTables(spreadsheetId, googleToken, customBlogPosts, customImages, customProducts);
       
       const nowStr = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
       setSheetsConfig((prev: any) => ({
         ...prev,
         lastSynced: nowStr,
         hasArticles: customBlogPosts.length > 0,
-        hasImages: customImages.length > 0
+        hasImages: customImages.length > 0,
+        hasProducts: customProducts.length > 0
       }));
       
       setSyncMessage({
-        text: `Đã đẩy toàn bộ ${customBlogPosts.length} bài viết và ${customImages.length} hình ảnh hiện tại từ Website lên Google Sheet thành công! 📊`,
+        text: `Đã đẩy toàn bộ ${customBlogPosts.length} bài viết, ${customImages.length} hình ảnh, và ${customProducts.length} sản phẩm hiện tại từ Website lên Google Sheet thành công! 📊`,
         type: "success"
       });
     } catch (err: any) {
@@ -1256,7 +1378,7 @@ export default function CRMDashboard({
                     <h4 className="font-serif font-bold text-base sm:text-lg">Cấu Trúc Bảng Dữ Liệu</h4>
                   </div>
                   <p className="text-xs text-stone-300 font-light leading-relaxed">
-                    Khi khởi tạo, Google Sheet của bạn sẽ được thiết lập tự động gồm hai trang tính (sheet) con với cấu trúc cột chuẩn xác để phục vụ cho website CMS:
+                    Khi khởi tạo, Google Sheet của bạn sẽ được thiết lập tự động gồm ba trang tính (sheet) con với cấu trúc cột chuẩn xác để phục vụ cho website CMS:
                   </p>
                   <div className="space-y-4 pt-2 text-xs text-left">
                     <div className="space-y-1.5">
@@ -1269,6 +1391,12 @@ export default function CRMDashboard({
                       <span className="text-emerald-green font-bold text-[10px] uppercase tracking-wider block">Trang tính 2: "Hình ảnh" (Activities Library)</span>
                       <div className="bg-white/5 p-3 rounded-lg font-mono text-[10px] text-stone-200 overflow-x-auto whitespace-nowrap scrollbar-none border border-white/5">
                         Tiêu đề | Danh mục | Mô tả | Hình ảnh
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <span className="text-emerald-green font-bold text-[10px] uppercase tracking-wider block">Trang tính 3: "Sản phẩm" (Products List)</span>
+                      <div className="bg-white/5 p-3 rounded-lg font-mono text-[10px] text-stone-200 overflow-x-auto whitespace-nowrap scrollbar-none border border-white/5">
+                        Mã SP | Tiêu đề | Danh mục | Phòng LAB | Loại da | Số sao | Điểm đánh giá | Lượt reviews | Giá gốc | Giá bán | % Giảm giá | Nhãn | Lượt thử lâm sàng | % Độ HOT | Hình ảnh | Mô tả | Thành phần | Hướng dẫn sử dụng
                       </div>
                     </div>
                   </div>
@@ -1326,7 +1454,11 @@ export default function CRMDashboard({
                 {!isEditingWebsiteLogo ? (
                   <button
                     onClick={() => {
-                      setTempWebsiteLogo({ name: websiteLogo?.name || "COSBUILT", slogan: websiteLogo?.slogan || "ESTD 1999" });
+                      setTempWebsiteLogo({
+                        name: websiteLogo?.name || "COSBUILT",
+                        slogan: websiteLogo?.slogan || "ESTD 1999",
+                        image: websiteLogo?.image || ""
+                      });
                       setIsEditingWebsiteLogo(true);
                     }}
                     className="border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all"
@@ -1359,6 +1491,41 @@ export default function CRMDashboard({
                       />
                     </div>
                   </div>
+
+                  <div className="space-y-1.5 pt-1">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Hình ảnh Logo (Tùy chọn - Thay cho dạng chữ)</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Có thể upload file bên cạnh hoặc điền link ảnh..."
+                        value={tempWebsiteLogo.image}
+                        onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, image: e.target.value }))}
+                        className="flex-1 border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                      />
+                      <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                        {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                        <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={isUploading}
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const url = await handleImageUpload(file);
+                                setTempWebsiteLogo(prev => ({ ...prev, image: url }));
+                              } catch (err: any) {
+                                alert("Lỗi tải ảnh lên: " + err.message);
+                              }
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="flex justify-end gap-2 pt-2">
                     <button
                       onClick={() => setIsEditingWebsiteLogo(false)}
@@ -1378,13 +1545,25 @@ export default function CRMDashboard({
                 </div>
               ) : (
                 <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Tên hiển thị hiện tại</div>
-                    <div className="font-serif font-black text-2xl text-stone-900 tracking-widest mt-1 uppercase">{websiteLogo?.name || "COSBUILT"}</div>
-                    <div className="text-[10px] font-bold text-stone-400 mt-1 uppercase tracking-widest">{websiteLogo?.slogan || "— ESTD 1999 —"}</div>
+                  <div className="flex items-center gap-4">
+                    {websiteLogo?.image ? (
+                      <div className="bg-white p-2 rounded-xl border border-stone-150 shrink-0">
+                        <img 
+                          src={websiteLogo.image} 
+                          alt={websiteLogo.name} 
+                          className="h-12 w-auto object-contain max-w-[150px]"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    ) : null}
+                    <div className="text-left">
+                      <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Tên hiển thị hiện tại</div>
+                      <div className="font-serif font-black text-2xl text-stone-900 tracking-widest mt-1 uppercase">{websiteLogo?.name || "COSBUILT"}</div>
+                      <div className="text-[10px] font-bold text-stone-400 mt-1 uppercase tracking-widest">{websiteLogo?.slogan || "— ESTD 1999 —"}</div>
+                    </div>
                   </div>
-                  <div className="text-xs text-stone-500 font-light max-w-sm">
-                    Tên thương hiệu và slogan này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
+                  <div className="text-xs text-stone-500 font-light max-w-sm text-left">
+                    Tên thương hiệu, slogan và hình ảnh logo này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
                   </div>
                 </div>
               )}
@@ -1540,7 +1719,110 @@ export default function CRMDashboard({
               )}
             </div>
 
-            {/* 4. Partner Logos Section */}
+            {/* 4. Synced Products Section */}
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-emerald-green" />
+                  <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Sản Phẩm (Mẫu Thử Gia Công)</h3>
+                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
+                    {customProducts.length} sản phẩm
+                  </span>
+                </div>
+                <button
+                  onClick={() => setEditingProduct({
+                    index: -1,
+                    isNew: true,
+                    data: {
+                      id: "product_" + Math.random().toString(36).substring(2, 9),
+                      title: "",
+                      category: "facial-care",
+                      lab: "Cosbuilt LAB",
+                      skinTypes: ["Mọi loại da"],
+                      rating: 5,
+                      ratingValue: 4.8,
+                      reviewsCount: 120,
+                      originalPrice: 250000,
+                      price: 190000,
+                      discountPercent: 24,
+                      badge: "NEW",
+                      testedCount: 100,
+                      hotPercent: 85,
+                      image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400",
+                      description: "Mẫu thử nghiệm sản phẩm chăm sóc da cao cấp gia công bởi Cosbuilt.",
+                      ingredients: "Nước tinh khiết, Hyaluronic Acid, Niacinamide, Glycerin.",
+                      guidelines: "Thoa đều lên vùng da mặt và cổ sau khi rửa sạch mỗi sáng và tối."
+                    }
+                  })}
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Thêm Sản Phẩm
+                </button>
+              </div>
+
+              {customProducts.length === 0 ? (
+                <div className="text-center py-8 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
+                  Chưa có sản phẩm nào. Hãy thêm sản phẩm mới để hiển thị trong mục mẫu thử gia công.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {customProducts.map((prod, index) => (
+                    <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-2xs transition-all relative group">
+                      <img 
+                        src={prod.image || "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400"} 
+                        alt={prod.title} 
+                        className="w-20 h-20 object-cover rounded-xl bg-stone-100 shrink-0"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="space-y-1 flex-1 min-w-0 text-left">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[8px] font-bold text-emerald-green uppercase tracking-wider bg-emerald-green-light px-1.5 py-0.5 rounded">
+                            {prod.category}
+                          </span>
+                          {prod.badge && (
+                            <span className="text-[8px] font-bold text-white uppercase tracking-wider bg-amber-500 px-1.5 py-0.5 rounded">
+                              {prod.badge}
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="font-bold text-stone-900 text-xs sm:text-sm truncate pr-12" title={prod.title}>{prod.title}</h4>
+                        <p className="text-[10px] text-stone-400 font-medium">LAB: {prod.lab || "Cosbuilt LAB"}</p>
+                        <div className="flex items-center gap-2 pt-0.5">
+                          <span className="text-stone-900 font-bold text-xs">
+                            {prod.price ? prod.price.toLocaleString("vi-VN") : "0"}đ
+                          </span>
+                          {prod.originalPrice > prod.price && (
+                            <span className="text-stone-400 line-through text-[10px]">
+                              {prod.originalPrice ? prod.originalPrice.toLocaleString("vi-VN") : "0"}đ
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Action controls */}
+                      <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200/60 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
+                        <button
+                          onClick={() => setEditingProduct({ index, isNew: false, data: { ...prod } })}
+                          className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                          title="Sửa sản phẩm"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(index)}
+                          className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                          title="Xóa sản phẩm"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 5. Partner Logos Section */}
             <div className="space-y-4 pt-4">
               <div className="flex items-center justify-between border-b border-stone-150 pb-3">
                 <div className="flex items-center gap-2">
@@ -1781,15 +2063,38 @@ export default function CRMDashboard({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đường dẫn ảnh bìa (URL)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="https://images.unsplash.com/..."
-                    value={editingBlogPost.data.image}
-                    onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
-                  />
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Hình ảnh bìa (Chọn file từ máy hoặc điền URL)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      placeholder="https://images.unsplash.com/..."
+                      value={editingBlogPost.data.image}
+                      onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                      className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                    />
+                    <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                      {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                      <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploading}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await handleImageUpload(file);
+                              setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, image: url } } : null);
+                            } catch (err: any) {
+                              alert("Lỗi tải ảnh lên: " + err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -1883,15 +2188,38 @@ export default function CRMDashboard({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đường dẫn hình ảnh (URL)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="https://images.unsplash.com/..."
-                    value={editingImage.data.image}
-                    onChange={(e) => setEditingImage(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
-                  />
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Hình ảnh hoạt động (Chọn file từ máy hoặc điền URL)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      placeholder="https://images.unsplash.com/..."
+                      value={editingImage.data.image}
+                      onChange={(e) => setEditingImage(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                      className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                    />
+                    <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                      {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                      <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploading}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await handleImageUpload(file);
+                              setEditingImage(prev => prev ? { ...prev, data: { ...prev.data, image: url } } : null);
+                            } catch (err: any) {
+                              alert("Lỗi tải ảnh lên: " + err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -1919,6 +2247,271 @@ export default function CRMDashboard({
                   >
                     {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                     <span>Lưu ảnh</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* CMS: EDIT PRODUCT MODAL */}
+        {editingProduct && (
+          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-stone-150 max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="p-6 border-b border-stone-150 flex justify-between items-center bg-stone-50">
+                <h3 className="font-serif font-bold text-lg text-stone-950">
+                  {editingProduct.isNew ? "Thêm Sản Phẩm Mới" : "Sửa Sản Phẩm"}
+                </h3>
+                <button
+                  onClick={() => setEditingProduct(null)}
+                  className="p-1.5 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-6 space-y-4 text-left text-xs sm:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên sản phẩm</label>
+                    <input
+                      type="text"
+                      required
+                      value={editingProduct.data.title}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, title: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Danh mục</label>
+                    <select
+                      value={editingProduct.data.category}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, category: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none cursor-pointer font-bold"
+                    >
+                      <option value="facial-care">Chăm sóc mặt (facial-care)</option>
+                      <option value="body-care">Chăm sóc cơ thể (body-care)</option>
+                      <option value="hair-care">Chăm sóc tóc (hair-care)</option>
+                      <option value="lip-care">Chăm sóc môi (lip-care)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Phòng LAB phát triển</label>
+                    <input
+                      type="text"
+                      required
+                      value={editingProduct.data.lab}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, lab: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Loại da phù hợp (cách nhau bằng dấu phẩy)</label>
+                    <input
+                      type="text"
+                      value={editingProduct.data.skinTypes ? editingProduct.data.skinTypes.join(", ") : ""}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, skinTypes: e.target.value.split(",").map(s => s.trim()) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Số sao (Rating, ví dụ: 5)</label>
+                    <input
+                      type="number"
+                      step="1"
+                      required
+                      value={editingProduct.data.rating}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, rating: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Điểm đánh giá (ví dụ: 4.8)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      required
+                      value={editingProduct.data.ratingValue}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, ratingValue: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Số lượt đánh giá (Reviews)</label>
+                    <input
+                      type="number"
+                      step="1"
+                      required
+                      value={editingProduct.data.reviewsCount}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, reviewsCount: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Giá gốc (đ, ví dụ: 250000)</label>
+                    <input
+                      type="number"
+                      step="1"
+                      required
+                      value={editingProduct.data.originalPrice}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, originalPrice: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Giá khuyến mãi (đ)</label>
+                    <input
+                      type="number"
+                      step="1"
+                      required
+                      value={editingProduct.data.price}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, price: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">% Giảm giá (ví dụ: 15)</label>
+                    <input
+                      type="number"
+                      step="1"
+                      required
+                      value={editingProduct.data.discountPercent}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, discountPercent: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Nhãn nổi bật (Badge, ví dụ: "HOT" hoặc trống)</label>
+                    <input
+                      type="text"
+                      value={editingProduct.data.badge || ""}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, badge: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Lượt thử nghiệm lâm sàng (ví dụ: 150)</label>
+                    <input
+                      type="number"
+                      step="1"
+                      required
+                      value={editingProduct.data.testedCount}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, testedCount: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">% Mức độ HOT (ví dụ: 89)</label>
+                    <input
+                      type="number"
+                      step="1"
+                      required
+                      value={editingProduct.data.hotPercent}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, hotPercent: Number(e.target.value) } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Hình ảnh sản phẩm (Chọn file từ máy hoặc điền URL)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      value={editingProduct.data.image}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                      className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                    <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                      {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                      <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploading}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await handleImageUpload(file);
+                              setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, image: url } } : null);
+                            } catch (err: any) {
+                              alert("Lỗi tải ảnh lên: " + err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Mô tả ngắn sản phẩm</label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={editingProduct.data.description}
+                    onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, description: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Thành phần chi tiết</label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={editingProduct.data.ingredients}
+                    onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, ingredients: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Hướng dẫn sử dụng</label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={editingProduct.data.guidelines}
+                    onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, guidelines: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+
+                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-6 -mb-6 pt-3 mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct(null)}
+                    className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingContent}
+                    className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1 shadow-2xs"
+                  >
+                    {isSavingContent ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                    <span>Lưu sản phẩm</span>
                   </button>
                 </div>
               </form>
@@ -1970,6 +2563,40 @@ export default function CRMDashboard({
                     onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, type: e.target.value } } : null)}
                     className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
                   />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Hình ảnh Logo đối tác (Tùy chọn - Chọn file hoặc điền URL)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Có thể upload file bên cạnh hoặc điền link..."
+                      value={editingPartnerLogo.data.image || ""}
+                      onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                      className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                    />
+                    <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                      {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                      <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploading}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await handleImageUpload(file);
+                              setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, image: url } } : null);
+                            } catch (err: any) {
+                              alert("Lỗi tải ảnh lên: " + err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-5 -mb-5 pt-3 mt-4">
