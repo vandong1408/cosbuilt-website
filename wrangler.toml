@@ -8,8 +8,6 @@ binding = "DB"
 database_name = "cosbuilt-db"
 database_id = "d2107b08-1f88-4a3c-93a9-65179cfa92a7"
 
-# R2 bucket not yet enabled on the Cloudflare account.
-# Once enabled, run `wrangler r2 bucket create cosbuilt-uploads` and uncomment:
-# [[r2_buckets]]
-# binding = "UPLOADS"
-# bucket_name = "cosbuilt-uploads"
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "cosbuilt-uploads"
