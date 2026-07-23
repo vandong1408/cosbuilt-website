@@ -65,13 +65,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
       contents: prompt,
-      config: { responseMimeType: "application/json", maxOutputTokens: 8192 }
+      config: { responseMimeType: "application/json", maxOutputTokens: 16384 }
     });
 
     const text = response.text;
     if (!text) {
       throw new Error("Không nhận được phản hồi từ AI.");
     }
+
+    console.error("AI Formula finishReason:", response.candidates?.[0]?.finishReason, "textLength:", text.length);
 
     const data = JSON.parse(text.trim());
     return Response.json(data);
