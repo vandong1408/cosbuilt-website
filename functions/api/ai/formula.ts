@@ -1,5 +1,58 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import type { Env } from "../../_shared/types";
+
+const RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    suggestedName: { type: Type.STRING },
+    conceptDescription: { type: Type.STRING },
+    ingredients: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          name: { type: Type.STRING },
+          percentage: { type: Type.STRING },
+          role: { type: Type.STRING },
+          origin: { type: Type.STRING }
+        },
+        required: ["name", "percentage", "role", "origin"]
+      }
+    },
+    processingSteps: { type: Type.ARRAY, items: { type: Type.STRING } },
+    packagingDesign: {
+      type: Type.OBJECT,
+      properties: {
+        bottleType: { type: Type.STRING },
+        volumeMl: { type: Type.STRING },
+        printingMethod: { type: Type.STRING }
+      },
+      required: ["bottleType", "volumeMl", "printingMethod"]
+    },
+    pricingEstimation: {
+      type: Type.OBJECT,
+      properties: {
+        rawMaterialCostPerUnit: { type: Type.STRING },
+        packagingCostPerUnit: { type: Type.STRING },
+        manufacturingCostPerUnit: { type: Type.STRING },
+        totalCostPerUnit: { type: Type.STRING },
+        totalBatchCost: { type: Type.STRING },
+        registrationFee: { type: Type.STRING },
+        deliveryLeadTimeDays: { type: Type.STRING }
+      },
+      required: [
+        "rawMaterialCostPerUnit", "packagingCostPerUnit", "manufacturingCostPerUnit",
+        "totalCostPerUnit", "totalBatchCost", "registrationFee", "deliveryLeadTimeDays"
+      ]
+    },
+    regulatoryAdvice: { type: Type.STRING },
+    rdRecommendation: { type: Type.STRING }
+  },
+  required: [
+    "suggestedName", "conceptDescription", "ingredients", "processingSteps",
+    "packagingDesign", "pricingEstimation", "regulatoryAdvice", "rdRecommendation"
+  ]
+};
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
@@ -26,57 +79,38 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       - Khách hàng mục tiêu: ${targetAudience || "Mọi loại da, kể cả da nhạy cảm"}
       - Yêu cầu bổ sung đặc biệt: ${extraDemands || "Không có"}
 
-      Hãy phản hồi bằng một cấu trúc JSON chính xác theo Schema sau:
-      {
-        "suggestedName": "Tên thương mại gợi ý cho sản phẩm (phải sang trọng, hiện đại, bắt tai)",
-        "conceptDescription": "Mô tả ý tưởng sản phẩm ngắn gọn, định vị thị trường",
-        "ingredients": [
-          {
-            "name": "Tên nguyên liệu/hoạt chất (tiếng Anh chuẩn INCI)",
-            "percentage": "Tỷ lệ % (phải khoa học, tổng công thức xấp xỉ 100%)",
-            "role": "Vai trò của thành phần (ví dụ: Hoạt chất chính sáng da, dung môi, chất nhũ hóa, bảo quản)",
-            "origin": "Xuất xứ nguyên liệu (Pháp, Hàn Quốc, Nhật Bản, Mỹ, v.v. để tăng uy tín)"
-          }
-        ],
-        "processingSteps": [
-          "Các bước quy trình gia công đạt chuẩn CGMP tại nhà máy cosbuilt"
-        ],
-        "packagingDesign": {
-          "bottleType": "Loại chai/lọ đề xuất (ví dụ: Chai thủy tinh mờ có dropper, Hũ acrylic 2 lớp)",
-          "volumeMl": "Dung tích khuyến nghị (ml hoặc g)",
-          "printingMethod": "Phương pháp in ấn bao bì đề xuất (In lụa trực tiếp, dán decal cán mờ, ép kim)"
-        },
-        "pricingEstimation": {
-          "rawMaterialCostPerUnit": "Chi phí nguyên liệu/bán thành phẩm cho 1 sản phẩm (VND, ví dụ: 12000)",
-          "packagingCostPerUnit": "Chi phí chai lọ, bao bì, hộp giấy cho 1 sản phẩm (VND, ví dụ: 8000)",
-          "manufacturingCostPerUnit": "Chi phí nhân công, vận hành máy móc, đóng gói cho 1 sản phẩm (VND, ví dụ: 3000)",
-          "totalCostPerUnit": "Tổng giá thành sản xuất cho 1 sản phẩm (VND, ví dụ: 23000)",
-          "totalBatchCost": "Tổng chi phí cho cả lô hàng (VND)",
-          "registrationFee": "Phí kiểm nghiệm lâm sàng và công bố pháp lý trọn gói (VND)",
-          "deliveryLeadTimeDays": "Thời gian hoàn thành dự kiến (ngày, ví dụ: 25)"
-        },
-        "regulatoryAdvice": "Lời khuyên pháp lý, hồ sơ công bố mỹ phẩm của Bộ Y Tế và thủ tục giấy tờ",
-        "rdRecommendation": "Nhận xét và đề xuất nâng cấp công thức từ chuyên gia R&D của cosbuilt để cạnh tranh vượt trội"
-      }
-
-      Hãy chắc chắn trả về phản hồi CHỈ gồm chuỗi JSON hợp lệ để có thể parse trực tiếp, không chứa các ký tự định dạng markdown như \`\`\`json.
+      Thiết kế công thức chi tiết gồm: tên thương mại, mô tả ý tưởng, danh sách nguyên liệu (tên chuẩn INCI, tỷ lệ %, vai trò, xuất xứ),
+      các bước quy trình gia công đạt chuẩn CGMP, đề xuất bao bì đóng gói, dự toán chi phí (nguyên liệu/bao bì/gia công/tổng/phí đăng ký/thời gian giao hàng),
+      lời khuyên pháp lý về công bố mỹ phẩm, và nhận xét đề xuất từ chuyên gia R&D.
     `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: prompt,
-      config: { responseMimeType: "application/json", maxOutputTokens: 16384 }
-    });
+    let lastError: any = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const response = await ai.models.generateContent({
+          model: "gemini-3.5-flash",
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+            responseSchema: RESPONSE_SCHEMA,
+            maxOutputTokens: 16384
+          }
+        });
 
-    const text = response.text;
-    if (!text) {
-      throw new Error("Không nhận được phản hồi từ AI.");
+        const text = response.text;
+        if (!text) {
+          throw new Error("Không nhận được phản hồi từ AI.");
+        }
+
+        const data = JSON.parse(text.trim());
+        return Response.json(data);
+      } catch (error: any) {
+        lastError = error;
+        console.error(`AI Formula attempt ${attempt} failed:`, error.message);
+      }
     }
 
-    console.error("AI Formula finishReason:", response.candidates?.[0]?.finishReason, "textLength:", text.length);
-
-    const data = JSON.parse(text.trim());
-    return Response.json(data);
+    throw lastError;
   } catch (error: any) {
     console.error("AI Formula generation failed:", error);
     return Response.json({
