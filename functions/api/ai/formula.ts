@@ -73,7 +73,17 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       throw new Error("Không nhận được phản hồi từ AI.");
     }
 
-    const data = JSON.parse(text.trim());
+    let data: any;
+    try {
+      data = JSON.parse(text.trim());
+    } catch (parseError: any) {
+      console.error("AI Formula JSON parse failed. Raw text:", text);
+      return Response.json({
+        error: "Đã xảy ra lỗi trong quá trình xử lý công thức và định giá.",
+        details: parseError.message,
+        debugRawText: text
+      }, { status: 500 });
+    }
     return Response.json(data);
   } catch (error: any) {
     console.error("AI Formula generation failed:", error);
