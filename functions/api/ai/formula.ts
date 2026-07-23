@@ -107,15 +107,21 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       } catch (error: any) {
         lastError = error;
         console.error(`AI Formula attempt ${attempt} failed:`, error.message);
+        if (error.message?.includes("RESOURCE_EXHAUSTED") || error.message?.includes('"code":429')) {
+          break;
+        }
       }
     }
 
     throw lastError;
   } catch (error: any) {
     console.error("AI Formula generation failed:", error);
+    const isQuotaError = error.message?.includes("RESOURCE_EXHAUSTED") || error.message?.includes('"code":429');
     return Response.json({
-      error: "Đã xảy ra lỗi trong quá trình xử lý công thức và định giá.",
+      error: isQuotaError
+        ? "Hệ thống AI đang tạm hết lượt sử dụng miễn phí trong hôm nay. Vui lòng thử lại sau hoặc liên hệ hotline để được hỗ trợ trực tiếp."
+        : "Đã xảy ra lỗi trong quá trình xử lý công thức và định giá.",
       details: error.message
-    }, { status: 500 });
+    }, { status: isQuotaError ? 429 : 500 });
   }
 };
