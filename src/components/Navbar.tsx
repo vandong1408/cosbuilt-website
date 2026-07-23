@@ -8,8 +8,10 @@ import {
   Sparkles,
   Heart,
   ShoppingBag,
-  Star
+  Star,
+  Globe
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface NavbarProps {
   activeTab: string;
@@ -32,6 +34,8 @@ export default function Navbar({
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [langOpen, setLangOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -46,31 +50,93 @@ export default function Navbar({
       <div className="bg-white border-b border-stone-200 text-stone-600 text-[11px] sm:text-xs py-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-3">
-            <span>Hotline: <strong>0966 373 686</strong></span>
+            <span>{t("hotline")}: <strong>0966 373 686</strong></span>
             <span className="text-stone-300">|</span>
-            <span>TIẾNG VIỆT</span>
+            {/* Custom Premium Dropdown Language Selector */}
+            <div className="relative z-50 flex items-center">
+              <button
+                type="button"
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-stone-200 bg-stone-50 hover:bg-stone-100 hover:border-stone-300 text-stone-700 hover:text-stone-900 font-bold text-[11px] transition-all cursor-pointer shadow-3xs"
+              >
+                <Globe className="w-3.5 h-3.5 text-emerald-green shrink-0" />
+                <span className="tracking-wide">
+                  {language === "vi" ? "Tiếng Việt" : language === "en" ? "English" : "한국어"}
+                </span>
+                <ChevronDown className={`w-3 h-3 text-stone-400 transition-transform duration-250 ${langOpen ? "rotate-180 text-emerald-green" : ""}`} />
+              </button>
+
+              {langOpen && (
+                <>
+                  {/* Overlay to close on outside click */}
+                  <div className="fixed inset-0 z-40 bg-transparent" onClick={() => setLangOpen(false)} />
+                  
+                  {/* Dropdown Items list */}
+                  <div className="absolute left-0 mt-1 top-full w-36 bg-white border border-stone-200 rounded-lg shadow-lg py-1.5 z-50 divide-y divide-stone-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLanguage("vi");
+                        setLangOpen(false);
+                      }}
+                      className={`w-full text-left px-3.5 py-2 text-[11px] hover:bg-stone-50 transition-all font-semibold flex items-center justify-between cursor-pointer ${
+                        language === "vi" 
+                          ? "text-emerald-green bg-emerald-green/5 font-extrabold" 
+                          : "text-stone-700 hover:text-stone-950"
+                      }`}
+                    >
+                      <span>Tiếng Việt</span>
+                      <span className="text-[9px] text-stone-400 bg-stone-100 px-1 py-0.5 rounded font-mono font-bold">VN</span>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLanguage("en");
+                        setLangOpen(false);
+                      }}
+                      className={`w-full text-left px-3.5 py-2 text-[11px] hover:bg-stone-50 transition-all font-semibold flex items-center justify-between cursor-pointer ${
+                        language === "en" 
+                          ? "text-emerald-green bg-emerald-green/5 font-extrabold" 
+                          : "text-stone-700 hover:text-stone-950"
+                      }`}
+                    >
+                      <span>English</span>
+                      <span className="text-[9px] text-stone-400 bg-stone-100 px-1 py-0.5 rounded font-mono font-bold">EN</span>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLanguage("ko");
+                        setLangOpen(false);
+                      }}
+                      className={`w-full text-left px-3.5 py-2 text-[11px] hover:bg-stone-50 transition-all font-semibold flex items-center justify-between cursor-pointer ${
+                        language === "ko" 
+                          ? "text-emerald-green bg-emerald-green/5 font-extrabold" 
+                          : "text-stone-700 hover:text-stone-950"
+                      }`}
+                    >
+                      <span>한국어</span>
+                      <span className="text-[9px] text-stone-400 bg-stone-100 px-1 py-0.5 rounded font-mono font-bold">KO</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             <span className="text-stone-300">|</span>
             <span>VNĐ</span>
           </div>
           <div className="hidden lg:block text-stone-700 font-medium text-[11px] sm:text-xs">
-            🎁 Nhận gia công đơn hàng nhỏ & vừa · Thiết kế & Test mẫu miễn phí
+            {t("accept_small_orders")}
           </div>
           <div className="flex items-center gap-3 text-[11px] sm:text-xs">
-            <span className="hidden md:inline">Miễn phí chuyển phát mẫu thử toàn quốc</span>
-            {isAdminMode && (
-              <>
-                <span className="hidden md:inline text-stone-300">|</span>
-                <button 
-                  onClick={() => onTabChange("crm")}
-                  className="border border-emerald-green bg-emerald-green/5 text-emerald-green hover:bg-emerald-green hover:text-white transition-all px-3 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase flex items-center gap-1 cursor-pointer"
-                >
-                  QUẢN TRỊ CRM
-                </button>
-              </>
-            )}
+            <span className="hidden md:inline">{t("free_delivery")}</span>
+            {/* Removed CRM link */}
           </div>
         </div>
       </div>
+
 
       {/* Main Logo & Search Bar Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -107,7 +173,7 @@ export default function Navbar({
           >
             <input 
               type="text" 
-              placeholder="Tìm kiếm công thức..."
+              placeholder={t("search_placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent px-4 py-2.5 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
@@ -168,18 +234,18 @@ export default function Navbar({
                   className="bg-emerald-green hover:bg-emerald-green-dark text-white px-6 py-4 text-xs font-bold uppercase tracking-wider flex items-center gap-3 transition-all cursor-pointer"
                 >
                   <Menu className="w-4 h-4 text-white" />
-                  <span>DANH MỤC SẢN PHẨM</span>
+                  <span>{t("menu_directory")}</span>
                   <ChevronDown className="w-3.5 h-3.5 text-white opacity-80" />
                 </button>
                 
                 {/* Categories Dropdown */}
                 <div className="absolute top-full left-0 bg-white border border-stone-200 shadow-xl py-2 w-64 hidden group-hover:block z-50">
-                  <button onClick={() => onTabChange("categories", "facial-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc da mặt</button>
-                  <button onClick={() => onTabChange("categories", "body-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc body</button>
-                  <button onClick={() => onTabChange("categories", "hair-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc tóc</button>
-                  <button onClick={() => onTabChange("categories", "makeup")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Trang điểm</button>
-                  <button onClick={() => onTabChange("categories", "personal-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc cá nhân</button>
-                  <button onClick={() => onTabChange("categories", "new-tech")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold text-emerald-green">Sản phẩm công nghệ mới ✨</button>
+                  <button onClick={() => onTabChange("categories", "facial-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_facial")}</button>
+                  <button onClick={() => onTabChange("categories", "body-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_body")}</button>
+                  <button onClick={() => onTabChange("categories", "hair-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_hair")}</button>
+                  <button onClick={() => onTabChange("categories", "makeup")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_makeup")}</button>
+                  <button onClick={() => onTabChange("categories", "personal-care")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_personal")}</button>
+                  <button onClick={() => onTabChange("categories", "new-tech")} className="w-full text-left px-4 py-2.5 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold text-emerald-green">{t("cat_new_tech")}</button>
                 </div>
               </div>
 
@@ -194,7 +260,7 @@ export default function Navbar({
                       activeTab === "home" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
-                    <span>Trang Chủ</span>
+                    <span>{t("menu_home")}</span>
                   </button>
                 </div>
 
@@ -206,15 +272,15 @@ export default function Navbar({
                       activeTab === "about" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
-                    <span>Giới Thiệu</span>
+                    <span>{t("menu_about")}</span>
                     <ChevronDown className="w-3 h-3 opacity-60 group-hover:rotate-180 transition-transform" />
                   </button>
                   <div className="absolute top-full left-0 bg-white border border-stone-200 shadow-lg py-2 w-56 hidden group-hover:block z-50">
-                    <button onClick={() => onTabChange("about", "about-us")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Về Cosbuilt</button>
-                    <button onClick={() => onTabChange("about", "factory-capacity")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Nhà máy & Năng lực sản xuất</button>
-                    <button onClick={() => onTabChange("about", "certifications")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Chứng nhận</button>
-                    <button onClick={() => onTabChange("about", "rd-team")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Đội ngũ R&D</button>
-                    <button onClick={() => onTabChange("about", "partners")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Đối tác & khách hàng</button>
+                    <button onClick={() => onTabChange("about", "about-us")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("about_cosbuilt")}</button>
+                    <button onClick={() => onTabChange("about", "factory-capacity")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("about_capacity")}</button>
+                    <button onClick={() => onTabChange("about", "certifications")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("about_certifications")}</button>
+                    <button onClick={() => onTabChange("about", "rd-team")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("about_rd")}</button>
+                    <button onClick={() => onTabChange("about", "partners")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("about_partners")}</button>
                   </div>
                 </div>
 
@@ -226,17 +292,17 @@ export default function Navbar({
                       activeTab === "services" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
-                    <span>Dịch Vụ</span>
+                    <span>{t("menu_services")}</span>
                     <ChevronDown className="w-3 h-3 opacity-60 group-hover:rotate-180 transition-transform" />
                   </button>
                   <div className="absolute top-full left-0 bg-white border border-stone-200 shadow-lg py-2 w-64 hidden group-hover:block z-50">
-                    <button onClick={() => onTabChange("services", "oem-odm")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Gia công OEM/ODM</button>
-                    <button onClick={() => onTabChange("services", "formula-development")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Phát triển công thức (R&D)</button>
-                    <button onClick={() => onTabChange("services", "packaging-print")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Bao bì & in ấn</button>
-                    <button onClick={() => onTabChange("services", "legal-service")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Pháp lý & công bố mỹ phẩm</button>
-                    <button onClick={() => onTabChange("services", "logistics")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Vận chuyển – thông quan quốc tế</button>
-                    <button onClick={() => onTabChange("services", "cooperation-process")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Quy trình hợp tác</button>
-                    <button onClick={() => onTabChange("services", "cooperation-benefits")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Lợi ích hợp tác</button>
+                    <button onClick={() => onTabChange("services", "oem-odm")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("service_oem_odm")}</button>
+                    <button onClick={() => onTabChange("services", "formula-development")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("service_rd")}</button>
+                    <button onClick={() => onTabChange("services", "packaging-print")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("service_packaging")}</button>
+                    <button onClick={() => onTabChange("services", "legal-service")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("service_legal")}</button>
+                    <button onClick={() => onTabChange("services", "logistics")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("service_logistics")}</button>
+                    <button onClick={() => onTabChange("services", "cooperation-process")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("service_process")}</button>
+                    <button onClick={() => onTabChange("services", "cooperation-benefits")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{t("service_benefits")}</button>
                   </div>
                 </div>
 
@@ -248,23 +314,23 @@ export default function Navbar({
                       activeTab === "categories" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
-                    <span>Danh Mục Gia Công</span>
+                    <span>{t("menu_categories")}</span>
                     <ChevronDown className="w-3 h-3 opacity-60 group-hover:rotate-180 transition-transform" />
                   </button>
                   <div className="absolute top-full left-0 bg-white border border-stone-200 shadow-lg py-2 w-56 hidden group-hover:block z-50">
-                    <button onClick={() => onTabChange("categories", "facial-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc da mặt</button>
-                    <button onClick={() => onTabChange("categories", "body-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc body</button>
-                    <button onClick={() => onTabChange("categories", "hair-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc tóc</button>
-                    <button onClick={() => onTabChange("categories", "makeup")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Trang điểm</button>
-                    <button onClick={() => onTabChange("categories", "personal-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">Chăm sóc cá nhân</button>
-                    <button onClick={() => onTabChange("categories", "new-tech")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold text-emerald-green">Công nghệ mới ✨</button>
+                    <button onClick={() => onTabChange("categories", "facial-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_facial")}</button>
+                    <button onClick={() => onTabChange("categories", "body-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_body")}</button>
+                    <button onClick={() => onTabChange("categories", "hair-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_hair")}</button>
+                    <button onClick={() => onTabChange("categories", "makeup")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_makeup")}</button>
+                    <button onClick={() => onTabChange("categories", "personal-care")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold">{t("cat_personal")}</button>
+                    <button onClick={() => onTabChange("categories", "new-tech")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-semibold text-emerald-green">{t("cat_new_tech")}</button>
                   </div>
                 </div>
 
                 {/* Bảng Giá Gia Công */}
                 <div className="relative py-4">
                   <div className="absolute -top-1 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider scale-90 select-none z-10 animate-bounce">
-                    MỚI
+                    {t("menu_new") || "NEW"}
                   </div>
                   <button 
                     onClick={() => onTabChange("pricing")}
@@ -272,7 +338,7 @@ export default function Navbar({
                       activeTab === "pricing" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
-                    <span>Bảng Giá Gia Công</span>
+                    <span>{t("menu_pricing")}</span>
                   </button>
                 </div>
 
@@ -284,7 +350,7 @@ export default function Navbar({
                       activeTab === "news" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
-                    <span>Tin Tức</span>
+                    <span>{t("menu_news")}</span>
                     <ChevronDown className="w-3 h-3 opacity-60 group-hover:rotate-180 transition-transform" />
                   </button>
                   <div className="absolute top-full left-0 bg-white border border-stone-200 shadow-lg py-2 w-56 hidden group-hover:block z-50">
@@ -301,7 +367,7 @@ export default function Navbar({
                       activeTab === "contact" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
-                    <span>Liên Hệ</span>
+                    <span>{t("menu_contact")}</span>
                   </button>
                 </div>
               </div>
@@ -321,7 +387,7 @@ export default function Navbar({
           <form onSubmit={handleSearchSubmit} className="flex bg-stone-50 border border-stone-250 rounded-lg overflow-hidden">
             <input 
               type="text" 
-              placeholder="Tìm công thức..."
+              placeholder={t("search_placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent px-4 py-2.5 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
@@ -338,7 +404,7 @@ export default function Navbar({
                 activeTab === "home" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
               }`}
             >
-              Trang Chủ
+              {t("menu_home")}
             </button>
             <button
               onClick={() => { onTabChange("about"); setMobileMenuOpen(false); }}
@@ -346,7 +412,7 @@ export default function Navbar({
                 activeTab === "about" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
               }`}
             >
-              Giới Thiệu
+              {t("menu_about")}
             </button>
             <button
               onClick={() => { onTabChange("services"); setMobileMenuOpen(false); }}
@@ -354,7 +420,7 @@ export default function Navbar({
                 activeTab === "services" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
               }`}
             >
-              Dịch Vụ
+              {t("menu_services")}
             </button>
             <button
               onClick={() => { onTabChange("categories"); setMobileMenuOpen(false); }}
@@ -362,7 +428,7 @@ export default function Navbar({
                 activeTab === "categories" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
               }`}
             >
-              Danh Mục Gia Công
+              {t("menu_categories")}
             </button>
             <button
               onClick={() => { onTabChange("pricing"); setMobileMenuOpen(false); }}
@@ -370,7 +436,7 @@ export default function Navbar({
                 activeTab === "pricing" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
               }`}
             >
-              Bảng Giá Gia Công
+              {t("menu_pricing")}
             </button>
             <button
               onClick={() => { onTabChange("news"); setMobileMenuOpen(false); }}
@@ -378,7 +444,7 @@ export default function Navbar({
                 activeTab === "news" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
               }`}
             >
-              Tin Tức
+              {t("menu_news")}
             </button>
             <button
               onClick={() => { onTabChange("contact"); setMobileMenuOpen(false); }}
@@ -386,18 +452,9 @@ export default function Navbar({
                 activeTab === "contact" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
               }`}
             >
-              Liên Hệ
+              {t("menu_contact")}
             </button>
-            {isAdminMode && (
-              <button
-                onClick={() => { onTabChange("crm"); setMobileMenuOpen(false); }}
-                className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-all ${
-                  activeTab === "crm" ? "bg-emerald-green text-white" : "text-stone-800 hover:bg-stone-50"
-                }`}
-              >
-                Quản Trị CRM
-              </button>
-            )}
+            {/* Removed CRM mobile link */}
           </div>
 
           {/* No promotional button */}

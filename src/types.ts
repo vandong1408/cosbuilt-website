@@ -77,18 +77,26 @@ export interface PricingItem {
   timeframe: string;
 }
 
+export interface ProductPackaging {
+  type: "bottle" | "jar" | "tube" | "dropper" | "sachet";
+  name: string;
+  image: string;
+  description: string;
+}
+
 export interface FormulaProduct {
   id: string;
   title: string;
-  category: string; // facial-care, body-care, hair-care, makeup, personal-care
-  lab: "Cosbuilt LAB" | "Organic Formula" | "Premium Eco" | "Advanced Clinical";
+  category: string; // facial-care, body-care, hair-care, makeup, personal-care, new-tech
+  lab: "Cosbuilt LAB" | "Organic Formula" | "Premium Eco" | "Advanced Clinical" | string;
   skinTypes: string[]; // ["Tất cả loại da", "Dành cho da khô", "Dành cho da dầu mụn", "Dành cho da nhạy cảm", "Mọi loại da"]
   rating: number;
   ratingValue: number;
   reviewsCount: number;
-  originalPrice: number;
+  originalPrice?: number;
   price: number;
-  discountPercent: number;
+  discountPercent?: number;
+  priceRange?: string;
   badge: string;
   testedCount: number;
   hotPercent: number;
@@ -96,5 +104,6 @@ export interface FormulaProduct {
   description: string;
   ingredients: string;
   guidelines: string;
+  packagings?: ProductPackaging[];
 }
 

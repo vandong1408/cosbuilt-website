@@ -11,6 +11,8 @@ import {
   Clock, 
   PhoneCall, 
   XCircle, 
+  X,
+  Mail,
   Image, 
   BookOpen, 
   Info,
@@ -27,7 +29,9 @@ import {
   Save,
   Sparkles,
   ArrowUpToLine,
-  Upload
+  Upload,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
@@ -43,8 +47,228 @@ import {
   syncSpreadsheetData, 
   appendSheetRow, 
   updateSheetRow, 
-  deleteSheetRow 
+  deleteSheetRow,
+  syncLeadsToSpreadsheet
 } from "../lib/sheetsService";
+
+const getProductPriceRange = (prod: any, quantity = 1) => {
+  const isMask = prod.title?.toLowerCase().includes("mặt nạ") || prod.id?.toLowerCase().includes("mask") || prod.category === "mask";
+  if (isMask) {
+    const min = 6000 * quantity;
+    const max = 16000 * quantity;
+    return `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+  } else {
+    const min = 60000 * quantity;
+    const max = 160000 * quantity;
+    return `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+  }
+};
+
+const getProductOriginalPriceRange = (prod: any, quantity = 1) => {
+  const isMask = prod.title?.toLowerCase().includes("mặt nạ") || prod.id?.toLowerCase().includes("mask") || prod.category === "mask";
+  if (isMask) {
+    const min = 8000 * quantity;
+    const max = 20000 * quantity;
+    return `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+  } else {
+    const min = 80000 * quantity;
+    const max = 200000 * quantity;
+    return `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
+  }
+};
+
+const getPackagingTypeLabel = (type: string) => {
+  switch (type) {
+    case "bottle": return "Chai";
+    case "jar": return "Hũ";
+    case "tube": return "Tuýp";
+    case "dropper": return "Lọ nhỏ giọt";
+    case "sachet": return "Gói";
+    default: return type;
+  }
+};
+
+const getDefaultPackagings = (prod: any) => {
+  const productObj = typeof prod === "string" ? { category: prod } : (prod || {});
+  
+  // Deterministic seed for this product
+  const combined = (productObj.id || "") + (productObj.title || "");
+  let seed = 0;
+  for (let i = 0; i < combined.length; i++) {
+    seed = combined.charCodeAt(i) + ((seed << 5) - seed);
+  }
+  seed = Math.abs(seed);
+
+  const isMask = productObj.title?.toLowerCase().includes("mặt nạ") || productObj.id?.toLowerCase().includes("mask") || productObj.category === "mask";
+  const isSerumOrLiquid = productObj.title?.toLowerCase().includes("serum") || productObj.title?.toLowerCase().includes("tinh chất") || productObj.title?.toLowerCase().includes("ampoule") || productObj.title?.toLowerCase().includes("xịt") || productObj.title?.toLowerCase().includes("nước") || productObj.title?.toLowerCase().includes("toner");
+  const isMakeup = productObj.category === "makeup" || productObj.title?.toLowerCase().includes("son") || productObj.title?.toLowerCase().includes("phấn") || productObj.title?.toLowerCase().includes("kem nền") || productObj.title?.toLowerCase().includes("cushion") || productObj.title?.toLowerCase().includes("eyeliner");
+
+  const serumPool = [
+    "photo-1620916566398-39f1143ab7be",
+    "photo-1601049541289-9b1b7bbbfe19",
+    "photo-1611930022073-b7a4ba5fcccd",
+    "photo-1614859324967-bdf461fec769",
+    "photo-1616683693504-3ea7e9ad6fec",
+    "photo-1631730359575-38e4755d772b",
+    "photo-1612817288484-6f916006741a",
+    "photo-1629732047847-50b7ecf0cbf1"
+  ];
+
+  const creamPool = [
+    "photo-1608248597279-f99d160bfcbc",
+    "photo-1556228720-195a672e8a03",
+    "photo-1617897903246-719242758050",
+    "photo-1601924994987-69e26d50dc26",
+    "photo-1620917670397-fe713e413676",
+    "photo-1611080626919-7cf5a9dbab5b",
+    "photo-1515377905703-c4788e51af15",
+    "photo-1608571423902-eed4a5ad8108"
+  ];
+
+  const cleanserPool = [
+    "photo-1556228578-0f85a1a1d596",
+    "photo-1556229174-5e42a09e45af",
+    "photo-1535585209827-a15fcdbc4c2d",
+    "photo-1526947425960-945c6e72858f",
+    "photo-1527799822341-478a783b83d0",
+    "photo-1519735797-402b0542195a",
+    "photo-1540555700478-4be289fbecef",
+    "photo-1626806787461-102c1bfaaea1",
+    "photo-1570172619644-dfd03ed5d881"
+  ];
+
+  const maskPool = [
+    "photo-1512290923902-8a9f81dc236c",
+    "photo-1570172619644-dfd03ed5d881",
+    "photo-1610913765184-b67ae2c0ca9c",
+    "photo-1598440947619-2c35fc9aa908",
+    "photo-1608248597279-f99d160bfcbc"
+  ];
+
+  const makeupPool = [
+    "photo-1586495777744-4413f21062fa",
+    "photo-1596462502278-27bfdc403348",
+    "photo-1512496015851-a90fb38ba796",
+    "photo-1522335789203-aabd1fc54bc9",
+    "photo-1607604276583-eef5d076aa5f"
+  ];
+
+  const selectImg = (pool: string[], indexOffset: number) => {
+    const imgId = pool[(seed + indexOffset) % pool.length];
+    return `https://images.unsplash.com/${imgId}?q=80&w=600`;
+  };
+
+  if (isMask) {
+    return [
+      {
+        type: "sachet" as const,
+        name: "Túi Sachet Màng Nhôm Mờ",
+        image: selectImg(maskPool, 0),
+        description: "Túi nhôm phức hợp 3 lớp giúp lưu giữ trọn vẹn hoạt chất, chống thấm khí tuyệt đối và bảo quản tối ưu."
+      },
+      {
+        type: "jar" as const,
+        name: "Hũ Thủy Tinh Cao Cấp",
+        image: selectImg(maskPool, 1),
+        description: "Thiết kế hũ thủy tinh mờ sang trọng, nắp vân giả gỗ tinh tế, thích hợp cho mặt nạ đất sét/kem dẻo."
+      },
+      {
+        type: "tube" as const,
+        name: "Tuýp Nhựa PE Cấp Thực Phẩm",
+        image: selectImg(maskPool, 2),
+        description: "Tuýp nhựa dẻo phủ lì (matte surface) tinh tế, nắp bật kín khít bảo quản vệ sinh cho mặt nạ dạng gel."
+      },
+      {
+        type: "bottle" as const,
+        name: "Chai Nhấn Vòi Chân Không",
+        image: selectImg(maskPool, 3),
+        description: "Vòi nhấn hút chân không tiện lợi, kiểm soát liều lượng và ngăn chặn tối đa quá trình oxy hóa tinh chất mặt nạ."
+      }
+    ];
+  } else if (isSerumOrLiquid) {
+    return [
+      {
+        type: "dropper" as const,
+        name: "Lọ Dropper Thủy Tinh Nâu",
+        image: selectImg(serumPool, 0),
+        description: "Lọ nhỏ giọt thủy tinh cao cấp bảo vệ tối đa các tinh chất đặc trị nhạy cảm trước bức xạ tia cực tím."
+      },
+      {
+        type: "bottle" as const,
+        name: "Chai Nhấn Vòi Chân Không",
+        image: selectImg(serumPool, 1),
+        description: "Chai vòi nhấn hút chân không acrylic cao cấp chống tiếp xúc không khí oxy hóa, kiểm soát lượng nhấn cực chuẩn."
+      },
+      {
+        type: "tube" as const,
+        name: "Tuýp Nhỏ Đầu Nhọn Định Lượng",
+        image: selectImg(serumPool, 2),
+        description: "Thiết kế tuýp thon gọn với đầu phun định lượng siêu nhỏ thích hợp cho các tinh chất cô đặc cao."
+      },
+      {
+        type: "dropper" as const,
+        name: "Lọ Dropper Thủy Tinh Trong",
+        image: selectImg(serumPool, 3),
+        description: "Thủy tinh borosilicate siêu trong suốt khoe trọn vẹn màu sắc tự nhiên và cấu trúc hạt của tinh chất cao cấp."
+      }
+    ];
+  } else if (isMakeup) {
+    return [
+      {
+        type: "bottle" as const,
+        name: "Vỏ Son / Hộp Acrylic Cao Cấp",
+        image: selectImg(makeupPool, 0),
+        description: "Thiết kế vỏ tinh xảo, chất liệu acrylic dày dặn, sang trọng khẳng định giá trị thương hiệu dẫn đầu."
+      },
+      {
+        type: "jar" as const,
+        name: "Hộp Compact Phấn Nước Tiện Dụng",
+        image: selectImg(makeupPool, 1),
+        description: "Hộp phấn nước tích hợp gương soi sắc nét và bông mút rubycell kháng khuẩn kháng nước tuyệt đối."
+      },
+      {
+        type: "bottle" as const,
+        name: "Chai Thủy Tinh Vòi Nhấn Tinh Tế",
+        image: selectImg(makeupPool, 2),
+        description: "Chai kem nền thủy tinh mờ dầy dặn cầm đầm tay, vòi nhấn mạ kim loại sang trọng nâng tầm đẳng cấp mỹ phẩm."
+      },
+      {
+        type: "tube" as const,
+        name: "Bút Kẻ / Thỏi Satin Độc Quyền",
+        image: selectImg(makeupPool, 3),
+        description: "Bao bì dạng bút hoặc thỏi bấm thông minh, tối ưu hóa thao tác trang điểm chuyên nghiệp hằng ngày."
+      }
+    ];
+  } else {
+    const pool = productObj.category === "facial-care" ? creamPool : cleanserPool;
+    return [
+      {
+        type: "jar" as const,
+        name: "Hũ Thủy Tinh Ép Kim Sang Trọng",
+        image: selectImg(pool, 0),
+        description: "Hũ thủy tinh đúc đầm tay, nắp mạ vàng/bạc ép kim cực kỳ đẳng cấp nâng cao giá trị định vị thương hiệu."
+      },
+      {
+        type: "bottle" as const,
+        name: "Chai Nhấn Vòi Pump Cao Cấp",
+        image: selectImg(pool, 1),
+        description: "Vòi pump tiện dụng dễ kiểm soát dung lượng, lý tưởng cho các dòng lotion dưỡng da, sữa rửa mặt."
+      },
+      {
+        type: "tube" as const,
+        name: "Tuýp Nhôm Matte Thân Thiện",
+        image: selectImg(pool, 2),
+        description: "Chất liệu nhôm dẻo dễ tái chế thân thiện môi trường, bề mặt phủ mờ phong cách tối giản Bắc Âu."
+      },
+      {
+        type: "jar" as const,
+        name: "Hộp Kim Metal Nhôm Minimalist",
+        image: selectImg(pool, 3),
+        description: "Hộp nhôm phủ sơn tĩnh điện lì thời thượng, nắp vặn ren kín khí, hoàn hảo cho định dạng sáp hoặc hạt scrub tự nhiên."
+      }
+    ];
+  }
+};
 
 interface CRMDashboardProps {
   customBlogPosts: any[];
@@ -114,6 +338,8 @@ export default function CRMDashboard({
   const [editingBlogPost, setEditingBlogPost] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [editingImage, setEditingImage] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [editingProduct, setEditingProduct] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [newPkg, setNewPkg] = useState<{ type: "bottle" | "jar" | "tube" | "dropper" | "sachet"; name: string; image: string; description: string } | null>(null);
+  const [editingPkgIdx, setEditingPkgIdx] = useState<number | null>(null);
   const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [isEditingWebsiteLogo, setIsEditingWebsiteLogo] = useState(false);
   const [tempWebsiteLogo, setTempWebsiteLogo] = useState({ 
@@ -123,6 +349,11 @@ export default function CRMDashboard({
   });
   const [actionMessage, setActionMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
   const [isSavingContent, setIsSavingContent] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   // Initialize tempWebsiteLogo whenever websiteLogo updates
   useEffect(() => {
@@ -215,7 +446,8 @@ export default function CRMDashboard({
                   data.image || "",
                   data.description || "",
                   data.ingredients || "",
-                  data.guidelines || ""
+                  data.guidelines || "",
+                  JSON.stringify(data.packagings || [])
                 ];
                 if (action === "add") {
                   await appendSheetRow(spreadsheetId, googleToken, "Sản phẩm", rowValues);
@@ -272,7 +504,6 @@ export default function CRMDashboard({
   };
 
   const handleDeleteBlogPost = async (index: number) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) return;
     let newPosts = [...customBlogPosts];
     const deletedItem = newPosts[index];
     newPosts.splice(index, 1);
@@ -299,7 +530,6 @@ export default function CRMDashboard({
   };
 
   const handleDeleteImage = async (index: number) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa hình ảnh này không?")) return;
     let newImages = [...customImages];
     const deletedItem = newImages[index];
     newImages.splice(index, 1);
@@ -326,7 +556,6 @@ export default function CRMDashboard({
   };
 
   const handleDeleteProduct = async (index: number) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
     let newProducts = [...customProducts];
     const deletedItem = newProducts[index];
     newProducts.splice(index, 1);
@@ -350,7 +579,6 @@ export default function CRMDashboard({
   };
 
   const handleDeletePartnerLogo = async (index: number) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa đối tác này không?")) return;
     let newLogos = [...customLogos];
     newLogos.splice(index, 1);
     await saveAllContent({ logos: newLogos });
@@ -364,16 +592,45 @@ export default function CRMDashboard({
   };
 
   const [activeSubTab, setActiveSubTab] = useState<"leads" | "sheets" | "content">("leads");
+  const [cmsSubTab, setCmsSubTab] = useState<"articles" | "products" | "images" | "partners" | "logo">("articles");
+  const [cmsSearchTerm, setCmsSearchTerm] = useState("");
+  const [cmsArticlesPage, setCmsArticlesPage] = useState(1);
+  const [cmsProductsPage, setCmsProductsPage] = useState(1);
+  const [cmsImagesPage, setCmsImagesPage] = useState(1);
+  const [cmsPartnersPage, setCmsPartnersPage] = useState(1);
+
+  useEffect(() => {
+    setCmsSearchTerm("");
+    setCmsArticlesPage(1);
+    setCmsProductsPage(1);
+    setCmsImagesPage(1);
+    setCmsPartnersPage(1);
+  }, [cmsSubTab]);
+
+  useEffect(() => {
+    setCmsArticlesPage(1);
+    setCmsProductsPage(1);
+    setCmsImagesPage(1);
+    setCmsPartnersPage(1);
+  }, [cmsSearchTerm]);
+
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [leadsPage, setLeadsPage] = useState(1);
+  const [filterDate, setFilterDate] = useState("");
+  const [editingLeadNotesId, setEditingLeadNotesId] = useState<string | null>(null);
+  const [editingLeadNotesValue, setEditingLeadNotesValue] = useState("");
   
   // Sheet sync states
   const [sheetInput, setSheetInput] = useState(sheetsConfig.spreadsheetId || "");
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSettingUp, setIsSettingUp] = useState(false);
   const [syncMessage, setSyncMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
+  const [isSyncingLeads, setIsSyncingLeads] = useState(false);
+  const [leadsSyncMessage, setLeadsSyncMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
   const [instructionTab, setInstructionTab] = useState<"read" | "write">("read");
 
   // Google Sheets Direct Integration state
@@ -498,7 +755,6 @@ export default function CRMDashboard({
 
   // Delete lead
   const handleDeleteLead = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa yêu cầu tư vấn này không?")) return;
     try {
       const res = await fetch(`/api/leads/${id}`, {
         method: "DELETE"
@@ -508,6 +764,25 @@ export default function CRMDashboard({
       }
     } catch (error) {
       console.error("Failed to delete lead:", error);
+    }
+  };
+
+  // Quick update lead (for inline status and notes changes)
+  const handleQuickUpdateLead = async (id: string, updatedStatus: string, updatedNotes: string) => {
+    try {
+      const res = await fetch(`/api/leads/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: updatedStatus,
+          notes: updatedNotes
+        })
+      });
+      if (res.ok) {
+        await fetchLeads();
+      }
+    } catch (error) {
+      console.error("Failed to quick update lead:", error);
     }
   };
 
@@ -739,6 +1014,36 @@ export default function CRMDashboard({
     }
   };
 
+  const handleSyncLeadsToSheet = async () => {
+    const spreadsheetId = sheetsConfig.spreadsheetId || extractSpreadsheetId(sheetInput);
+    if (!spreadsheetId) {
+      setLeadsSyncMessage({ text: "Vui lòng liên kết Google Sheet ở tab 'ĐỒNG BỘ GOOGLE SHEET' trước.", type: "error" });
+      setTimeout(() => setLeadsSyncMessage({ text: "", type: "" }), 5000);
+      return;
+    }
+    if (!googleToken) {
+      setLeadsSyncMessage({ text: "Vui lòng kết nối tài khoản Google ở tab 'ĐỒNG BỘ GOOGLE SHEET' trước.", type: "error" });
+      setTimeout(() => setLeadsSyncMessage({ text: "", type: "" }), 5000);
+      return;
+    }
+    setIsSyncingLeads(true);
+    setLeadsSyncMessage({ text: "Đang đồng bộ danh sách khách hàng lên Google Sheet...", type: "" });
+    try {
+      await syncLeadsToSpreadsheet(spreadsheetId, googleToken, leads);
+      setLeadsSyncMessage({
+        text: `Đồng bộ thành công ${leads.length} yêu cầu tư vấn của khách hàng lên Google Sheet tab 'Yêu cầu tư vấn'! 📊`,
+        type: "success"
+      });
+      setTimeout(() => setLeadsSyncMessage({ text: "", type: "" }), 6000);
+    } catch (err: any) {
+      console.error("Leads sheet sync failed:", err);
+      setLeadsSyncMessage({ text: `Đồng bộ thất bại: ${err.message}`, type: "error" });
+      setTimeout(() => setLeadsSyncMessage({ text: "", type: "" }), 6000);
+    } finally {
+      setIsSyncingLeads(false);
+    }
+  };
+
   // Filters leads
   const filteredLeads = leads.filter(lead => {
     const matchesSearch = 
@@ -748,8 +1053,20 @@ export default function CRMDashboard({
       (lead.brandName && lead.brandName.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesCategory = categoryFilter === "all" || lead.category === categoryFilter;
+    const matchesDate = filterDate === "" || (lead.createdAt && lead.createdAt.startsWith(filterDate));
+    
+    return matchesSearch && matchesStatus && matchesCategory && matchesDate;
   });
+
+  // Reset page when filters change
+  useEffect(() => {
+    setLeadsPage(1);
+  }, [searchTerm, statusFilter, categoryFilter, filterDate]);
+
+  const leadsPerPage = 5;
+  const paginatedLeads = filteredLeads.slice((leadsPage - 1) * leadsPerPage, leadsPage * leadsPerPage);
+  const totalPages = Math.ceil(filteredLeads.length / leadsPerPage);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -1016,9 +1333,74 @@ export default function CRMDashboard({
       <div className="min-h-[400px]">
         {/* LEADS PANEL */}
         {activeSubTab === "leads" && (
-          <div className="space-y-6">
-            {/* Filter and Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-stone-50 p-4 rounded-2xl border border-stone-150">
+          <div className="space-y-6 pt-2">
+            
+            {/* Status Segmented Control Tabs */}
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block text-left">Lọc theo trạng thái xử lý:</span>
+              <div className="flex overflow-x-auto pb-1 gap-2 scrollbar-none">
+                {[
+                  { id: "all", label: "Tất cả yêu cầu", count: totalLeads },
+                  { id: "Chờ xử lý", label: "Chờ xử lý ⏳", count: pendingLeads },
+                  { id: "Đang liên hệ", label: "Đang liên hệ 📞", count: inProgressLeads },
+                  { id: "Đã hoàn thành", label: "Đã hoàn thành ✅", count: completedLeads },
+                  { id: "Hủy", label: "Đã hủy ❌", count: leads.filter(l => l.status === "Hủy").length }
+                ].map(tab => {
+                  const isActive = statusFilter === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setStatusFilter(tab.id)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
+                        isActive 
+                          ? "bg-emerald-green text-white border-emerald-green shadow-xs" 
+                          : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"
+                      }`}
+                    >
+                      <span>{tab.label}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] ${isActive ? "bg-white/20 text-white font-bold" : "bg-stone-100 text-stone-600 font-medium"}`}>
+                        {tab.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Category Filter Capsules */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block text-left">Lọc theo danh mục gia công:</span>
+              <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-none">
+                {[
+                  { id: "all", label: "Tất cả danh mục" },
+                  { id: "Chăm sóc da mặt", label: "Chăm sóc da mặt 🧴" },
+                  { id: "Chăm sóc body", label: "Chăm sóc cơ thể 🧼" },
+                  { id: "Chăm sóc tóc", label: "Chăm sóc tóc 💇‍♀️" },
+                  { id: "Mặt nạ", label: "Mặt nạ dưỡng 🎭" },
+                  { id: "Trang điểm", label: "Trang điểm 💄" },
+                  { id: "Chăm sóc cá nhân", label: "Cá nhân & Vệ sinh 🪥" },
+                  { id: "Công nghệ mới", label: "Dòng công nghệ mới ⚡" }
+                ].map(cat => {
+                  const isActive = categoryFilter === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setCategoryFilter(cat.id)}
+                      className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
+                        isActive 
+                          ? "bg-stone-900 text-white border-stone-900 shadow-xs" 
+                          : "bg-stone-100 text-stone-600 border-transparent hover:bg-stone-200"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Search and Sheet Action Bar */}
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-stone-50 p-4 rounded-2xl border border-stone-200">
               <div className="relative w-full sm:max-w-md">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
@@ -1029,21 +1411,43 @@ export default function CRMDashboard({
                   className="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:border-emerald-green focus:outline-none transition-all"
                 />
               </div>
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-xs focus:border-emerald-green focus:outline-none transition-all w-full sm:w-auto"
+                title="Lọc theo ngày đăng ký"
+              />
 
-              <div className="flex gap-2 w-full sm:w-auto shrink-0">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full sm:w-44 bg-white border border-stone-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none cursor-pointer"
+              <div className="flex gap-2 w-full sm:w-auto shrink-0 justify-end">
+                <button
+                  onClick={handleSyncLeadsToSheet}
+                  disabled={isSyncingLeads}
+                  className="w-full sm:w-auto bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-xs"
+                  title="Đồng bộ toàn bộ danh sách khách hàng sang Google Sheet"
                 >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="Chờ xử lý">Chờ xử lý</option>
-                  <option value="Đang liên hệ">Đang liên hệ</option>
-                  <option value="Đã hoàn thành">Đã hoàn thành</option>
-                  <option value="Hủy">Đã hủy</option>
-                </select>
+                  <FileSpreadsheet className="w-4 h-4" />
+                  {isSyncingLeads ? "Đang đồng bộ..." : "Đồng bộ Sheet"}
+                </button>
               </div>
             </div>
+
+            {leadsSyncMessage.text && (
+              <div className={`p-4 rounded-xl border text-xs flex items-center gap-3 ${
+                leadsSyncMessage.type === "success" 
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-800" 
+                  : leadsSyncMessage.type === "error"
+                  ? "bg-red-50 border-red-200 text-red-800"
+                  : "bg-blue-50 border-blue-200 text-blue-800"
+              }`}>
+                {isSyncingLeads ? (
+                  <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
+                ) : (
+                  <FileSpreadsheet className="w-4 h-4 shrink-0" />
+                )}
+                <span>{leadsSyncMessage.text}</span>
+              </div>
+            )}
 
             {/* Leads Table Card */}
             <div className="bg-white rounded-2xl border border-stone-200 shadow-3xs overflow-hidden">
@@ -1054,8 +1458,8 @@ export default function CRMDashboard({
                       <th className="py-4 px-6">Khách Hàng</th>
                       <th className="py-4 px-6">Thông Tin Liên Hệ</th>
                       <th className="py-4 px-6">Yêu Cầu Gia Công</th>
-                      <th className="py-4 px-6">Lời Nhắn / Ghi Chú Admin</th>
-                      <th className="py-4 px-6">Trạng Thái</th>
+                      <th className="py-4 px-6">Lời nhắn của khách hàng</th>
+                      <th className="py-4 px-6">Trạng Thái (Chọn nhanh)</th>
                       <th className="py-4 px-6 text-right">Thao Tác</th>
                     </tr>
                   </thead>
@@ -1074,70 +1478,178 @@ export default function CRMDashboard({
                         </td>
                       </tr>
                     ) : (
-                      filteredLeads.map((lead) => (
-                        <tr key={lead.id} className="hover:bg-stone-50/50 transition-colors">
-                          <td className="py-4 px-6">
-                            <div className="font-bold text-stone-900">{lead.name}</div>
-                            {lead.brandName && (
-                              <div className="text-emerald-green text-[11px] font-medium mt-0.5">
-                                TH: {lead.brandName}
+                      paginatedLeads.map((lead) => {
+                        const initials = lead.name ? lead.name.split(" ").pop()?.substring(0, 2).toUpperCase() : "KH";
+                        const isEditingNotes = editingLeadNotesId === lead.id;
+                        
+                        // Deterministic soft background for avatar
+                        const colors = [
+                          "bg-emerald-50 text-emerald-700 border-emerald-100",
+                          "bg-blue-50 text-blue-700 border-blue-100",
+                          "bg-purple-50 text-purple-700 border-purple-100",
+                          "bg-amber-50 text-amber-700 border-amber-100",
+                          "bg-rose-50 text-rose-700 border-rose-100"
+                        ];
+                        const colorIndex = (lead.name || "").length % colors.length;
+                        const avatarClass = `w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${colors[colorIndex]} shrink-0 border`;
+
+                        return (
+                          <tr key={lead.id} className="hover:bg-stone-50/50 transition-colors">
+                            {/* KHÁCH HÀNG */}
+                            <td className="py-4 px-6">
+                              <div className="flex items-center gap-3">
+                                <div className={avatarClass}>{initials}</div>
+                                <div className="text-left">
+                                  <div className="font-bold text-stone-900 text-sm">{lead.name}</div>
+                                  <div className="text-stone-400 text-[10px] mt-0.5">
+                                    {new Date(lead.createdAt).toLocaleDateString("vi-VN", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                      day: "2-digit",
+                                      month: "2-digit",
+                                      year: "numeric"
+                                    })}
+                                  </div>
+                                </div>
                               </div>
-                            )}
-                            <div className="text-stone-400 text-[10px] mt-1">
-                              {new Date(lead.createdAt).toLocaleDateString("vi-VN", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric"
-                              })}
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="font-mono text-stone-800 font-medium">{lead.phone}</div>
-                            {lead.email && <div className="text-stone-500 text-xs mt-0.5">{lead.email}</div>}
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="font-medium text-stone-800">{lead.category}</div>
-                            <div className="text-stone-500 text-[11px] mt-0.5">SL: {lead.moq} sản phẩm</div>
-                          </td>
-                          <td className="py-4 px-6 max-w-xs">
-                            <div className="truncate text-stone-600 mb-1" title={lead.message}>
-                              {lead.message || <span className="text-stone-300 italic">Không có lời nhắn</span>}
-                            </div>
-                            {lead.notes && (
-                              <div className="bg-emerald-green/5 border border-emerald-green/10 text-emerald-green-dark p-1.5 rounded-md text-[11px] leading-normal">
-                                <strong>Ghi chú admin:</strong> {lead.notes}
+                            </td>
+
+                            {/* LIÊN HỆ */}
+                            <td className="py-4 px-6 text-left">
+                              <div className="font-mono text-stone-800 font-semibold flex items-center gap-1.5 text-xs">
+                                <span className="cursor-pointer hover:text-emerald-green" onClick={() => {navigator.clipboard.writeText(lead.phone); alert("Đã copy số điện thoại!");}} title="Bấm để copy số điện thoại">{lead.phone}</span>
+                                <a 
+                                  href={`tel:${lead.phone}`}
+                                  className="p-1 hover:bg-stone-100 text-stone-400 hover:text-emerald-green rounded transition-colors"
+                                  title="Gọi điện trực tiếp"
+                                >
+                                  <PhoneCall className="w-3.5 h-3.5" />
+                                </a>
                               </div>
-                            )}
-                          </td>
-                          <td className="py-4 px-6">
-                            {getStatusBadge(lead.status)}
-                          </td>
-                          <td className="py-4 px-6 text-right">
-                            <div className="flex gap-2 justify-end">
-                              <button
-                                onClick={() => handleSelectLead(lead)}
-                                className="p-2 text-stone-500 hover:text-emerald-green hover:bg-emerald-green-light rounded-lg transition-colors cursor-pointer"
-                                title="Xem chi tiết & Cập nhật"
+                              <div className="text-stone-500 text-xs mt-0.5 flex items-center gap-1.5">
+                                <span className="cursor-pointer hover:text-blue-600 truncate max-w-[140px]" onClick={() => {navigator.clipboard.writeText(lead.email || ""); alert("Đã copy email!");}} title="Bấm để copy email">{lead.email || "N/A"}</span>
+                                {lead.email && (
+                                  <a 
+                                    href={`mailto:${lead.email}`}
+                                    className="p-1 hover:bg-stone-100 text-stone-400 hover:text-blue-600 rounded transition-colors"
+                                    title="Gửi email"
+                                  >
+                                    <Mail className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* THƯƠNG HIỆU & YÊU CẦU */}
+                            <td className="py-4 px-6 text-left">
+                              <div className="font-bold text-stone-800 text-xs">{lead.category}</div>
+                              <div className="text-stone-500 text-[11px] mt-0.5 font-medium">SL: {lead.moq} sản phẩm</div>
+                              {lead.brandName && (
+                                <div className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-emerald-green/5 text-emerald-green border border-emerald-green/10">
+                                  TH: {lead.brandName}
+                                </div>
+                              )}
+                            </td>
+
+                            {/* LỜI NHẮN CỦA KHÁCH HÀNG (READ-ONLY) */}
+                            <td className="py-4 px-6 max-w-xs text-left">
+                                <div className="text-stone-600 text-xs leading-relaxed">
+                                  {lead.notes ? (
+                                    <span className="italic">"{lead.notes}"</span>
+                                  ) : (
+                                    <span className="text-stone-300 italic text-[11px]">Không có lời nhắn</span>
+                                  )}
+                                </div>
+                            </td>
+
+                            {/* TRẠNG THÁI (QUICK CHANGE DROP-DOWN!) */}
+                            <td className="py-4 px-6 text-left">
+                              <select
+                                value={lead.status || "Chờ xử lý"}
+                                onChange={async (e) => {
+                                  await handleQuickUpdateLead(lead.id, e.target.value, lead.notes || "");
+                                }}
+                                className={`text-[11px] font-bold px-2.5 py-1.5 rounded-lg border focus:outline-none cursor-pointer transition-colors ${
+                                  lead.status === "Chờ xử lý" 
+                                    ? "bg-amber-50 text-amber-700 border-amber-200" 
+                                    : lead.status === "Đang liên hệ"
+                                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                                    : lead.status === "Đã hoàn thành"
+                                    ? "bg-emerald-50 text-emerald-850 border-emerald-200"
+                                    : "bg-red-50 text-red-700 border-red-200"
+                                }`}
                               >
-                                <Eye className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteLead(lead.id)}
-                                className="p-2 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                title="Xóa"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
+                                <option value="Chờ xử lý">⏳ Chờ xử lý</option>
+                                <option value="Đang liên hệ">📞 Đang liên hệ</option>
+                                <option value="Đã hoàn thành">✅ Hoàn thành</option>
+                                <option value="Hủy">❌ Hủy bỏ</option>
+                              </select>
+                            </td>
+
+                            {/* THAO TÁC */}
+                            <td className="py-4 px-6 text-right">
+                              <div className="flex gap-2 justify-end">
+                                <button
+                                  onClick={() => handleSelectLead(lead)}
+                                  className="p-2 text-stone-500 hover:text-emerald-green hover:bg-emerald-green-light rounded-lg transition-colors cursor-pointer"
+                                  title="Xem chi tiết đầy đủ & Ghi chú dài"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setDeleteConfirm({
+                                      title: "Xóa yêu cầu tư vấn",
+                                      message: "Bạn có chắc chắn muốn xóa yêu cầu tư vấn này không?",
+                                      onConfirm: () => {
+                                        handleDeleteLead(lead.id);
+                                        setDeleteConfirm(null);
+                                      }
+                                    });
+                                  }}
+                                  className="p-2 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Xóa yêu cầu tư vấn"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </table>
               </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 py-6 border-t border-stone-150">
+                  <button
+                    disabled={leadsPage === 1}
+                    onClick={() => setLeadsPage(p => Math.max(1, p - 1))}
+                    className="p-2 bg-stone-100 rounded-lg hover:bg-stone-200 disabled:opacity-50 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setLeadsPage(i + 1)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${leadsPage === i + 1 ? "bg-emerald-green text-white" : "bg-white border border-stone-200"}`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button
+                    disabled={leadsPage === totalPages}
+                    onClick={() => setLeadsPage(p => Math.min(totalPages, p + 1))}
+                    className="p-2 bg-stone-100 rounded-lg hover:bg-stone-200 disabled:opacity-50 cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1401,27 +1913,6 @@ export default function CRMDashboard({
                     </div>
                   </div>
                 </div>
-
-                <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-3xs space-y-4">
-                  <h4 className="font-serif font-bold text-sm text-stone-950">Ưu điểm của đồng bộ trực tiếp (OAuth API)</h4>
-                  <div className="space-y-3.5">
-                    {[
-                      { title: "Bảo mật & Trực tiếp", desc: "Không cần triển khai các Web App công khai hay lộ mã nguồn. Mọi thao tác đều được bảo vệ bởi giao thức Google OAuth." },
-                      { title: "Đồng bộ thời gian thực", desc: "Khi bạn Thêm, Sửa hoặc Xóa bài viết/hình ảnh trong phần 'Quản lý Nội dung', hệ thống sẽ tự động gửi cập nhật và ghi trực tiếp lên Sheet của bạn ngay lập tức." },
-                      { title: "Tiết kiệm thời gian", desc: "Không cần am hiểu kỹ thuật để cấu hình các tiện ích mở rộng phức tạp. Chỉ cần 1 click và sẵn sàng vận hành." }
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex gap-3 text-left">
-                        <div className="w-5 h-5 bg-emerald-green-light text-emerald-green-dark rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                          ✓
-                        </div>
-                        <div className="space-y-0.5">
-                          <h5 className="font-bold text-xs text-stone-900">{item.title}</h5>
-                          <p className="text-stone-500 text-[11px] leading-relaxed font-light">{item.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </section>
@@ -1444,428 +1935,864 @@ export default function CRMDashboard({
               </div>
             )}
 
-            {/* 1. Main Website Logo Config Card */}
-            <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-3xs space-y-4">
-              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-emerald-green" />
-                  <h3 className="font-serif font-bold text-lg text-stone-900">Logo & Slogan chính của Website</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Left Column: Category navigation directory */}
+              <div className="lg:col-span-1 space-y-4">
+                <div className="bg-stone-50 p-4 rounded-3xl border border-stone-200 shadow-3xs">
+                  <h4 className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-4 pl-2">
+                    Danh mục quản trị
+                  </h4>
+                  <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none">
+                    {[
+                      { id: "articles", label: "Bài viết", count: customBlogPosts.length, icon: BookOpen, desc: "Tin tức & Xu hướng" },
+                      { id: "products", label: "Sản phẩm", count: customProducts.length, icon: Sparkles, desc: "Mẫu thử gia công" },
+                      { id: "images", label: "Thư viện ảnh", count: customImages.length, icon: Image, desc: "Gallery hoạt động" },
+                      { id: "partners", label: "Đối tác liên kết", count: customLogos.length, icon: Briefcase, desc: "Logo thương hiệu" },
+                      { id: "logo", label: "Cấu hình Logo", count: null, icon: Layers, desc: "Logo & Slogan chính" },
+                    ].map((subTab) => {
+                      const Icon = subTab.icon;
+                      const isSelected = cmsSubTab === subTab.id;
+                      return (
+                        <button
+                          key={subTab.id}
+                          onClick={() => setCmsSubTab(subTab.id as any)}
+                          className={`w-full text-left flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl transition-all cursor-pointer whitespace-nowrap shrink-0 lg:flex-none ${
+                            isSelected
+                              ? "bg-emerald-green text-white font-bold shadow-md shadow-emerald-green/15 translate-x-0.5"
+                              : "bg-white border border-stone-150 hover:bg-stone-50 text-stone-700 font-medium"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className={`w-4.5 h-4.5 shrink-0 ${isSelected ? "text-white" : "text-emerald-green"}`} />
+                            <div className="text-left">
+                              <div className="text-xs">{subTab.label}</div>
+                              <div className={`text-[9px] font-normal block ${isSelected ? "text-emerald-100" : "text-stone-400"}`}>
+                                {subTab.desc}
+                              </div>
+                            </div>
+                          </div>
+                          {subTab.count !== null && (
+                            <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                              isSelected ? "bg-white/20 text-white" : "bg-emerald-green-light text-emerald-green-dark"
+                            }`}>
+                              {subTab.count}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                {!isEditingWebsiteLogo ? (
-                  <button
-                    onClick={() => {
-                      setTempWebsiteLogo({
-                        name: websiteLogo?.name || "COSBUILT",
-                        slogan: websiteLogo?.slogan || "ESTD 1999",
-                        image: websiteLogo?.image || ""
-                      });
-                      setIsEditingWebsiteLogo(true);
-                    }}
-                    className="border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    Sửa Logo
-                  </button>
-                ) : null}
               </div>
 
-              {isEditingWebsiteLogo ? (
-                <div className="space-y-4 pt-1">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Tên hiển thị (Logo Text)</label>
+              {/* Right Column: Directory content with embedded search bar */}
+              <div className="lg:col-span-3 space-y-6">
+                
+                {/* Embedded dynamic search and action header */}
+                {cmsSubTab !== "logo" && (
+                  <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-stone-50 p-4 rounded-3xl border border-stone-200">
+                    <div className="relative w-full sm:max-w-md">
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                       <input
                         type="text"
-                        value={tempWebsiteLogo.name}
-                        onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                        placeholder={
+                          cmsSubTab === "articles" ? "Tìm theo tiêu đề, tóm tắt, tác giả..." :
+                          cmsSubTab === "products" ? "Tìm theo tên sản phẩm, danh mục, phòng LAB..." :
+                          cmsSubTab === "images" ? "Tìm theo tiêu đề, danh mục ảnh..." :
+                          "Tìm kiếm tên đối tác, loại đối tác..."
+                        }
+                        value={cmsSearchTerm}
+                        onChange={(e) => setCmsSearchTerm(e.target.value)}
+                        className="w-full bg-white border border-stone-200 rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:border-emerald-green focus:outline-none transition-all"
                       />
                     </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Slogan / Năm thành lập</label>
-                      <input
-                        type="text"
-                        value={tempWebsiteLogo.slogan}
-                        onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, slogan: e.target.value }))}
-                        className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                      />
-                    </div>
-                  </div>
 
-                  <div className="space-y-1.5 pt-1">
-                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Hình ảnh Logo (Tùy chọn - Thay cho dạng chữ)</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Có thể upload file bên cạnh hoặc điền link ảnh..."
-                        value={tempWebsiteLogo.image}
-                        onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, image: e.target.value }))}
-                        className="flex-1 border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
-                      />
-                      <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
-                        {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
-                        <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          disabled={isUploading}
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              try {
-                                const url = await handleImageUpload(file);
-                                setTempWebsiteLogo(prev => ({ ...prev, image: url }));
-                              } catch (err: any) {
-                                alert("Lỗi tải ảnh lên: " + err.message);
-                              }
+                    <button
+                      onClick={() => {
+                        if (cmsSubTab === "articles") {
+                          setEditingBlogPost({
+                            index: -1,
+                            isNew: true,
+                            data: {
+                              title: "",
+                              category: "cẩm nang",
+                              summary: "",
+                              content: "",
+                              date: new Date().toLocaleDateString("vi-VN"),
+                              author: "Cosbuilt",
+                              image: ""
                             }
-                          }}
-                        />
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button
-                      onClick={() => setIsEditingWebsiteLogo(false)}
-                      className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                          });
+                        } else if (cmsSubTab === "products") {
+                          setEditingProduct({
+                            index: -1,
+                            isNew: true,
+                            data: {
+                              id: "product_" + Math.random().toString(36).substring(2, 9),
+                              title: "",
+                              category: "facial-care",
+                              lab: "Cosbuilt LAB",
+                              skinTypes: ["Mọi loại da"],
+                              rating: 5,
+                              ratingValue: 4.8,
+                              reviewsCount: 120,
+                              originalPrice: 250000,
+                              price: 190000,
+                              discountPercent: 24,
+                              badge: "NEW",
+                              testedCount: 100,
+                              hotPercent: 85,
+                              image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400",
+                              description: "Mẫu thử nghiệm sản phẩm chăm sóc da cao cấp gia công bởi Cosbuilt.",
+                              ingredients: "Nước tinh khiết, Hyaluronic Acid, Niacinamide, Glycerin.",
+                              guidelines: "Thoa đều lên vùng da mặt và cổ sau khi rửa sạch mỗi sáng và tối."
+                            }
+                          });
+                        } else if (cmsSubTab === "images") {
+                          setEditingImage({
+                            index: -1,
+                            isNew: true,
+                            data: {
+                              title: "",
+                              category: "nhà máy",
+                              image: "",
+                              description: ""
+                            }
+                          });
+                        } else if (cmsSubTab === "partners") {
+                          setEditingPartnerLogo({
+                            index: -1,
+                            isNew: true,
+                            data: { name: "", type: "" }
+                          });
+                        }
+                      }}
+                      className="w-full sm:w-auto bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shrink-0"
                     >
-                      Hủy
-                    </button>
-                    <button
-                      onClick={handleSaveWebsiteLogo}
-                      disabled={isSavingContent}
-                      className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      Lưu Logo
+                      <Plus className="w-4 h-4" />
+                      <span>Thêm {cmsSubTab === "articles" ? "bài viết" : cmsSubTab === "products" ? "sản phẩm" : cmsSubTab === "images" ? "hình ảnh" : "đối tác"}</span>
                     </button>
                   </div>
-                </div>
-              ) : (
-                <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-4">
-                    {websiteLogo?.image ? (
-                      <div className="bg-white p-2 rounded-xl border border-stone-150 shrink-0">
-                        <img 
-                          src={websiteLogo.image} 
-                          alt={websiteLogo.name} 
-                          className="h-12 w-auto object-contain max-w-[150px]"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                    ) : null}
-                    <div className="text-left">
-                      <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Tên hiển thị hiện tại</div>
-                      <div className="font-serif font-black text-2xl text-stone-900 tracking-widest mt-1 uppercase">{websiteLogo?.name || "COSBUILT"}</div>
-                      <div className="text-[10px] font-bold text-stone-400 mt-1 uppercase tracking-widest">{websiteLogo?.slogan || "— ESTD 1999 —"}</div>
-                    </div>
-                  </div>
-                  <div className="text-xs text-stone-500 font-light max-w-sm text-left">
-                    Tên thương hiệu, slogan và hình ảnh logo này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
 
-            {/* 2. Synced Articles Section */}
-            <div className="space-y-4 pt-2">
-              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-emerald-green" />
-                  <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Bài Viết (Tin tức & Xu hướng)</h3>
-                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
-                    {customBlogPosts.length} bài viết
-                  </span>
-                </div>
-                <button
-                  onClick={() => setEditingBlogPost({
-                    index: -1,
-                    isNew: true,
-                    data: {
-                      title: "",
-                      category: "cẩm nang",
-                      summary: "",
-                      content: "",
-                      date: new Date().toLocaleDateString("vi-VN"),
-                      author: "Cosbuilt",
-                      image: ""
-                    }
-                  })}
-                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Thêm Bài Viết
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {customBlogPosts.map((post, index) => (
-                  <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-2xs transition-all relative group">
-                    <img 
-                      src={post.image || "https://images.unsplash.com/photo-1556228578-0d85b1a4a5a3?q=80&w=400"} 
-                      alt={post.title} 
-                      className="w-24 h-24 object-cover rounded-xl bg-stone-100 shrink-0"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="space-y-1.5 flex-1 min-w-0">
-                      <span className="text-[9px] font-bold text-emerald-green uppercase tracking-wider block bg-emerald-green-light px-2 py-0.5 rounded w-fit">
-                        {post.category}
-                      </span>
-                      <h4 className="font-bold text-stone-900 text-xs sm:text-sm line-clamp-1 pr-14">{post.title}</h4>
-                      <p className="text-stone-500 text-[11px] leading-snug line-clamp-2 font-light">{post.summary}</p>
-                      <div className="flex items-center gap-3 text-[10px] text-stone-400 pt-1">
-                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {post.date}</span>
-                        <span>·</span>
-                        <span>Tác giả: {post.author || "Cosbuilt"}</span>
-                      </div>
-                    </div>
+                {/* Sub-tab 1: Articles Directory */}
+                {cmsSubTab === "articles" && (() => {
+                  const filteredArticles = customBlogPosts.filter(post => 
+                    (post.title || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (post.summary || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (post.category || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (post.author || "").toLowerCase().includes(cmsSearchTerm.toLowerCase())
+                  );
 
-                    {/* CRUD hover overlay controls */}
-                    <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200/60 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
-                      <button
-                        onClick={() => setEditingBlogPost({ index, isNew: false, data: { ...post } })}
-                        className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
-                        title="Sửa bài"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteBlogPost(index)}
-                        className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
-                        title="Xóa bài"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  const itemsPerPage = 4;
+                  const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
+                  const activePage = Math.min(cmsArticlesPage, Math.max(1, totalPages));
+                  const paginatedArticles = filteredArticles.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
-            {/* 3. Synced Images Section */}
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
-                <div className="flex items-center gap-2">
-                  <Image className="w-5 h-5 text-emerald-green" />
-                  <h3 className="font-serif font-bold text-lg text-stone-900">Thư Viện Ảnh Hoạt Động (Gallery)</h3>
-                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
-                    {customImages.length} hình ảnh
-                  </span>
-                </div>
-                <button
-                  onClick={() => setEditingImage({
-                    index: -1,
-                    isNew: true,
-                    data: {
-                      title: "",
-                      category: "nhà máy",
-                      image: "",
-                      description: ""
-                    }
-                  })}
-                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Thêm Hình Ảnh
-                </button>
-              </div>
-
-              {customImages.length === 0 ? (
-                <div className="text-center py-8 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
-                  Chưa có hình ảnh nào. Hãy thêm ảnh mới để hiển thị trong Album Hoạt Động.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {customImages.map((img, index) => (
-                    <div key={index} className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-3xs group relative">
-                      <div className="aspect-video relative bg-stone-100 overflow-hidden">
-                        <img 
-                          src={img.image} 
-                          alt={img.title} 
-                          className="w-full h-full object-cover group-hover:scale-102 transition-all duration-300"
-                          referrerPolicy="no-referrer"
-                        />
-                        <span className="absolute top-2 left-2 bg-stone-900/70 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase">
-                          {img.category}
-                        </span>
-
-                        {/* Action controls */}
-                        <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200/60 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
-                          <button
-                            onClick={() => setEditingImage({ index, isNew: false, data: { ...img } })}
-                            className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
-                            title="Sửa ảnh"
-                          >
-                            <Edit3 className="w-3 h-3" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteImage(index)}
-                            className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
-                            title="Xóa ảnh"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                        <div className="text-left">
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Bài Viết ({filteredArticles.length})</h3>
+                          <p className="text-stone-400 text-xs font-light">Tin tức, cẩm nang và xu hướng thị trường cập nhật trên Website</p>
                         </div>
                       </div>
-                      <div className="p-3 space-y-0.5 text-left">
-                        <h5 className="font-bold text-xs text-stone-950 truncate">{img.title}</h5>
-                        {img.description && (
-                          <p className="text-stone-500 text-[10px] truncate font-light">{img.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* 4. Synced Products Section */}
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-emerald-green" />
-                  <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Sản Phẩm (Mẫu Thử Gia Công)</h3>
-                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
-                    {customProducts.length} sản phẩm
-                  </span>
-                </div>
-                <button
-                  onClick={() => setEditingProduct({
-                    index: -1,
-                    isNew: true,
-                    data: {
-                      id: "product_" + Math.random().toString(36).substring(2, 9),
-                      title: "",
-                      category: "facial-care",
-                      lab: "Cosbuilt LAB",
-                      skinTypes: ["Mọi loại da"],
-                      rating: 5,
-                      ratingValue: 4.8,
-                      reviewsCount: 120,
-                      originalPrice: 250000,
-                      price: 190000,
-                      discountPercent: 24,
-                      badge: "NEW",
-                      testedCount: 100,
-                      hotPercent: 85,
-                      image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400",
-                      description: "Mẫu thử nghiệm sản phẩm chăm sóc da cao cấp gia công bởi Cosbuilt.",
-                      ingredients: "Nước tinh khiết, Hyaluronic Acid, Niacinamide, Glycerin.",
-                      guidelines: "Thoa đều lên vùng da mặt và cổ sau khi rửa sạch mỗi sáng và tối."
-                    }
-                  })}
-                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Thêm Sản Phẩm
-                </button>
-              </div>
+                      {filteredArticles.length === 0 ? (
+                        <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
+                          Không tìm thấy bài viết nào khớp với từ khóa "{cmsSearchTerm}".
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {paginatedArticles.map((post, index) => {
+                              const originalIndex = customBlogPosts.findIndex(p => p.title === post.title);
+                              return (
+                                <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-md hover:border-emerald-green/30 transition-all duration-200 relative group">
+                                  <img 
+                                    src={post.image || "https://images.unsplash.com/photo-1556228578-0f85a1a1d596?q=80&w=400"} 
+                                    alt={post.title} 
+                                    className="w-24 h-24 object-cover rounded-xl bg-stone-100 shrink-0"
+                                    referrerPolicy="no-referrer"
+                                  />
+                                  <div className="space-y-1.5 flex-1 min-w-0 text-left">
+                                    <span className="text-[9px] font-bold text-emerald-green uppercase tracking-wider block bg-emerald-green-light px-2 py-0.5 rounded w-fit">
+                                      {post.category}
+                                    </span>
+                                    <h4 className="font-bold text-stone-900 text-xs sm:text-sm line-clamp-1 pr-14">{post.title}</h4>
+                                    <p className="text-stone-500 text-[11px] leading-snug line-clamp-2 font-light">{post.summary}</p>
+                                    <div className="flex items-center gap-3 text-[10px] text-stone-400 pt-1">
+                                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {post.date}</span>
+                                      <span>·</span>
+                                      <span className="truncate">Tác giả: {post.author || "Cosbuilt"}</span>
+                                    </div>
+                                  </div>
 
-              {customProducts.length === 0 ? (
-                <div className="text-center py-8 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
-                  Chưa có sản phẩm nào. Hãy thêm sản phẩm mới để hiển thị trong mục mẫu thử gia công.
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {customProducts.map((prod, index) => (
-                    <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-2xs transition-all relative group">
-                      <img 
-                        src={prod.image || "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400"} 
-                        alt={prod.title} 
-                        className="w-20 h-20 object-cover rounded-xl bg-stone-100 shrink-0"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="space-y-1 flex-1 min-w-0 text-left">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[8px] font-bold text-emerald-green uppercase tracking-wider bg-emerald-green-light px-1.5 py-0.5 rounded">
-                            {prod.category}
-                          </span>
-                          {prod.badge && (
-                            <span className="text-[8px] font-bold text-white uppercase tracking-wider bg-amber-500 px-1.5 py-0.5 rounded">
-                              {prod.badge}
-                            </span>
+                                  {/* CRUD hover overlay controls */}
+                                  <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingBlogPost({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...post } })}
+                                      className="p-1.5 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                                      title="Sửa bài"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const finalIndex = originalIndex >= 0 ? originalIndex : index;
+                                        setDeleteConfirm({
+                                          title: "Xóa bài viết",
+                                          message: "Bạn có chắc chắn muốn xóa bài viết này không?",
+                                          onConfirm: () => {
+                                            handleDeleteBlogPost(finalIndex);
+                                            setDeleteConfirm(null);
+                                          }
+                                        });
+                                      }}
+                                      className="p-1.5 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                                      title="Xóa bài"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Beautiful Pagination Controls */}
+                          {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-1.5 pt-4 border-t border-stone-100 mt-6">
+                              <button
+                                type="button"
+                                onClick={() => setCmsArticlesPage(prev => Math.max(1, prev - 1))}
+                                disabled={activePage === 1}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === 1
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                              </button>
+
+                              <div className="flex items-center gap-1">
+                                {[...Array(totalPages)].map((_, idx) => {
+                                  const pageNum = idx + 1;
+                                  const isActive = activePage === pageNum;
+                                  return (
+                                    <button
+                                      key={pageNum}
+                                      type="button"
+                                      onClick={() => setCmsArticlesPage(pageNum)}
+                                      className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
+                                        isActive
+                                          ? "bg-emerald-green text-white border-emerald-green shadow-xs"
+                                          : "bg-white text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                      }`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setCmsArticlesPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={activePage === totalPages}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === totalPages
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           )}
                         </div>
-                        <h4 className="font-bold text-stone-900 text-xs sm:text-sm truncate pr-12" title={prod.title}>{prod.title}</h4>
-                        <p className="text-[10px] text-stone-400 font-medium">LAB: {prod.lab || "Cosbuilt LAB"}</p>
-                        <div className="flex items-center gap-2 pt-0.5">
-                          <span className="text-stone-900 font-bold text-xs">
-                            {prod.price ? prod.price.toLocaleString("vi-VN") : "0"}đ
-                          </span>
-                          {prod.originalPrice > prod.price && (
-                            <span className="text-stone-400 line-through text-[10px]">
-                              {prod.originalPrice ? prod.originalPrice.toLocaleString("vi-VN") : "0"}đ
-                            </span>
-                          )}
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Sub-tab 2: Products Directory */}
+                {cmsSubTab === "products" && (() => {
+                  const filteredProducts = customProducts.filter(prod => 
+                    (prod.title || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (prod.id || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (prod.category || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (prod.lab || "").toLowerCase().includes(cmsSearchTerm.toLowerCase())
+                  );
+
+                  const itemsPerPage = 6;
+                  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+                  const activePage = Math.min(cmsProductsPage, Math.max(1, totalPages));
+                  const paginatedProducts = filteredProducts.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                        <div className="text-left">
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Sản Phẩm Mẫu ({filteredProducts.length})</h3>
+                          <p className="text-stone-400 text-xs font-light">Quản lý các công thức và mẫu thử sản phẩm hỗ trợ khách đặt gia công</p>
                         </div>
                       </div>
 
-                      {/* Action controls */}
-                      <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200/60 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
-                        <button
-                          onClick={() => setEditingProduct({ index, isNew: false, data: { ...prod } })}
-                          className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
-                          title="Sửa sản phẩm"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(index)}
-                          className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
-                          title="Xóa sản phẩm"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                      {filteredProducts.length === 0 ? (
+                        <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
+                          Không tìm thấy sản phẩm nào khớp với từ khóa "{cmsSearchTerm}".
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {paginatedProducts.map((prod, index) => {
+                              const originalIndex = customProducts.findIndex(p => p.id === prod.id || p.title === prod.title);
+                              return (
+                                <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-green/30 transition-all duration-200 relative group">
+                                  <div className="flex gap-3">
+                                    <img 
+                                      src={prod.image || "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400"} 
+                                      alt={prod.title} 
+                                      className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl bg-stone-100 shrink-0 border border-stone-100"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                    <div className="space-y-1 flex-1 min-w-0 text-left">
+                                      <div className="flex items-center gap-1.5 flex-wrap">
+                                        <span className="text-[8px] font-bold text-emerald-green uppercase tracking-wider bg-emerald-green-light px-1.5 py-0.5 rounded">
+                                          {prod.category}
+                                        </span>
+                                        {prod.badge && (
+                                          <span className="text-[8px] font-bold text-white uppercase tracking-wider bg-amber-500 px-1.5 py-0.5 rounded">
+                                            {prod.badge}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <h4 className="font-bold text-stone-900 text-xs sm:text-sm truncate pr-12" title={prod.title}>{prod.title}</h4>
+                                      <p className="text-[10px] text-stone-400 font-medium">LAB: {prod.lab || "Cosbuilt LAB"}</p>
+                                      <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2 pt-0.5">
+                                        <span className="text-stone-900 font-bold text-xs">
+                                          {getProductPriceRange(prod)}
+                                        </span>
+                                        {prod.priceRange && (
+                                          <span className="text-stone-900 font-bold text-xs">
+                                            {prod.priceRange}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* CRUD controls */}
+                                  <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingProduct({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...prod } })}
+                                      className="p-1.5 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                                      title="Sửa sản phẩm"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const finalIndex = originalIndex >= 0 ? originalIndex : index;
+                                        setDeleteConfirm({
+                                          title: "Xóa sản phẩm",
+                                          message: "Bạn có chắc chắn muốn xóa sản phẩm này không?",
+                                          onConfirm: () => {
+                                            handleDeleteProduct(finalIndex);
+                                            setDeleteConfirm(null);
+                                          }
+                                        });
+                                      }}
+                                      className="p-1.5 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                                      title="Xóa sản phẩm"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Beautiful Pagination Controls */}
+                          {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-1.5 pt-4 border-t border-stone-100 mt-6">
+                              <button
+                                type="button"
+                                onClick={() => setCmsProductsPage(prev => Math.max(1, prev - 1))}
+                                disabled={activePage === 1}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === 1
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                              </button>
+
+                              <div className="flex items-center gap-1">
+                                {[...Array(totalPages)].map((_, idx) => {
+                                  const pageNum = idx + 1;
+                                  const isActive = activePage === pageNum;
+                                  return (
+                                    <button
+                                      key={pageNum}
+                                      type="button"
+                                      onClick={() => setCmsProductsPage(pageNum)}
+                                      className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
+                                        isActive
+                                          ? "bg-emerald-green text-white border-emerald-green shadow-xs"
+                                          : "bg-white text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                      }`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setCmsProductsPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={activePage === totalPages}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === totalPages
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Sub-tab 3: Gallery Directory */}
+                {cmsSubTab === "images" && (() => {
+                  const filteredImages = customImages.filter(img => 
+                    (img.title || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (img.category || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (img.description || "").toLowerCase().includes(cmsSearchTerm.toLowerCase())
+                  );
+
+                  const itemsPerPage = 6;
+                  const totalPages = Math.ceil(filteredImages.length / itemsPerPage);
+                  const activePage = Math.min(cmsImagesPage, Math.max(1, totalPages));
+                  const paginatedImages = filteredImages.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                        <div className="text-left">
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Thư Viện Ảnh Gallery ({filteredImages.length})</h3>
+                          <p className="text-stone-400 text-xs font-light">Hình ảnh hoạt động của nhà máy, phòng Lab và xưởng sản xuất</p>
+                        </div>
+                      </div>
+
+                      {filteredImages.length === 0 ? (
+                        <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
+                          Không tìm thấy hình ảnh nào khớp với từ khóa "{cmsSearchTerm}".
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            {paginatedImages.map((img, index) => {
+                              const originalIndex = customImages.findIndex(i => i.image === img.image && i.title === img.title);
+                              return (
+                                <div key={index} className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-md hover:border-emerald-green/30 transition-all duration-200 group relative">
+                                  <div className="aspect-video relative bg-stone-100 overflow-hidden">
+                                    <img 
+                                      src={img.image} 
+                                      alt={img.title} 
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                    <span className="absolute top-2 left-2 bg-stone-900/70 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase">
+                                      {img.category}
+                                    </span>
+
+                                    {/* Action controls */}
+                                    <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditingImage({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...img } })}
+                                        className="p-1.5 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                                        title="Sửa ảnh"
+                                      >
+                                        <Edit3 className="w-3 h-3" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const finalIndex = originalIndex >= 0 ? originalIndex : index;
+                                          setDeleteConfirm({
+                                            title: "Xóa hình ảnh",
+                                            message: "Bạn có chắc chắn muốn xóa hình ảnh này không?",
+                                            onConfirm: () => {
+                                              handleDeleteImage(finalIndex);
+                                              setDeleteConfirm(null);
+                                            }
+                                          });
+                                        }}
+                                        className="p-1.5 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                                        title="Xóa ảnh"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="p-3 space-y-0.5 text-left">
+                                    <h5 className="font-bold text-xs text-stone-950 truncate">{img.title}</h5>
+                                    {img.description && (
+                                      <p className="text-stone-500 text-[10px] truncate font-light">{img.description}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Beautiful Pagination Controls */}
+                          {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-1.5 pt-4 border-t border-stone-100 mt-6">
+                              <button
+                                type="button"
+                                onClick={() => setCmsImagesPage(prev => Math.max(1, prev - 1))}
+                                disabled={activePage === 1}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === 1
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                              </button>
+
+                              <div className="flex items-center gap-1">
+                                {[...Array(totalPages)].map((_, idx) => {
+                                  const pageNum = idx + 1;
+                                  const isActive = activePage === pageNum;
+                                  return (
+                                    <button
+                                      key={pageNum}
+                                      type="button"
+                                      onClick={() => setCmsImagesPage(pageNum)}
+                                      className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
+                                        isActive
+                                          ? "bg-emerald-green text-white border-emerald-green shadow-xs"
+                                          : "bg-white text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                      }`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setCmsImagesPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={activePage === totalPages}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === totalPages
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Sub-tab 4: Partners Directory */}
+                {cmsSubTab === "partners" && (() => {
+                  const filteredPartners = customLogos.filter(logo => 
+                    (logo.name || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
+                    (logo.type || "").toLowerCase().includes(cmsSearchTerm.toLowerCase())
+                  );
+
+                  const itemsPerPage = 6;
+                  const totalPages = Math.ceil(filteredPartners.length / itemsPerPage);
+                  const activePage = Math.min(cmsPartnersPage, Math.max(1, totalPages));
+                  const paginatedPartners = filteredPartners.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                        <div className="text-left">
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Đối Tác & Thương Hiệu ({filteredPartners.length})</h3>
+                          <p className="text-stone-400 text-xs font-light">Các đối tác và khách hàng hợp tác sản xuất cùng Cosbuilt</p>
+                        </div>
+                      </div>
+
+                      {filteredPartners.length === 0 ? (
+                        <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
+                          Không tìm thấy đối tác nào khớp với từ khóa "{cmsSearchTerm}".
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            {paginatedPartners.map((logo, index) => {
+                              const originalIndex = customLogos.findIndex(l => l.name === logo.name);
+                              return (
+                                <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex items-center gap-3 relative group hover:shadow-md hover:border-emerald-green/30 transition-all duration-200 text-left">
+                                  {logo.image ? (
+                                    <img 
+                                      src={logo.image} 
+                                      alt={logo.name} 
+                                      className="w-12 h-12 object-contain bg-stone-50 rounded-xl p-1 border border-stone-100 shrink-0"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  ) : (
+                                    <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-400 flex items-center justify-center text-[10px] font-bold border border-stone-100 shrink-0">
+                                      No Logo
+                                    </div>
+                                  )}
+                                  <div className="space-y-1 text-left min-w-0 flex-1">
+                                    <h5 className="font-bold text-xs text-stone-900 pr-8 truncate" title={logo.name}>{logo.name}</h5>
+                                    <span className="text-[10px] text-stone-400 block truncate">{logo.type}</span>
+                                  </div>
+                                  
+                                  <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-150 opacity-0 group-hover:opacity-100 transition-all duration-150">
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingPartnerLogo({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...logo } })}
+                                      className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
+                                      title="Sửa đối tác"
+                                    >
+                                      <Edit3 className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const finalIndex = originalIndex >= 0 ? originalIndex : index;
+                                        setDeleteConfirm({
+                                          title: "Xóa đối tác liên kết",
+                                          message: "Bạn có chắc chắn muốn xóa đối tác này không?",
+                                          onConfirm: () => {
+                                            handleDeletePartnerLogo(finalIndex);
+                                            setDeleteConfirm(null);
+                                          }
+                                        });
+                                      }}
+                                      className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
+                                      title="Xóa đối tác"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Beautiful Pagination Controls */}
+                          {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-1.5 pt-4 border-t border-stone-100 mt-6">
+                              <button
+                                type="button"
+                                onClick={() => setCmsPartnersPage(prev => Math.max(1, prev - 1))}
+                                disabled={activePage === 1}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === 1
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                              </button>
+
+                              <div className="flex items-center gap-1">
+                                {[...Array(totalPages)].map((_, idx) => {
+                                  const pageNum = idx + 1;
+                                  const isActive = activePage === pageNum;
+                                  return (
+                                    <button
+                                      key={pageNum}
+                                      type="button"
+                                      onClick={() => setCmsPartnersPage(pageNum)}
+                                      className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
+                                        isActive
+                                          ? "bg-emerald-green text-white border-emerald-green shadow-xs"
+                                          : "bg-white text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                      }`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => setCmsPartnersPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={activePage === totalPages}
+                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
+                                  activePage === totalPages
+                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
+                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
+                                }`}
+                              >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Sub-tab 5: General Website Logo Directory */}
+                {cmsSubTab === "logo" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                      <div className="text-left">
+                        <h3 className="font-serif font-bold text-lg text-stone-900">Cấu Hình Chung & Logo Website</h3>
+                        <p className="text-stone-400 text-xs font-light">Tùy biến tên thương hiệu, slogan hiển thị chính trên thanh Menu chính</p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* 5. Partner Logos Section */}
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center justify-between border-b border-stone-150 pb-3">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-emerald-green" />
-                  <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Đối Tác & Thương Hiệu</h3>
-                  <span className="bg-emerald-green-light text-emerald-green-dark font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">
-                    {customLogos.length} đối tác
-                  </span>
-                </div>
-                <button
-                  onClick={() => setEditingPartnerLogo({ index: -1, isNew: true, data: { name: "", type: "" } })}
-                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shadow-3xs"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Thêm Đối Tác
-                </button>
-              </div>
+                    <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-3xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Briefcase className="w-5 h-5 text-emerald-green" />
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Logo & Slogan chính của Website</h3>
+                        </div>
+                        {!isEditingWebsiteLogo ? (
+                          <button
+                            onClick={() => {
+                              setTempWebsiteLogo({
+                                name: websiteLogo?.name || "COSBUILT",
+                                slogan: websiteLogo?.slogan || "ESTD 1999",
+                                image: websiteLogo?.image || ""
+                              });
+                              setIsEditingWebsiteLogo(true);
+                            }}
+                            className="border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            Sửa Logo
+                          </button>
+                        ) : null}
+                      </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {customLogos.map((logo, index) => (
-                  <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between relative group hover:border-emerald-green transition-all shadow-3xs">
-                    <div className="space-y-1 text-left">
-                      <h5 className="font-bold text-xs text-stone-900 pr-12 truncate">{logo.name}</h5>
-                      <span className="text-[10px] text-stone-400 block truncate">{logo.type}</span>
-                    </div>
-                    
-                    <div className="absolute top-2.5 right-2.5 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-150 opacity-0 group-hover:opacity-100 transition-all duration-150">
-                      <button
-                        onClick={() => setEditingPartnerLogo({ index, isNew: false, data: { ...logo } })}
-                        className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
-                        title="Sửa đối tác"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={() => handleDeletePartnerLogo(index)}
-                        className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
-                        title="Xóa đối tác"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                      {isEditingWebsiteLogo ? (
+                        <div className="space-y-4 pt-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Tên hiển thị (Logo Text)</label>
+                              <input
+                                type="text"
+                                value={tempWebsiteLogo.name}
+                                onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, name: e.target.value }))}
+                                className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Slogan / Năm thành lập</label>
+                              <input
+                                type="text"
+                                value={tempWebsiteLogo.slogan}
+                                onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, slogan: e.target.value }))}
+                                className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1.5 pt-1">
+                            <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Hình ảnh Logo (Tùy chọn - Thay cho dạng chữ)</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Có thể upload file bên cạnh hoặc điền link ảnh..."
+                                value={tempWebsiteLogo.image}
+                                onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, image: e.target.value }))}
+                                className="flex-1 border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                              />
+                              <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                                {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                                <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  disabled={isUploading}
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      try {
+                                        const url = await handleImageUpload(file);
+                                        setTempWebsiteLogo(prev => ({ ...prev, image: url }));
+                                      } catch (err: any) {
+                                        alert("Lỗi tải ảnh lên: " + err.message);
+                                      }
+                                    }
+                                  }}
+                                />
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end gap-2 pt-2">
+                            <button
+                              onClick={() => setIsEditingWebsiteLogo(false)}
+                              className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                            >
+                              Hủy
+                            </button>
+                            <button
+                              onClick={handleSaveWebsiteLogo}
+                              disabled={isSavingContent}
+                              className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              Lưu Logo
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-4">
+                            {websiteLogo?.image ? (
+                              <div className="bg-white p-2 rounded-xl border border-stone-150 shrink-0">
+                                <img 
+                                  src={websiteLogo.image} 
+                                  alt={websiteLogo.name} 
+                                  className="h-12 w-auto object-contain max-w-[150px]"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+                            ) : null}
+                            <div className="text-left">
+                              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Tên hiển thị hiện tại</div>
+                              <div className="font-serif font-black text-2xl text-stone-900 tracking-widest mt-1 uppercase">{websiteLogo?.name || "COSBUILT"}</div>
+                              <div className="text-[10px] font-bold text-stone-400 mt-1 uppercase tracking-widest">{websiteLogo?.slogan || "— ESTD 1999 —"}</div>
+                            </div>
+                          </div>
+                          <div className="text-xs text-stone-500 font-light max-w-sm text-left">
+                            Tên thương hiệu, slogan và hình ảnh logo này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>
@@ -1936,7 +2863,7 @@ export default function CRMDashboard({
                 <div className="space-y-1.5">
                   <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Lời nhắn của khách hàng</span>
                   <div className="p-4 bg-amber-50/50 border border-amber-150 rounded-2xl text-stone-700 italic font-light leading-relaxed whitespace-pre-line">
-                    "{selectedLead.message || "Không có nội dung lời nhắn đi kèm."}"
+                    "{selectedLead.notes || "Không có nội dung lời nhắn đi kèm."}"
                   </div>
                 </div>
 
@@ -2109,11 +3036,39 @@ export default function CRMDashboard({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Nội dung chi tiết (Markdown / Văn bản)</label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Nội dung chi tiết (Markdown / Văn bản)</label>
+                    <label className="text-[10px] text-emerald-green hover:text-emerald-green-dark font-bold flex items-center gap-1 cursor-pointer select-none border border-emerald-green/20 px-2 py-0.5 rounded-md hover:bg-emerald-green/5 transition-colors">
+                      {isUploading ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                      <span>Chèn ảnh vào bài viết</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploading}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await handleImageUpload(file);
+                              const mdImage = `\n\n![ảnh_mô_tả](${url})\n\n`;
+                              setEditingBlogPost(prev => {
+                                if (!prev) return null;
+                                const newContent = (prev.data.content || "") + mdImage;
+                                return { ...prev, data: { ...prev.data, content: newContent } };
+                              });
+                            } catch (err: any) {
+                              alert("Lỗi tải ảnh lên bài viết: " + err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                   <textarea
                     required
                     rows={6}
-                    placeholder="Nhập nội dung chi tiết bài viết..."
+                    placeholder="Nhập nội dung chi tiết bài viết... Có thể chèn ảnh bằng nút tải lên ở trên để thêm hình ảnh mô tả vào giữa các đoạn văn bản."
                     value={editingBlogPost.data.content}
                     onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, content: e.target.value } } : null)}
                     className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none resize-none font-light font-mono text-[11px]"
@@ -2360,41 +3315,15 @@ export default function CRMDashboard({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Giá gốc (đ, ví dụ: 250000)</label>
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Giá khoảng (ví dụ: 60-160k)</label>
                     <input
-                      type="number"
-                      step="1"
-                      required
-                      value={editingProduct.data.originalPrice}
-                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, originalPrice: Number(e.target.value) } } : null)}
+                      type="text"
+                      value={editingProduct.data.priceRange || ""}
+                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, priceRange: e.target.value } } : null)}
                       className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Giá khuyến mãi (đ)</label>
-                    <input
-                      type="number"
-                      step="1"
-                      required
-                      value={editingProduct.data.price}
-                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, price: Number(e.target.value) } } : null)}
-                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">% Giảm giá (ví dụ: 15)</label>
-                    <input
-                      type="number"
-                      step="1"
-                      required
-                      value={editingProduct.data.discountPercent}
-                      onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, discountPercent: Number(e.target.value) } } : null)}
-                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                    />
-                  </div>
-                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
@@ -2495,6 +3424,255 @@ export default function CRMDashboard({
                     onChange={(e) => setEditingProduct(prev => prev ? { ...prev, data: { ...prev.data, guidelines: e.target.value } } : null)}
                     className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
                   />
+                </div>
+
+                {/* Custom Packaging / Trial Image Manager */}
+                <div className="border border-stone-200 rounded-2xl p-4 bg-stone-50 space-y-4">
+                  <div className="flex justify-between items-center border-b border-stone-200 pb-2">
+                    <div>
+                      <h4 className="font-bold text-xs text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-emerald-green" />
+                        Quản lý mẫu thử & Bao bì từng sản phẩm
+                      </h4>
+                      <p className="text-[10px] text-stone-500 font-light">Thêm, sửa hoặc xoá các mẫu chai lọ/tuýp chứa mẫu thử cho sản phẩm này.</p>
+                    </div>
+                    {!newPkg && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNewPkg({
+                            type: "bottle",
+                            name: "",
+                            image: "",
+                            description: ""
+                          });
+                          setEditingPkgIdx(null);
+                        }}
+                        className="bg-emerald-green/10 hover:bg-emerald-green/20 text-emerald-green border border-emerald-green/20 font-bold text-[10px] px-2.5 py-1 rounded-lg cursor-pointer transition-all flex items-center gap-1 shrink-0 select-none"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Thêm bao bì
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Packagings Form Inline */}
+                  {newPkg && (
+                    <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3.5 shadow-xs">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-[11px] text-stone-800 uppercase tracking-wider">
+                          {editingPkgIdx !== null ? "✏️ Sửa mẫu bao bì" : "➕ Thêm mẫu bao bì mới"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewPkg(null);
+                            setEditingPkgIdx(null);
+                          }}
+                          className="text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="block text-[9px] font-bold text-stone-500 uppercase">Loại bao bì</label>
+                          <select
+                            value={newPkg.type}
+                            onChange={(e) => setNewPkg(prev => prev ? { ...prev, type: e.target.value as any } : null)}
+                            className="w-full bg-white border border-stone-300 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-emerald-green"
+                          >
+                            <option value="bottle">Chai (bottle)</option>
+                            <option value="jar">Hũ (jar)</option>
+                            <option value="tube">Tuýp (tube)</option>
+                            <option value="dropper">Ống nhỏ giọt (dropper)</option>
+                            <option value="sachet">Gói (sachet)</option>
+                          </select>
+                        </div>
+
+                        {newPkg.image && (
+                          <div className="flex items-center gap-3 bg-white border border-stone-200 rounded-xl p-2 h-14">
+                            <img
+                              src={newPkg.image}
+                              alt="Preview"
+                              className="h-10 w-10 object-cover rounded bg-stone-50 border border-stone-100"
+                              referrerPolicy="no-referrer"
+                            />
+                            <div className="text-[10px] text-stone-400 truncate flex-1 font-mono">
+                              Ảnh đã chọn
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="block text-[9px] font-bold text-stone-500 uppercase">Hình ảnh mẫu thử (Chọn file hoặc điền URL)</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            required
+                            placeholder="https://..."
+                            value={newPkg.image}
+                            onChange={(e) => setNewPkg(prev => prev ? { ...prev, image: e.target.value } : null)}
+                            className="flex-1 bg-white border border-stone-300 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-emerald-green font-mono text-[10px]"
+                          />
+                          <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none font-sans">
+                            {isUploading ? <RefreshCw className="w-3 h-3 animate-spin text-emerald-green" /> : <Upload className="w-3 h-3" />}
+                            <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={isUploading}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  try {
+                                    const url = await handleImageUpload(file);
+                                    setNewPkg(prev => prev ? { ...prev, image: url } : null);
+                                  } catch (err: any) {
+                                    alert("Lỗi tải ảnh lên: " + err.message);
+                                  }
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 justify-end pt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewPkg(null);
+                            setEditingPkgIdx(null);
+                          }}
+                          className="bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-[10px] px-3 py-1.5 rounded-lg cursor-pointer transition-all"
+                        >
+                          Hủy
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!newPkg.image) {
+                              alert("Vui lòng điền đầy đủ hoặc tải lên ảnh bao bì!");
+                              return;
+                            }
+                            // Save into editingProduct's packagings
+                            setEditingProduct(prev => {
+                              if (!prev) return null;
+                              let currentPackagings = prev.data.packagings || [];
+                              if (currentPackagings.length === 0) {
+                                // Fallback default packagings if empty
+                                currentPackagings = getDefaultPackagings(prev.data);
+                              }
+                              let updated = [...currentPackagings];
+                              const savedPkg = {
+                                ...newPkg,
+                                name: newPkg.name || getPackagingTypeLabel(newPkg.type),
+                                description: newPkg.description || ""
+                              };
+                              if (editingPkgIdx !== null) {
+                                updated[editingPkgIdx] = savedPkg;
+                              } else {
+                                updated.push(savedPkg);
+                              }
+                              return { ...prev, data: { ...prev.data, packagings: updated } };
+                            });
+                            setNewPkg(null);
+                            setEditingPkgIdx(null);
+                          }}
+                          className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-[10px] px-4 py-1.5 rounded-lg cursor-pointer transition-all flex items-center gap-1"
+                        >
+                          <Check className="w-3 h-3" />
+                          <span>{editingPkgIdx !== null ? "Lưu thay đổi" : "Xác nhận thêm"}</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Existing Packagings list */}
+                  {(() => {
+                    let currentPackagings = editingProduct.data.packagings;
+                    if (!currentPackagings || currentPackagings.length === 0) {
+                      currentPackagings = getDefaultPackagings(editingProduct.data);
+                    }
+                    return (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[350px] overflow-y-auto pr-1">
+                        {currentPackagings.map((pkg: any, idx: number) => (
+                          <div key={idx} className="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 flex flex-col hover:border-emerald-green/30 transition-all text-xs font-sans relative group">
+                            <div className="aspect-square w-full rounded-xl overflow-hidden border border-stone-200 bg-white mb-2 relative">
+                              {pkg.image ? (
+                                <img 
+                                  src={pkg.image} 
+                                  alt={pkg.name || "packaging"} 
+                                  className="w-full h-full object-cover"
+                                  referrerPolicy="no-referrer"
+                                />
+                              ) : (
+                                <div className="w-full h-full rounded-lg bg-stone-100 text-stone-400 flex items-center justify-center text-[9px] font-bold">
+                                  Không có ảnh
+                                </div>
+                              )}
+                              
+                              {/* Hover quick overlay for fast actions too */}
+                              <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                                <span className="bg-white/95 backdrop-blur-3xs text-[9px] font-bold text-stone-700 px-2 py-0.5 rounded shadow-xs">
+                                  {getPackagingTypeLabel(pkg.type)}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Permanently visible label & action footer */}
+                            <div className="flex items-center justify-between mt-auto pt-1 border-t border-stone-200/60">
+                              <span className="text-[10px] font-bold text-stone-600 bg-stone-200/60 px-1.5 py-0.5 rounded truncate max-w-[70px]" title={getPackagingTypeLabel(pkg.type)}>
+                                {getPackagingTypeLabel(pkg.type)}
+                              </span>
+                              <div className="flex gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setNewPkg({ ...pkg });
+                                    setEditingPkgIdx(idx);
+                                  }}
+                                  className="p-1 bg-white border border-stone-200 hover:border-emerald-green hover:text-emerald-green rounded-lg text-stone-500 transition-all shadow-3xs cursor-pointer"
+                                  title="Sửa mẫu bao bì"
+                                >
+                                  <Edit3 className="w-3 h-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setDeleteConfirm({
+                                      title: "Xóa mẫu bao bì",
+                                      message: "Bạn có chắc chắn muốn xóa mẫu bao bì này?",
+                                      onConfirm: () => {
+                                        setEditingProduct(prev => {
+                                          if (!prev) return null;
+                                          let list = prev.data.packagings || [];
+                                          if (list.length === 0) {
+                                            list = getDefaultPackagings(prev.data);
+                                          }
+                                          const updated = list.filter((_: any, i: number) => i !== idx);
+                                          return { ...prev, data: { ...prev.data, packagings: updated } };
+                                        });
+                                        setDeleteConfirm(null);
+                                      }
+                                    });
+                                  }}
+                                  className="p-1 bg-white border border-stone-200 hover:border-red-500 hover:text-red-600 rounded-lg text-stone-500 transition-all shadow-3xs cursor-pointer"
+                                  title="Xóa mẫu bao bì"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-6 -mb-6 pt-3 mt-4">
@@ -2617,6 +3795,44 @@ export default function CRMDashboard({
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+        {deleteConfirm && (
+          <div className="fixed inset-0 z-55 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-stone-150 max-w-xs w-full shadow-2xl p-6 space-y-4 text-center"
+            >
+              <div className="mx-auto w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif font-bold text-base text-stone-950">
+                  {deleteConfirm.title}
+                </h3>
+                <p className="text-xs text-stone-500 leading-relaxed">
+                  {deleteConfirm.message}
+                </p>
+              </div>
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteConfirm.onConfirm}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all shadow-2xs"
+                >
+                  Xác nhận xóa
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

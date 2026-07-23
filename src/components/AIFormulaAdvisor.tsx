@@ -17,8 +17,10 @@ import {
   HelpCircle
 } from "lucide-react";
 import { AIFormulaResult } from "../types";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export default function AIFormulaAdvisor() {
+  const { t, language } = useLanguage();
   const [productType, setProductType] = useState("Chăm sóc da mặt");
   const [targetEffect, setTargetEffect] = useState("Dưỡng trắng, mờ thâm nám sạm");
   const [budgetTier, setBudgetTier] = useState("Trung cấp (Chất lượng spa/clinic)");
@@ -43,20 +45,21 @@ export default function AIFormulaAdvisor() {
           budgetTier,
           volume,
           targetAudience,
-          extraDemands
+          extraDemands,
+          language
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Không thể kết nối đến máy chủ AI.");
+        throw new Error(errorData.error || (language === "en" ? "Failed to connect to the AI server." : language === "ko" ? "AI 서버에 연결할 수 없습니다." : "Không thể kết nối đến máy chủ AI."));
       }
 
       const data = await response.json();
       setResult(data);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Đã xảy ra lỗi không xác định. Vui lòng thử lại.");
+      setError(err.message || (language === "en" ? "An unknown error occurred. Please try again." : language === "ko" ? "알 수 없는 오류가 발생했습니다. 다시 시도해 주세요." : "Đã xảy ra lỗi không xác định. Vui lòng thử lại."));
     } finally {
       setIsLoading(false);
     }
@@ -71,13 +74,13 @@ export default function AIFormulaAdvisor() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 bg-emerald-green/20 text-satin-gold border border-emerald-green/30 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase mb-3">
-              <Sparkles className="w-3.5 h-3.5" /> Trợ Lý Lab Nghiên Cứu R&D Trực Tuyến
+              <Sparkles className="w-3.5 h-3.5" /> {t("ai_lab_tag")}
             </div>
             <h3 className="text-2xl md:text-3xl font-serif font-bold text-stone-100">
-              Thiết Kế Công Thức & Báo Giá Bằng AI
+              {t("ai_lab_title")}
             </h3>
             <p className="text-stone-300 text-sm mt-2 max-w-2xl">
-              Nhập ý tưởng sản phẩm của bạn, thuật toán AI huấn luyện từ hàng ngàn công thức CGMP quốc tế của <span className="text-satin-gold font-semibold">cosbuilt</span> sẽ tính toán tỷ lệ, đề xuất bao bì và lập dự toán chi phí trong 10 giây.
+              {t("ai_lab_desc")}
             </p>
           </div>
           <FlaskConical className="w-16 h-16 text-satin-gold opacity-80 shrink-0 self-end md:self-center" />
@@ -90,55 +93,61 @@ export default function AIFormulaAdvisor() {
           <form id="ai-formula-form" onSubmit={handleGenerate} className="lg:col-span-5 space-y-5 bg-stone-50/50 p-6 rounded-2xl border border-stone-100">
             <div>
               <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">
-                1. Danh mục gia công chính
+                {t("ai_lab_cat")}
               </label>
               <select
                 value={productType}
                 onChange={(e) => setProductType(e.target.value)}
                 className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all cursor-pointer"
               >
-                <option value="Chăm sóc da mặt">Chăm sóc da mặt (Facial Care)</option>
-                <option value="Chăm sóc body">Chăm sóc cơ thể (Body Care)</option>
-                <option value="Chăm sóc tóc">Chăm sóc tóc (Hair Care)</option>
-                <option value="Trang điểm">Trang điểm (Makeup)</option>
-                <option value="Chăm sóc cá nhân">Chăm sóc vệ sinh cá nhân</option>
-                <option value="Sản phẩm gia công theo công nghệ mới">Gia công công nghệ mới (Exosome, Liposome...)</option>
+                <option value="Chăm sóc da mặt">{t("cat_facial")}</option>
+                <option value="Chăm sóc body">{t("cat_body")}</option>
+                <option value="Chăm sóc tóc">{t("cat_hair")}</option>
+                <option value="Trang điểm">{t("cat_makeup")}</option>
+                <option value="Chăm sóc cá nhân">{t("cat_personal")}</option>
+                <option value="Sản phẩm gia công theo công nghệ mới">{t("cat_new_tech")}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">
-                2. Ý tưởng / Công dụng mong muốn
+                {t("ai_lab_idea")}
               </label>
               <input
                 type="text"
                 required
                 value={targetEffect}
                 onChange={(e) => setTargetEffect(e.target.value)}
-                placeholder="Ví dụ: Serum HA cấp ẩm sâu căng bóng da, Kem mờ nám thâm sạm"
+                placeholder={t("ai_lab_idea_placeholder")}
                 className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all"
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">
-                3. Định vị phân khúc & ngân sách
+                {t("ai_lab_budget")}
               </label>
               <select
                 value={budgetTier}
                 onChange={(e) => setBudgetTier(e.target.value)}
                 className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all cursor-pointer"
               >
-                <option value="Bình dân (Tối ưu giá thành tốt nhất, bán đại chúng)">Bình dân (Bán phân khúc bình dân)</option>
-                <option value="Trung cấp (Chất lượng spa/clinic, hoạt chất phổ biến)">Trung cấp (Chất lượng Spa/Clinic)</option>
-                <option value="Cao cấp (Organic hữu cơ, hoạt chất độc quyền, đắt đỏ)">Cao cấp (Hiệu quả đột phá, Organic)</option>
+                <option value="Bình dân (Tối ưu giá thành tốt nhất, bán đại chúng)">
+                  {language === "en" ? "Mass Market / Budget (Optimized price)" : language === "ko" ? "대중 시장 / 보급형 (최적화 단가)" : "Bình dân (Tối ưu giá thành tốt nhất)"}
+                </option>
+                <option value="Trung cấp (Chất lượng spa/clinic, hoạt chất phổ biến)">
+                  {language === "en" ? "Mid-range (Spa/Clinic quality)" : language === "ko" ? "미드레인지 (스파/클리닉 품질)" : "Trung cấp (Chất lượng spa/clinic)"}
+                </option>
+                <option value="Cao cấp (Organic hữu cơ, hoạt chất độc quyền, đắt đỏ)">
+                  {language === "en" ? "Premium (Organic, exclusive actives)" : language === "ko" ? "프리미엄 (오가닉, 독점 활성 성분)" : "Cao cấp (Organic hữu cơ, hoạt chất độc quyền)"}
+                </option>
               </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">
-                  4. Số lượng lô (MOQ)
+                  {t("ai_lab_moq")}
                 </label>
                 <input
                   type="number"
@@ -152,12 +161,12 @@ export default function AIFormulaAdvisor() {
               </div>
               <div>
                 <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">
-                  Đơn vị tính
+                  {t("ai_lab_unit")}
                 </label>
                 <input
                   type="text"
                   disabled
-                  value="Sản phẩm"
+                  value={t("ai_lab_unit_val")}
                   className="w-full bg-stone-100 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-500 focus:outline-none"
                 />
               </div>
@@ -165,25 +174,25 @@ export default function AIFormulaAdvisor() {
 
             <div>
               <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">
-                5. Khách hàng & Da mục tiêu
+                {t("ai_lab_audience")}
               </label>
               <input
                 type="text"
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
-                placeholder="Ví dụ: Da dầu mụn nhạy cảm, mẹ bầu"
+                placeholder={t("ai_lab_audience_placeholder")}
                 className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all"
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">
-                6. Yêu cầu thêm (Tùy chọn)
+                {t("ai_lab_extra")}
               </label>
               <textarea
                 value={extraDemands}
                 onChange={(e) => setExtraDemands(e.target.value)}
-                placeholder="Ví dụ: Không paraben, màu hồng nhạt tự nhiên, hương thơm hoa lài dịu nhẹ..."
+                placeholder={t("ai_lab_extra_placeholder")}
                 rows={2}
                 className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 transition-all resize-none"
               />
@@ -198,12 +207,12 @@ export default function AIFormulaAdvisor() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Đang phân tích & lập công thức...
+                  {t("ai_lab_btn_loading")}
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 text-amber-300 fill-amber-300" />
-                  Khởi Tạo Công Thức & Dự Toán Ngay
+                  {t("ai_lab_btn")}
                 </>
               )}
             </button>
@@ -224,9 +233,9 @@ export default function AIFormulaAdvisor() {
                     <div className="w-16 h-16 rounded-full border-4 border-stone-100 border-t-emerald-green animate-spin"></div>
                     <FlaskConical className="w-6 h-6 text-emerald-green absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                   </div>
-                  <h4 className="font-semibold text-stone-800 text-lg mt-6">Hệ thống AI R&D đang phân tích...</h4>
+                  <h4 className="font-semibold text-stone-800 text-lg mt-6">{t("ai_lab_loading_title")}</h4>
                   <p className="text-stone-500 text-sm max-w-sm mt-2 px-6">
-                    Kết nối cơ sở dữ liệu hoạt chất tiêu chuẩn quốc tế, tính toán mức an toàn độc tính lâm sàng và tự động áp định mức chi phí chuẩn CGMP ASEAN của cosbuilt.
+                    {t("ai_lab_loading_desc")}
                   </p>
                 </motion.div>
               )}
@@ -239,11 +248,10 @@ export default function AIFormulaAdvisor() {
                   exit={{ opacity: 0 }}
                   className="p-6 bg-red-50 rounded-2xl border border-red-100 text-red-700 text-sm h-full flex flex-col items-center justify-center text-center"
                 >
-                  <p className="font-semibold mb-2">Đã xảy ra lỗi khi tạo công thức.</p>
-                  <p className="text-red-500 text-xs max-w-md">{error}</p>
-                  <p className="text-stone-500 text-xs mt-4">
-                    Vui lòng liên hệ với ban kỹ thuật qua mục Liên hệ, hoặc kiểm tra xem API Key đã được điền đủ chưa.
+                  <p className="font-semibold mb-2">
+                    {language === "en" ? "Failed to generate formula." : language === "ko" ? "포뮬러를 생성하지 못했습니다." : "Đã xảy ra lỗi khi tạo công thức."}
                   </p>
+                  <p className="text-red-500 text-xs max-w-md">{error}</p>
                 </motion.div>
               )}
 
@@ -257,14 +265,38 @@ export default function AIFormulaAdvisor() {
                   <div className="w-16 h-16 bg-stone-50 text-stone-400 rounded-full flex items-center justify-center mb-4">
                     <FlaskConical className="w-8 h-8" />
                   </div>
-                  <h4 className="font-semibold text-stone-800 text-base">Chưa có công thức nào được thiết kế</h4>
+                  <h4 className="font-semibold text-stone-800 text-base">{t("ai_lab_empty_title")}</h4>
                   <p className="text-stone-500 text-sm max-w-sm mt-2">
-                    Điền đầy đủ thông tin yêu cầu của bạn ở form bên cạnh và nhấp vào nút "Khởi Tạo Công Thức" để nhận bảng phân tích hoạt chất và báo giá chi tiết độc quyền từ AI.
+                    {t("ai_lab_empty_desc")}
                   </p>
                   <div className="mt-6 flex flex-wrap gap-2 justify-center">
-                    <span className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-full cursor-pointer transition-all" onClick={() => {setProductType("Chăm sóc da mặt"); setTargetEffect("Serum B5 tái tạo phục hồi da nhiễm corticoid");}}>Serum B5 phục hồi</span>
-                    <span className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-full cursor-pointer transition-all" onClick={() => {setProductType("Chăm sóc body"); setTargetEffect("Kem tắm trắng nâng tông tế bào gốc thực vật");}}>Kem tắm trắng tế bào gốc</span>
-                    <span className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-full cursor-pointer transition-all" onClick={() => {setProductType("Chăm sóc tóc"); setTargetEffect("Xịt dưỡng bưởi dừa kích mọc tóc x3 hiệu quả");}}>Xịt dưỡng mọc tóc bưởi dừa</span>
+                    <span 
+                      className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-full cursor-pointer transition-all" 
+                      onClick={() => {
+                        setProductType("Chăm sóc da mặt"); 
+                        setTargetEffect(language === "en" ? "HA serum deep moisture" : language === "ko" ? "HA 수분 가득 세럼" : "Serum HA cấp ẩm sâu căng bóng da");
+                      }}
+                    >
+                      {language === "en" ? "HA Hydration Serum" : language === "ko" ? "HA 수분 세럼" : "Serum HA cấp ẩm"}
+                    </span>
+                    <span 
+                      className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-full cursor-pointer transition-all" 
+                      onClick={() => {
+                        setProductType("Chăm sóc body"); 
+                        setTargetEffect(language === "en" ? "Vegan body tone-up cream" : language === "ko" ? "비건 바디 톤업 크림" : "Kem dưỡng nâng tông body thuần chay");
+                      }}
+                    >
+                      {language === "en" ? "Vegan Tone-up Body" : language === "ko" ? "비건 바디 톤업" : "Kem body nâng tông"}
+                    </span>
+                    <span 
+                      className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-full cursor-pointer transition-all" 
+                      onClick={() => {
+                        setProductType("Chăm sóc tóc"); 
+                        setTargetEffect(language === "en" ? "Grapefruit hair growth spray x3" : language === "ko" ? "자몽 모발 성장 스프레이" : "Xịt bưởi kích mọc tóc hiệu quả cao");
+                      }}
+                    >
+                      {language === "en" ? "Grapefruit Hair Growth Spray" : language === "ko" ? "자몽 발모 스프레이" : "Xịt mọc tóc bưởi"}
+                    </span>
                   </div>
                 </motion.div>
               )}
@@ -281,7 +313,7 @@ export default function AIFormulaAdvisor() {
                     <div className="absolute top-0 right-0 p-3 bg-emerald-green text-white rounded-bl-xl text-xs font-bold uppercase tracking-widest flex items-center gap-1">
                       <CheckCircle className="w-3.5 h-3.5 text-satin-gold" /> CGMP Approved
                     </div>
-                    <div className="text-stone-400 text-xs font-bold uppercase tracking-widest">Đề xuất sản xuất</div>
+                    <div className="text-stone-400 text-xs font-bold uppercase tracking-widest">{t("ai_lab_proposal")}</div>
                     <h4 className="text-xl font-serif font-bold mt-1 text-emerald-green">{result.suggestedName}</h4>
                     <p className="text-stone-300 text-xs mt-2 italic">"{result.conceptDescription}"</p>
                   </div>
@@ -292,7 +324,7 @@ export default function AIFormulaAdvisor() {
                     <div className="border border-stone-150 rounded-2xl p-4 bg-white shadow-xs">
                       <div className="flex items-center gap-2 mb-3 border-b border-stone-100 pb-2">
                         <FlaskConical className="w-4 h-4 text-emerald-green" />
-                        <h5 className="font-bold text-xs text-stone-800 uppercase tracking-wider">Thành phần hoạt chất (INCI)</h5>
+                        <h5 className="font-bold text-xs text-stone-800 uppercase tracking-wider">{t("ai_lab_inci")}</h5>
                       </div>
                       <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
                         {result.ingredients?.map((ing, idx) => (
@@ -302,8 +334,8 @@ export default function AIFormulaAdvisor() {
                               <span className="bg-emerald-green/10 text-emerald-green text-[10px] font-bold px-2 py-0.5 rounded-full">{ing.percentage}</span>
                             </div>
                             <div className="flex justify-between items-center mt-1.5 text-[11px] text-stone-500">
-                              <span>Vai trò: {ing.role}</span>
-                              <span className="text-stone-400">Nguồn: {ing.origin}</span>
+                              <span>{t("ai_lab_role")}: {ing.role}</span>
+                              <span className="text-stone-400">{t("ai_lab_origin")}: {ing.origin}</span>
                             </div>
                           </div>
                         ))}
@@ -316,48 +348,48 @@ export default function AIFormulaAdvisor() {
                       <div className="border border-stone-150 rounded-2xl p-4 bg-stone-50/50 shadow-xs">
                         <div className="flex items-center gap-2 mb-3 border-b border-stone-100 pb-2">
                           <Calculator className="w-4 h-4 text-amber-600" />
-                          <h5 className="font-bold text-xs text-stone-800 uppercase tracking-wider">Dự toán giá thành (Gia công trọn gói)</h5>
+                          <h5 className="font-bold text-xs text-stone-800 uppercase tracking-wider">{t("est_results_title")}</h5>
                         </div>
                         <div className="space-y-2 text-xs">
                           <div className="flex justify-between py-1">
-                            <span className="text-stone-600">Bán thành phẩm thô / sp:</span>
+                            <span className="text-stone-600">{t("ai_lab_raw_cost")}:</span>
                             <span className="font-mono font-medium text-stone-800">
                               {Number(result.pricingEstimation?.rawMaterialCostPerUnit || 0).toLocaleString("vi-VN")} đ
                             </span>
                           </div>
                           <div className="flex justify-between py-1">
-                            <span className="text-stone-600">Chai lọ + Bao bì hộp giấy / sp:</span>
+                            <span className="text-stone-600">{t("ai_lab_pack_cost")}:</span>
                             <span className="font-mono font-medium text-stone-800">
                               {Number(result.pricingEstimation?.packagingCostPerUnit || 0).toLocaleString("vi-VN")} đ
                             </span>
                           </div>
                           <div className="flex justify-between py-1">
-                            <span className="text-stone-600">Đóng gói + Vận hành CGMP / sp:</span>
+                            <span className="text-stone-600">{t("ai_lab_mfg_cost")}:</span>
                             <span className="font-mono font-medium text-stone-800">
                               {Number(result.pricingEstimation?.manufacturingCostPerUnit || 0).toLocaleString("vi-VN")} đ
                             </span>
                           </div>
                           <div className="flex justify-between py-1 border-t border-dashed border-stone-200 pt-1.5 font-bold">
-                            <span className="text-stone-900">Đơn giá thành phẩm / sản phẩm:</span>
+                            <span className="text-stone-900">{t("ai_lab_total_unit")}:</span>
                             <span className="font-mono text-emerald-green">
                               {Number(result.pricingEstimation?.totalCostPerUnit || 0).toLocaleString("vi-VN")} đ
                             </span>
                           </div>
                           <div className="flex justify-between py-1 border-t border-stone-200 pt-1.5">
-                            <span className="text-stone-600 font-bold">Tổng chi phí lô ({volume} sp):</span>
+                            <span className="text-stone-600 font-bold">{t("ai_lab_total_batch")} ({volume} {t("ai_lab_unit_val").toLowerCase()}):</span>
                             <span className="font-mono font-bold text-stone-950">
                               {Number(result.pricingEstimation?.totalBatchCost || 0).toLocaleString("vi-VN")} đ
                             </span>
                           </div>
                           <div className="flex justify-between py-1 text-[11px] text-stone-500">
-                            <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> Phí kiểm nghiệm & công bố lý lịch:</span>
+                            <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> {t("ai_lab_reg_fee")}:</span>
                             <span className="font-mono">
                               {Number(result.pricingEstimation?.registrationFee || 0).toLocaleString("vi-VN")} đ
                             </span>
                           </div>
                           <div className="flex justify-between py-1 text-[11px] text-stone-500">
-                            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Thời gian hoàn thiện dự kiến:</span>
-                            <span>{result.pricingEstimation?.deliveryLeadTimeDays} ngày</span>
+                            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {t("ai_lab_lead_time")}:</span>
+                            <span>{result.pricingEstimation?.deliveryLeadTimeDays} {t("ai_lab_days")}</span>
                           </div>
                         </div>
                       </div>
@@ -366,12 +398,21 @@ export default function AIFormulaAdvisor() {
                       <div className="border border-stone-150 rounded-2xl p-4 bg-white shadow-xs">
                         <div className="flex items-center gap-2 mb-3 border-b border-stone-100 pb-2">
                           <Box className="w-4 h-4 text-stone-600" />
-                          <h5 className="font-bold text-xs text-stone-800 uppercase tracking-wider">Bao bì đề xuất từ chuyên gia</h5>
+                          <h5 className="font-bold text-xs text-stone-800 uppercase tracking-wider">{t("est_packaging_type")}</h5>
                         </div>
                         <div className="text-xs space-y-2">
-                          <div className="flex justify-between"><span className="text-stone-500">Vỏ hũ/chai đựng:</span> <span className="font-medium text-stone-800">{result.packagingDesign?.bottleType}</span></div>
-                          <div className="flex justify-between"><span className="text-stone-500">Dung tích quy chuẩn:</span> <span className="font-medium text-stone-800">{result.packagingDesign?.volumeMl}</span></div>
-                          <div className="flex justify-between"><span className="text-stone-500">Kỹ thuật in vỏ hộp:</span> <span className="font-medium text-stone-800">{result.packagingDesign?.printingMethod}</span></div>
+                          <div className="flex justify-between">
+                            <span className="text-stone-500">{language === "en" ? "Vessel type:" : language === "ko" ? "용기 타입:" : "Vỏ hũ/chai đựng:"}</span> 
+                            <span className="font-medium text-stone-800">{result.packagingDesign?.bottleType}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-stone-500">{language === "en" ? "Capacity:" : language === "ko" ? "규격 용량:" : "Dung tích quy chuẩn:"}</span> 
+                            <span className="font-medium text-stone-800">{result.packagingDesign?.volumeMl}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-stone-500">Kỹ thuật in vỏ hộp:</span> 
+                            <span className="font-medium text-stone-800">{result.packagingDesign?.printingMethod}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -381,7 +422,7 @@ export default function AIFormulaAdvisor() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="border border-stone-150 rounded-2xl p-5 bg-white shadow-xs text-xs space-y-3">
                       <h5 className="font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-stone-100">
-                        <TrendingUp className="w-4 h-4 text-indigo-600" /> Nhận xét nâng cấp công thức (USP)
+                        <TrendingUp className="w-4 h-4 text-indigo-600" /> {t("ai_lab_usp")}
                       </h5>
                       <p className="text-stone-600 leading-relaxed italic">
                         {result.rdRecommendation}
@@ -390,7 +431,7 @@ export default function AIFormulaAdvisor() {
 
                     <div className="border border-stone-150 rounded-2xl p-5 bg-white shadow-xs text-xs space-y-3">
                       <h5 className="font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-stone-100">
-                        <Scale className="w-4 h-4 text-emerald-600" /> Hồ sơ pháp lý & Công bố mỹ phẩm
+                        <Scale className="w-4 h-4 text-emerald-600" /> {t("ai_lab_reg_advice")}
                       </h5>
                       <p className="text-stone-600 leading-relaxed">
                         {result.regulatoryAdvice}
@@ -401,7 +442,7 @@ export default function AIFormulaAdvisor() {
                   {/* Processing steps list */}
                   <div className="border border-stone-150 rounded-2xl p-5 bg-stone-50/30 shadow-xs">
                     <h5 className="font-bold text-xs text-stone-800 uppercase tracking-wider mb-3.5 flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" /> Quy trình gia công đạt chuẩn CGMP ASEAN của cosbuilt
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" /> {t("ai_lab_process")}
                     </h5>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {result.processingSteps?.map((step, idx) => (
@@ -418,14 +459,14 @@ export default function AIFormulaAdvisor() {
                   {/* Final call to action */}
                   <div className="bg-gradient-to-r from-stone-50 to-emerald-green/5 border border-emerald-green/10 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div>
-                      <h6 className="font-bold text-sm text-stone-900">Bạn hài lòng với công thức do AI thiết kế?</h6>
-                      <p className="text-xs text-stone-500 mt-1">Liên hệ với chuyên viên Cosbuilt để nhận mẫu thử vật lý miễn phí tại văn phòng của chúng tôi.</p>
+                      <h6 className="font-bold text-sm text-stone-900">{t("ai_lab_satisfied")}</h6>
+                      <p className="text-xs text-stone-500 mt-1">{t("ai_lab_satisfied_desc")}</p>
                     </div>
                     <a
                       href="#contact"
                       className="bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all cursor-pointer whitespace-nowrap"
                     >
-                      Yêu Cầu Mẫu Thử Vật Lý
+                      {t("ai_lab_request_sample")}
                     </a>
                   </div>
                 </motion.div>
