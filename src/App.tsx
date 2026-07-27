@@ -43,7 +43,9 @@ import {
   Image,
   Settings,
   FileSpreadsheet,
-  RefreshCw
+  RefreshCw,
+  ChevronUp,
+  MessageCircle
 } from "lucide-react";
 
 import Navbar from "./components/Navbar";
@@ -268,7 +270,7 @@ export default function App() {
   const [customBlogPosts, setCustomBlogPosts] = useState<BlogPost[]>(BLOG_POSTS);
   const [customImages, setCustomImages] = useState<any[]>(DEFAULT_GALLERY_IMAGES);
   const [customLogos, setCustomLogos] = useState<any[]>(ABOUT_SECTIONS.partners.logos);
-  const [websiteLogo, setWebsiteLogo] = useState<any>({ name: "COSBUILT", slogan: "ESTD 1999" });
+  const [websiteLogo, setWebsiteLogo] = useState<any>({ name: "COSBUILT" });
   const [customProducts, setCustomProducts] = useState<FormulaProduct[]>(FORMULA_PRODUCTS);
 
   const localizedAboutSections = {
@@ -1126,6 +1128,7 @@ export default function App() {
     message: ""
   });
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
   // Apply Estimate configuration to Contact tab
   const handleApplyEstimateToContact = (
@@ -1310,6 +1313,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
   const handleContactSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setSubmittedEmail(contactForm.email);
     setIsFormSubmitted(true);
     
     try {
@@ -2895,38 +2899,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                 </div>
 
-                {/* Bottom interactive recommendation banner */}
-                <div className="bg-emerald-green text-white p-8 sm:p-10 rounded-3xl border border-emerald-green/20 text-left grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
-                  <div className="lg:col-span-8 space-y-2">
-                    <span className="bg-white/10 text-white text-[10px] font-bold px-3 py-1 rounded-md uppercase tracking-wider block w-max">
-                      {language === "en" ? "EXCLUSIVE CREATIVE IDEAS" : language === "ko" ? "독점 창의적 아이디어" : "Ý TƯỞNG SÁNG TẠO ĐỘC QUYỀN"}
-                    </span>
-                    <h3 className="text-2xl font-serif font-bold leading-tight">
-                      {language === "en" ? "Haven't found your desired exclusive active ingredients?" : language === "ko" ? "원하시는 독창적인 성분이나 포뮬러를 찾지 못하셨나요?" : "Bạn chưa tìm thấy dòng hoạt chất độc bản mong muốn?"}
-                    </h3>
-                    <p className="text-emerald-50 font-light text-xs sm:text-sm leading-relaxed max-w-2xl">
-                      {language === "en" ? "Experience our intelligent AI R&D Advisor on the Homepage. Get detailed chemical ingredient ratios, packaging suggestions, and investment estimates in just 3 seconds." : language === "ko" ? "홈페이지의 스마트한 AI R&D 파트너를 경험해 보세요. 단 3초 만에 원료 성분의 상세 비율, 추천 용기 및 화장품 제형 맞춤 견적을 제시해 드립니다." : "Hãy trải nghiệm ngay Trợ lý R&D AI đĩnh đạc của chúng tôi ở Trang Chủ. Nhận bản phác thảo chi tiết tỷ lệ thành phần dược chất, bao bì vỏ chai đựng và dự toán đầu tư tự động chỉ trong 3 giây."}
-                    </p>
-                  </div>
-                  <div className="lg:col-span-4 flex justify-start lg:justify-end">
-                    <button 
-                      onClick={() => {
-                        handleTabChange("home");
-                        setTimeout(() => {
-                          const advisorEl = document.getElementById("ai-advisor");
-                          if (advisorEl) {
-                            advisorEl.scrollIntoView({ behavior: "smooth" });
-                          }
-                        }, 100);
-                      }}
-                      className="bg-white hover:bg-stone-50 text-stone-900 font-bold text-xs px-8 py-4 rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer uppercase tracking-wider"
-                    >
-                      <Sparkles className="w-4 h-4 text-emerald-green fill-emerald-green" />
-                      {language === "en" ? "Generate AI Formula Now" : language === "ko" ? "AI 화장품 처방 즉시 생성" : "Lên công thức AI ngay"}
-                    </button>
-                  </div>
-                </div>
+
 
                   </>
                 )}
@@ -3495,76 +3468,93 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
             >
               {selectedBlog ? (
                 /* Specific Article Detailed View */
-                <div className="max-w-4xl mx-auto space-y-8 text-left">
-                  {/* Back button */}
-                  <button 
-                    onClick={() => setSelectedBlog(null)}
-                    className="flex items-center gap-2 text-stone-500 hover:text-emerald-green font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    {language === "en" ? "Back to Articles" : language === "ko" ? "글 목록으로 가기" : "Quay lại danh sách bài viết"}
-                  </button>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 text-left">
+                  <div className="lg:col-span-2 space-y-8">
+                    {/* Back button */}
+                    <button 
+                      onClick={() => setSelectedBlog(null)}
+                      className="flex items-center gap-2 text-stone-500 hover:text-emerald-green font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      {language === "en" ? "Back to Articles" : language === "ko" ? "글 목록으로 가기" : "Quay lại danh sách bài viết"}
+                    </button>
 
-                  {/* Header metadata */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <span className="bg-emerald-green/10 text-emerald-green text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">
-                        {selectedBlog.category}
-                      </span>
-                      <span className="text-[11px] text-stone-400 font-bold tracking-wide">
-                        {language === "en" ? "Published:" : language === "ko" ? "등록일:" : "Đăng ngày:"} {selectedBlog.date}
-                      </span>
+                    {/* Header metadata */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <span className="bg-emerald-green/10 text-emerald-green text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">
+                          {selectedBlog.category}
+                        </span>
+                        <span className="text-[11px] text-stone-400 font-bold tracking-wide">
+                          {language === "en" ? "Published:" : language === "ko" ? "등록일:" : "Đăng ngày:"} {selectedBlog.date}
+                        </span>
+                      </div>
+                      <h1 className="font-serif font-extrabold text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight">
+                        {selectedBlog.title}
+                      </h1>
+                      <div className="flex items-center gap-2.5 text-xs text-stone-500 font-bold border-b border-stone-200 pb-5">
+                        <User className="w-4 h-4 text-emerald-green" />
+                        <span>{language === "en" ? "Author:" : language === "ko" ? "작성자:" : "Tác giả:"} {selectedBlog.author}</span>
+                      </div>
                     </div>
-                    <h1 className="font-serif font-extrabold text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight">
-                      {selectedBlog.title}
-                    </h1>
-                    <div className="flex items-center gap-2.5 text-xs text-stone-500 font-bold border-b border-stone-200 pb-5">
-                      <User className="w-4 h-4 text-emerald-green" />
-                      <span>{language === "en" ? "Author:" : language === "ko" ? "작성자:" : "Tác giả:"} {selectedBlog.author}</span>
+
+                    {/* Feature Image */}
+                    <div className="aspect-[21/9] rounded-3xl overflow-hidden border border-stone-150 shadow-md">
+                      <img 
+                        src={selectedBlog.image} 
+                        alt={selectedBlog.title} 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
-                  </div>
 
-                  {/* Feature Image */}
-                  <div className="aspect-[21/9] rounded-3xl overflow-hidden border border-stone-150 shadow-md">
-                    <img 
-                      src={selectedBlog.image} 
-                      alt={selectedBlog.title} 
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
+                    {/* TOC Box */}
+                    <div className="bg-stone-50 border border-stone-200 rounded-xl p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-bold text-lg text-stone-900">Nội Dung Trong Bài Viết</h3>
+                        <ChevronUp className="w-5 h-5 text-stone-600" />
+                      </div>
+                      <ol className="list-decimal list-inside space-y-2 text-sm text-stone-700">
+                        <li>Nám da là gì và tại sao nó khó trị?</li>
+                        <li>Tranexamic acid và cơ chế liên quan đến nám</li>
+                        <li>Bằng chứng lâm sàng: TXA hiệu quả đến đâu?</li>
+                        <li>Dùng tranexamic acid thế nào để giảm rủi ro kích ứng?</li>
+                        <li>Kỳ vọng thực tế khi dùng tranexamic acid trị nám</li>
+                        <li>Tranexamic acid trị nám, nên hay không?</li>
+                      </ol>
+                    </div>
 
-                  {/* Article content */}
-                  <div className="prose prose-stone max-w-none">
-                    <p className="text-stone-800 text-base sm:text-lg leading-relaxed font-light whitespace-pre-line">
-                      {selectedBlog.content}
-                    </p>
-                  </div>
-
-                  {/* Inline CTA block */}
-                  <div className="bg-stone-50 p-6 sm:p-8 rounded-3xl border border-stone-200 mt-10 space-y-4 shadow-3xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                    <div className="space-y-1.5 max-w-xl">
-                      <h4 className="font-serif font-black text-lg text-stone-900 tracking-tight">
-                        {language === "en" ? "Want to develop a trending product line like this?" : language === "ko" ? "이 트렌디한 제품 라인을 실제로 런칭하고 싶으신가요?" : "Muốn phát triển dòng sản phẩm đón đầu xu hướng này?"}
-                      </h4>
-                      <p className="text-xs text-stone-500 leading-relaxed font-medium">
-                        {language === "en" 
-                          ? "Contact us today. The Cosbuilt R&D Lab is ready to manufacture free physics samples based on this research theme for you." 
-                          : language === "ko" 
-                            ? "지금 바로 당사 전문가 그룹과 매칭해 보세요. 코스빌트의 전문 R&D 연구소에서 본 테마에 기조한 시제품 처방 샘플을 전액 무상으로 즉시 조제해 드립니다." 
-                            : "Hãy liên hệ với chúng tôi, phòng Lab của Cosbuilt sẵn sàng thử nghiệm mẫu thử miễn phí dựa trên đề tài nghiên cứu này."}
+                    {/* Article content */}
+                    <div className="prose prose-stone max-w-none">
+                      <p className="text-stone-800 text-base sm:text-lg leading-relaxed font-light whitespace-pre-line">
+                        {selectedBlog.content}
                       </p>
                     </div>
-                    <button 
-                      onClick={() => {
-                        setSelectedBlog(null);
-                        handleTabChange("contact");
-                      }}
-                      className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-xl transition-all cursor-pointer shrink-0 shadow-md flex items-center gap-2"
-                    >
-                      <ShoppingBag className="w-4 h-4" />
-                      {language === "en" ? "Request Formulation Sample" : language === "ko" ? "무료 실물 테스트 샘플 요청" : "Đăng ký nhận mẫu test vật lý"}
-                    </button>
+                  </div>
+
+                  {/* Sidebar */}
+                  <div className="space-y-8">
+                    <div className="bg-white border border-stone-200 rounded-2xl p-6 space-y-4">
+                      <h3 className="font-bold text-lg text-stone-900">Tìm kiếm bài viết</h3>
+                      <div className="flex gap-2">
+                        <input type="text" placeholder="Gõ để bắt đầu tìm..." className="flex-1 border border-stone-300 rounded-lg p-2 text-xs" />
+                        <button className="bg-blue-600 text-white rounded-lg p-2"><Search className="w-4 h-4" /></button>
+                      </div>
+                    </div>
+                    
+                    {/* Related Posts */}
+                    <div className="space-y-4">
+                      {customBlogPosts.slice(0, 3).map((post, idx) => (
+                        <div key={idx} className="flex gap-4 items-start">
+                          <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-lg shrink-0" />
+                          <div className="space-y-1">
+                            <h4 className="font-bold text-sm text-stone-900 line-clamp-2">{post.title}</h4>
+                            <p className="text-[10px] text-stone-400">{post.date}</p>
+                            <span className="text-emerald-green text-[10px] font-bold">Đọc thêm »</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -3844,16 +3834,31 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0 }}
-                          className="py-16 text-center space-y-4 flex flex-col items-center justify-center"
+                          className="py-12 text-center space-y-4 flex flex-col items-center justify-center"
                         >
-                          <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-10 h-10" />
+                          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shadow-xs">
+                            <CheckCircle className="w-10 h-10 text-emerald-green" />
                           </div>
-                          <h3 className="font-serif font-bold text-xl text-stone-900">Gửi Yêu Cầu Thành Công!</h3>
-                          <p className="text-stone-500 text-sm max-w-md mx-auto leading-relaxed">
-                            Cảm ơn quý khách đã tin tưởng thương hiệu <strong className="text-stone-800 font-bold">Cosbuilt</strong>. Bộ phận phát triển dự án đã ghi nhận yêu cầu của quý khách và sẽ liên hệ trực tiếp qua số điện thoại để gửi tặng mẫu vật lý trong vòng 2 giờ.
+                          <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900">Gửi Yêu Cầu Thành Công!</h3>
+                          
+                          {/* Automatic Email Confirmation Box */}
+                          <div className="bg-emerald-green/5 border border-emerald-green/20 rounded-2xl p-4 max-w-lg w-full text-left space-y-2">
+                            <div className="flex items-center gap-2 text-emerald-green-dark font-bold text-xs uppercase tracking-wider">
+                              <Mail className="w-4 h-4 shrink-0" />
+                              <span>Đã gửi Email xác nhận tự động</span>
+                            </div>
+                            <p className="text-stone-600 text-xs leading-relaxed">
+                              Thư xác nhận tiếp nhận hồ sơ đã được gửi trực tiếp tới hòm thư: <strong className="text-stone-900 font-mono font-bold underline">{submittedEmail || "email của bạn"}</strong>
+                            </p>
+                            <div className="text-[11px] text-stone-500 font-light pt-1 border-t border-emerald-green/10 flex justify-between items-center">
+                              <span>Trạng thái Email: <span className="text-emerald-green font-bold">Đã phát thành công</span></span>
+                              <span>Mã hồ sơ: <strong className="font-mono text-stone-800">CB-2026-{(Math.floor(Math.random() * 90000) + 10000)}</strong></span>
+                            </div>
+                          </div>
+
+                          <p className="text-stone-500 text-xs max-w-md mx-auto leading-relaxed">
+                            Cảm ơn quý khách đã tin tưởng thương hiệu <strong className="text-stone-800 font-bold">Cosbuilt</strong>. Chuyên viên của Cosbuilt sẽ liên hệ tư vấn trực tiếp và gửi mẫu vật lý trong vòng 2 giờ làm việc.
                           </p>
-                          <span className="text-xs text-stone-400 italic">Mã số hồ sơ của bạn: CB-2026-{(Math.floor(Math.random() * 90000) + 10000)}</span>
                         </motion.div>
                       ) : (
                         <motion.form 
@@ -4359,6 +4364,43 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       </AnimatePresence>
 
       {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} />}
+      
+      {/* Contact Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+        <a 
+          href="https://zalo.me/0966373686" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="w-13 h-13 sm:w-14 sm:h-14 bg-[#0068FF] rounded-full shadow-lg flex items-center justify-center hover:bg-blue-600 transition-all hover:scale-105 active:scale-95"
+          title="Zalo 0966 373 686"
+        >
+          <svg className="w-8 h-8" viewBox="0 0 100 100">
+            <path
+              d="M 50 12 C 29 12 12 27.8 12 47.3 C 12 54.8 14.5 61.8 18.8 67.5 L 14 85 L 32.2 80 C 37.6 83 43.6 84.6 50 84.6 C 71 84.6 88 68.8 88 49.3 C 88 29.8 71 12 50 12 Z"
+              fill="#ffffff"
+            />
+            <text
+              x="50"
+              y="57"
+              fill="#0068FF"
+              fontSize="26"
+              fontWeight="900"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              textAnchor="middle"
+              letterSpacing="-0.5px"
+            >
+              Zalo
+            </text>
+          </svg>
+        </a>
+        <a 
+          href="tel:0966373686" 
+          className="w-13 h-13 sm:w-14 sm:h-14 bg-[#FF0000] rounded-full shadow-lg text-white hover:bg-red-600 transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+          title="Gọi 0966 373 686"
+        >
+          <Phone className="w-7 h-7 fill-white text-white" />
+        </a>
+      </div>
     </div>
   );
 }

@@ -61,12 +61,14 @@ export interface ManufacturingCategory {
 
 export interface BlogPost {
   title: string;
-  category: "cẩm nang" | "xu hướng";
+  category: "cẩm nang" | "xu hướng" | string;
   summary: string;
   content: string;
   date: string;
   author: string;
   image: string;
+  slug?: string;
+  url?: string;
 }
 
 export interface PricingItem {

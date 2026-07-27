@@ -19,7 +19,7 @@ interface NavbarProps {
   onSearch: (query: string) => void;
   sampleCartCount: number;
   onToggleSampleCart: () => void;
-  websiteLogo?: { name: string; slogan: string; image?: string };
+  websiteLogo?: { name: string; slogan?: string; image?: string };
   isAdminMode?: boolean;
 }
 
@@ -29,7 +29,7 @@ export default function Navbar({
   onSearch,
   sampleCartCount,
   onToggleSampleCart,
-  websiteLogo = { name: "COSBUILT", slogan: "ESTD 1999" },
+  websiteLogo = { name: "COSBUILT" },
   isAdminMode = false
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -159,9 +159,11 @@ export default function Navbar({
                 <span className="text-2xl sm:text-3xl font-serif font-black tracking-widest text-stone-950 leading-none">
                   {websiteLogo.name}
                 </span>
-                <span className="text-[9px] font-bold text-stone-400 tracking-[0.25em] uppercase mt-1 self-center">
-                  {websiteLogo.slogan}
-                </span>
+                {websiteLogo.slogan ? (
+                  <span className="text-[9px] font-bold text-stone-400 tracking-[0.25em] uppercase mt-1 self-center">
+                    {websiteLogo.slogan}
+                  </span>
+                ) : null}
               </div>
             )}
           </div>
@@ -329,8 +331,8 @@ export default function Navbar({
 
                 {/* Bảng Giá Gia Công */}
                 <div className="relative py-4">
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider scale-90 select-none z-10 animate-bounce">
-                    {t("menu_new") || "NEW"}
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-md tracking-wider scale-90 select-none z-10 animate-bounce">
+                    {t("menu_new") || "Mới"}
                   </div>
                   <button 
                     onClick={() => onTabChange("pricing")}

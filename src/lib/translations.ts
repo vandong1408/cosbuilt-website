@@ -127,11 +127,6 @@ export const translations: TranslationDictionary = {
     en: "Pricing List",
     ko: "제조 단가표"
   },
-  "menu_new": {
-    vi: "Mới",
-    en: "New",
-    ko: "신규"
-  },
   "menu_news": {
     vi: "Tin Tức",
     en: "News",
@@ -146,6 +141,11 @@ export const translations: TranslationDictionary = {
     vi: "DANH MỤC SẢN PHẨM",
     en: "PRODUCT DIRECTORY",
     ko: "제품 디렉토리"
+  },
+  "menu_new": {
+    vi: "Mới",
+    en: "NEW",
+    ko: "신규"
   },
 
   // Sub menus About Us

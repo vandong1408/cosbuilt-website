@@ -1,4 +1,8 @@
 import { useState, useEffect, FormEvent } from "react";
+import ArticleManagement from "./ArticleManagement";
+import ImageManagement from "./ImageManagement";
+import Sidebar from "./Sidebar";
+import RichTextEditor from "./RichTextEditor";
 import { 
   Users, 
   Search, 
@@ -6,7 +10,8 @@ import {
   RefreshCw, 
   Database, 
   Trash2, 
-  Eye, 
+  Eye,
+  EyeOff, 
   CheckCircle2, 
   Clock, 
   PhoneCall, 
@@ -309,14 +314,20 @@ export default function CRMDashboard({
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem("cosbuilt_admin_logged_in") === "true";
   });
+  const [activeSidebarTab, setActiveSidebarTab] = useState("articles");
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [loginError, setLoginError] = useState("");
+  
+  // Admin Credentials State
+  const [adminUsername, setAdminUsername] = useState(() => localStorage.getItem("admin_username") || "admin");
+  const [adminPassword, setAdminPassword] = useState(() => localStorage.getItem("admin_password") || "1234");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
-    // Default account as admin / 1234
-    if (usernameInput.trim().toLowerCase() === "admin" && passwordInput.trim() === "1234") {
+    if (usernameInput.trim().toLowerCase() === adminUsername.trim().toLowerCase() && passwordInput.trim() === adminPassword.trim()) {
       setIsLoggedIn(true);
       localStorage.setItem("cosbuilt_admin_logged_in", "true");
       setLoginError("");
@@ -591,7 +602,7 @@ export default function CRMDashboard({
     }
   };
 
-  const [activeSubTab, setActiveSubTab] = useState<"leads" | "sheets" | "content">("leads");
+  const [activeSubTab, setActiveSubTab] = useState<"leads" | "sheets" | "content" | "admin-settings">("leads");
   const [cmsSubTab, setCmsSubTab] = useState<"articles" | "products" | "images" | "partners" | "logo">("articles");
   const [cmsSearchTerm, setCmsSearchTerm] = useState("");
   const [cmsArticlesPage, setCmsArticlesPage] = useState(1);
@@ -1134,13 +1145,20 @@ export default function CRMDashboard({
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
-                  type="password"
+                  type={showLoginPassword ? "text" : "password"}
                   required
                   placeholder="Nhập mật khẩu quản trị"
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-xs sm:text-sm focus:border-emerald-green focus:outline-none transition-all"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-10 py-3 text-xs sm:text-sm focus:border-emerald-green focus:outline-none transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 hover:text-stone-600"
+                >
+                  {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -1158,16 +1176,6 @@ export default function CRMDashboard({
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
-
-          {/* Info banner with user credentials helper */}
-          <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100/60 text-[11px] text-amber-800 leading-normal flex gap-2">
-            <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <strong>Tài khoản đăng nhập quản trị viên:</strong><br />
-              • Tên đăng nhập: <code className="font-mono bg-white/80 px-1 py-0.5 rounded font-bold">admin</code><br />
-              • Mật khẩu: <code className="font-mono bg-white/80 px-1 py-0.5 rounded font-bold">1234</code>
-            </div>
-          </div>
 
           <div className="pt-2 text-center">
             <button
@@ -1308,7 +1316,8 @@ export default function CRMDashboard({
         {[
           { id: "leads", label: "YÊU CẦU TƯ VẤN (CRM)", icon: Users },
           { id: "sheets", label: "ĐỒNG BỘ GOOGLE SHEET", icon: FileSpreadsheet },
-          { id: "content", label: "BIÊN TẬP NỘI DUNG (CMS)", icon: Layers }
+          { id: "content", label: "BIÊN TẬP NỘI DUNG (CMS)", icon: Layers },
+          { id: "admin-settings", label: "TÀI KHOẢN ADMIN", icon: Lock }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -1918,6 +1927,56 @@ export default function CRMDashboard({
           </section>
         )}
 
+        {/* ADMIN SETTINGS PANEL */}
+        {activeSubTab === "admin-settings" && (
+          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6 text-left pt-2">
+            <h3 className="font-serif font-bold text-xl text-stone-900">Quản lý Tài khoản Admin</h3>
+            <p className="text-stone-500 text-sm font-light">Cập nhật tên đăng nhập và mật khẩu quản trị hệ thống.</p>
+            
+            <div className="space-y-4 max-w-sm">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">Tên đăng nhập mới</label>
+                <input
+                  type="text"
+                  placeholder="admin"
+                  value={adminUsername}
+                  onChange={(e) => setAdminUsername(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:border-emerald-green focus:outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">Mật khẩu mới</label>
+                <div className="relative">
+                  <input
+                    type={showAdminPassword ? "text" : "password"}
+                    placeholder="••••"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:border-emerald-green focus:outline-none transition-all pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAdminPassword(!showAdminPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 hover:text-stone-600"
+                  >
+                    {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  localStorage.setItem("admin_username", adminUsername);
+                  localStorage.setItem("admin_password", adminPassword);
+                  alert("Đã lưu thông tin tài khoản admin!");
+                }}
+                className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-3 px-6 rounded-xl transition-all cursor-pointer shadow-xs"
+              >
+                Lưu Thay Đổi
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* SYNCED CONTENT MANAGER */}
         {activeSubTab === "content" && (
           <div className="space-y-8 text-left">
@@ -2015,6 +2074,8 @@ export default function CRMDashboard({
                             isNew: true,
                             data: {
                               title: "",
+                              slug: "",
+                              url: "",
                               category: "cẩm nang",
                               summary: "",
                               content: "",
@@ -2090,132 +2151,34 @@ export default function CRMDashboard({
                   const paginatedArticles = filteredArticles.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
                   return (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-                        <div className="text-left">
-                          <h3 className="font-serif font-bold text-lg text-stone-900">Danh Sách Bài Viết ({filteredArticles.length})</h3>
-                          <p className="text-stone-400 text-xs font-light">Tin tức, cẩm nang và xu hướng thị trường cập nhật trên Website</p>
-                        </div>
-                      </div>
-
-                      {filteredArticles.length === 0 ? (
-                        <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
-                          Không tìm thấy bài viết nào khớp với từ khóa "{cmsSearchTerm}".
-                        </div>
-                      ) : (
-                        <div className="space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {paginatedArticles.map((post, index) => {
-                              const originalIndex = customBlogPosts.findIndex(p => p.title === post.title);
-                              return (
-                                <div key={index} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-md hover:border-emerald-green/30 transition-all duration-200 relative group">
-                                  <img 
-                                    src={post.image || "https://images.unsplash.com/photo-1556228578-0f85a1a1d596?q=80&w=400"} 
-                                    alt={post.title} 
-                                    className="w-24 h-24 object-cover rounded-xl bg-stone-100 shrink-0"
-                                    referrerPolicy="no-referrer"
-                                  />
-                                  <div className="space-y-1.5 flex-1 min-w-0 text-left">
-                                    <span className="text-[9px] font-bold text-emerald-green uppercase tracking-wider block bg-emerald-green-light px-2 py-0.5 rounded w-fit">
-                                      {post.category}
-                                    </span>
-                                    <h4 className="font-bold text-stone-900 text-xs sm:text-sm line-clamp-1 pr-14">{post.title}</h4>
-                                    <p className="text-stone-500 text-[11px] leading-snug line-clamp-2 font-light">{post.summary}</p>
-                                    <div className="flex items-center gap-3 text-[10px] text-stone-400 pt-1">
-                                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {post.date}</span>
-                                      <span>·</span>
-                                      <span className="truncate">Tác giả: {post.author || "Cosbuilt"}</span>
-                                    </div>
-                                  </div>
-
-                                  {/* CRUD hover overlay controls */}
-                                  <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
-                                    <button
-                                      type="button"
-                                      onClick={() => setEditingBlogPost({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...post } })}
-                                      className="p-1.5 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
-                                      title="Sửa bài"
-                                    >
-                                      <Edit3 className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const finalIndex = originalIndex >= 0 ? originalIndex : index;
-                                        setDeleteConfirm({
-                                          title: "Xóa bài viết",
-                                          message: "Bạn có chắc chắn muốn xóa bài viết này không?",
-                                          onConfirm: () => {
-                                            handleDeleteBlogPost(finalIndex);
-                                            setDeleteConfirm(null);
-                                          }
-                                        });
-                                      }}
-                                      className="p-1.5 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
-                                      title="Xóa bài"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {/* Beautiful Pagination Controls */}
-                          {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-1.5 pt-4 border-t border-stone-100 mt-6">
-                              <button
-                                type="button"
-                                onClick={() => setCmsArticlesPage(prev => Math.max(1, prev - 1))}
-                                disabled={activePage === 1}
-                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
-                                  activePage === 1
-                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
-                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
-                                }`}
-                              >
-                                <ChevronLeft className="w-3.5 h-3.5" />
-                              </button>
-
-                              <div className="flex items-center gap-1">
-                                {[...Array(totalPages)].map((_, idx) => {
-                                  const pageNum = idx + 1;
-                                  const isActive = activePage === pageNum;
-                                  return (
-                                    <button
-                                      key={pageNum}
-                                      type="button"
-                                      onClick={() => setCmsArticlesPage(pageNum)}
-                                      className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
-                                        isActive
-                                          ? "bg-emerald-green text-white border-emerald-green shadow-xs"
-                                          : "bg-white text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
-                                      }`}
-                                    >
-                                      {pageNum}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => setCmsArticlesPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={activePage === totalPages}
-                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
-                                  activePage === totalPages
-                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
-                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
-                                }`}
-                              >
-                                <ChevronRight className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                      <ArticleManagement
+                      posts={paginatedArticles}
+                      searchTerm={cmsSearchTerm}
+                      onEdit={(post, index) => {
+                          const originalIndex = customBlogPosts.findIndex(p => p.title === post.title);
+                          setEditingBlogPost({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...post } })
+                      }}
+                      onDelete={(index) => {
+                          const post = paginatedArticles[index];
+                          const originalIndex = customBlogPosts.findIndex(p => p.title === post.title);
+                          setDeleteConfirm({
+                            title: "Xóa bài viết",
+                            message: "Bạn có chắc chắn muốn xóa bài viết này không?",
+                            onConfirm: () => {
+                                handleDeleteBlogPost(originalIndex >= 0 ? originalIndex : index);
+                                setDeleteConfirm(null);
+                            }
+                          });
+                      }}
+                      page={activePage}
+                      setPage={setCmsArticlesPage}
+                      totalPages={totalPages}
+                      onSaveNew={async (post) => {
+                        let newPosts = [...customBlogPosts];
+                        newPosts.push(post);
+                        await saveAllContent({ articles: newPosts }, { action: "add", sheetName: "Bài viết", data: post });
+                      }}
+                    />
                   );
                 })()}
 
@@ -2391,131 +2354,29 @@ export default function CRMDashboard({
                   const paginatedImages = filteredImages.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
                   return (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-                        <div className="text-left">
-                          <h3 className="font-serif font-bold text-lg text-stone-900">Thư Viện Ảnh Gallery ({filteredImages.length})</h3>
-                          <p className="text-stone-400 text-xs font-light">Hình ảnh hoạt động của nhà máy, phòng Lab và xưởng sản xuất</p>
-                        </div>
-                      </div>
-
-                      {filteredImages.length === 0 ? (
-                        <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
-                          Không tìm thấy hình ảnh nào khớp với từ khóa "{cmsSearchTerm}".
-                        </div>
-                      ) : (
-                        <div className="space-y-6">
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                            {paginatedImages.map((img, index) => {
-                              const originalIndex = customImages.findIndex(i => i.image === img.image && i.title === img.title);
-                              return (
-                                <div key={index} className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-md hover:border-emerald-green/30 transition-all duration-200 group relative">
-                                  <div className="aspect-video relative bg-stone-100 overflow-hidden">
-                                    <img 
-                                      src={img.image} 
-                                      alt={img.title} 
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
-                                      referrerPolicy="no-referrer"
-                                    />
-                                    <span className="absolute top-2 left-2 bg-stone-900/70 text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase">
-                                      {img.category}
-                                    </span>
-
-                                    {/* Action controls */}
-                                    <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
-                                      <button
-                                        type="button"
-                                        onClick={() => setEditingImage({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...img } })}
-                                        className="p-1.5 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
-                                        title="Sửa ảnh"
-                                      >
-                                        <Edit3 className="w-3 h-3" />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const finalIndex = originalIndex >= 0 ? originalIndex : index;
-                                          setDeleteConfirm({
-                                            title: "Xóa hình ảnh",
-                                            message: "Bạn có chắc chắn muốn xóa hình ảnh này không?",
-                                            onConfirm: () => {
-                                              handleDeleteImage(finalIndex);
-                                              setDeleteConfirm(null);
-                                            }
-                                          });
-                                        }}
-                                        className="p-1.5 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"
-                                        title="Xóa ảnh"
-                                      >
-                                        <Trash2 className="w-3 h-3" />
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <div className="p-3 space-y-0.5 text-left">
-                                    <h5 className="font-bold text-xs text-stone-950 truncate">{img.title}</h5>
-                                    {img.description && (
-                                      <p className="text-stone-500 text-[10px] truncate font-light">{img.description}</p>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {/* Beautiful Pagination Controls */}
-                          {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-1.5 pt-4 border-t border-stone-100 mt-6">
-                              <button
-                                type="button"
-                                onClick={() => setCmsImagesPage(prev => Math.max(1, prev - 1))}
-                                disabled={activePage === 1}
-                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
-                                  activePage === 1
-                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
-                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
-                                }`}
-                              >
-                                <ChevronLeft className="w-3.5 h-3.5" />
-                              </button>
-
-                              <div className="flex items-center gap-1">
-                                {[...Array(totalPages)].map((_, idx) => {
-                                  const pageNum = idx + 1;
-                                  const isActive = activePage === pageNum;
-                                  return (
-                                    <button
-                                      key={pageNum}
-                                      type="button"
-                                      onClick={() => setCmsImagesPage(pageNum)}
-                                      className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
-                                        isActive
-                                          ? "bg-emerald-green text-white border-emerald-green shadow-xs"
-                                          : "bg-white text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
-                                      }`}
-                                    >
-                                      {pageNum}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => setCmsImagesPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={activePage === totalPages}
-                                className={`p-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
-                                  activePage === totalPages
-                                    ? "text-stone-300 border-stone-150 bg-stone-50 cursor-not-allowed"
-                                    : "text-stone-700 border-stone-200 hover:border-stone-350 hover:bg-stone-50"
-                                }`}
-                              >
-                                <ChevronRight className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <ImageManagement
+                      images={paginatedImages}
+                      searchTerm={cmsSearchTerm}
+                      onEdit={(img, index) => {
+                          const originalIndex = customImages.findIndex(i => i.image === img.image && i.title === img.title);
+                          setEditingImage({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...img } })
+                      }}
+                      onDelete={(index) => {
+                          const img = paginatedImages[index];
+                          const originalIndex = customImages.findIndex(i => i.image === img.image && i.title === img.title);
+                          setDeleteConfirm({
+                            title: "Xóa hình ảnh",
+                            message: "Bạn có chắc chắn muốn xóa hình ảnh này không?",
+                            onConfirm: () => {
+                                handleDeleteImage(originalIndex >= 0 ? originalIndex : index);
+                                setDeleteConfirm(null);
+                            }
+                          });
+                      }}
+                      page={activePage}
+                      setPage={setCmsImagesPage}
+                      totalPages={totalPages}
+                    />
                   );
                 })()}
 
@@ -2664,7 +2525,7 @@ export default function CRMDashboard({
                     <div className="flex items-center justify-between border-b border-stone-200 pb-2">
                       <div className="text-left">
                         <h3 className="font-serif font-bold text-lg text-stone-900">Cấu Hình Chung & Logo Website</h3>
-                        <p className="text-stone-400 text-xs font-light">Tùy biến tên thương hiệu, slogan hiển thị chính trên thanh Menu chính</p>
+                        <p className="text-stone-400 text-xs font-light">Tùy biến tên thương hiệu và hình ảnh logo hiển thị chính trên thanh Menu chính</p>
                       </div>
                     </div>
 
@@ -2672,14 +2533,14 @@ export default function CRMDashboard({
                       <div className="flex items-center justify-between border-b border-stone-150 pb-3">
                         <div className="flex items-center gap-2">
                           <Briefcase className="w-5 h-5 text-emerald-green" />
-                          <h3 className="font-serif font-bold text-lg text-stone-900">Logo & Slogan chính của Website</h3>
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Logo chính của Website</h3>
                         </div>
                         {!isEditingWebsiteLogo ? (
                           <button
                             onClick={() => {
                               setTempWebsiteLogo({
                                 name: websiteLogo?.name || "COSBUILT",
-                                slogan: websiteLogo?.slogan || "ESTD 1999",
+                                slogan: websiteLogo?.slogan || "",
                                 image: websiteLogo?.image || ""
                               });
                               setIsEditingWebsiteLogo(true);
@@ -2693,26 +2554,15 @@ export default function CRMDashboard({
                       </div>
 
                       {isEditingWebsiteLogo ? (
-                        <div className="space-y-4 pt-1">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Tên hiển thị (Logo Text)</label>
-                              <input
-                                type="text"
-                                value={tempWebsiteLogo.name}
-                                onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, name: e.target.value }))}
-                                className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Slogan / Năm thành lập</label>
-                              <input
-                                type="text"
-                                value={tempWebsiteLogo.slogan}
-                                onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, slogan: e.target.value }))}
-                                className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                              />
-                            </div>
+                        <div className="space-y-4 pt-1 text-left">
+                          <div>
+                            <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Tên hiển thị (Logo Text)</label>
+                            <input
+                              type="text"
+                              value={tempWebsiteLogo.name}
+                              onChange={(e) => setTempWebsiteLogo(prev => ({ ...prev, name: e.target.value }))}
+                              className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                            />
                           </div>
 
                           <div className="space-y-1.5 pt-1">
@@ -2782,11 +2632,10 @@ export default function CRMDashboard({
                             <div className="text-left">
                               <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Tên hiển thị hiện tại</div>
                               <div className="font-serif font-black text-2xl text-stone-900 tracking-widest mt-1 uppercase">{websiteLogo?.name || "COSBUILT"}</div>
-                              <div className="text-[10px] font-bold text-stone-400 mt-1 uppercase tracking-widest">{websiteLogo?.slogan || "— ESTD 1999 —"}</div>
                             </div>
                           </div>
                           <div className="text-xs text-stone-500 font-light max-w-sm text-left">
-                            Tên thương hiệu, slogan và hình ảnh logo này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
+                            Tên thương hiệu và hình ảnh logo này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
                           </div>
                         </div>
                       )}
@@ -2960,8 +2809,8 @@ export default function CRMDashboard({
                       onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, category: e.target.value as any } } : null)}
                       className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none cursor-pointer font-bold"
                     >
-                      <option value="cẩm nang">📖 Cẩm nang</option>
-                      <option value="xu hướng">📈 Xu hướng</option>
+                      <option value="cẩm nang">📖 Cẩm nang gia công</option>
+                      <option value="xu hướng">📈 Xu hướng nguyên liệu</option>
                     </select>
                   </div>
                 </div>
@@ -2985,6 +2834,32 @@ export default function CRMDashboard({
                       value={editingBlogPost.data.date}
                       onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, date: e.target.value } } : null)}
                       className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đường dẫn bài viết (URL / Slug)</label>
+                  <div className="flex items-center rounded-xl border border-stone-300 bg-white overflow-hidden focus-within:border-emerald-green">
+                    <span className="bg-stone-100 text-stone-500 text-xs font-mono px-3 py-2 border-r border-stone-200 shrink-0 select-none">
+                      https://cosbuilt.vn/
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="cam-nang-quy-trinh-dang-ky-giay-phep"
+                      value={(editingBlogPost.data.slug || editingBlogPost.data.url || "").replace(/^https?:\/\/cosbuilt\.vn\//, "")}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^https?:\/\/cosbuilt\.vn\//, "");
+                        setEditingBlogPost(prev => prev ? { 
+                          ...prev, 
+                          data: { 
+                            ...prev.data, 
+                            slug: val, 
+                            url: val ? `https://cosbuilt.vn/${val}` : "" 
+                          } 
+                        } : null);
+                      }}
+                      className="w-full bg-transparent px-3 py-2 text-xs focus:outline-none font-mono text-[11px]"
                     />
                   </div>
                 </div>
@@ -3038,40 +2913,11 @@ export default function CRMDashboard({
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center mb-1">
                     <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Nội dung chi tiết (Markdown / Văn bản)</label>
-                    <label className="text-[10px] text-emerald-green hover:text-emerald-green-dark font-bold flex items-center gap-1 cursor-pointer select-none border border-emerald-green/20 px-2 py-0.5 rounded-md hover:bg-emerald-green/5 transition-colors">
-                      {isUploading ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                      <span>Chèn ảnh vào bài viết</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        disabled={isUploading}
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            try {
-                              const url = await handleImageUpload(file);
-                              const mdImage = `\n\n![ảnh_mô_tả](${url})\n\n`;
-                              setEditingBlogPost(prev => {
-                                if (!prev) return null;
-                                const newContent = (prev.data.content || "") + mdImage;
-                                return { ...prev, data: { ...prev.data, content: newContent } };
-                              });
-                            } catch (err: any) {
-                              alert("Lỗi tải ảnh lên bài viết: " + err.message);
-                            }
-                          }
-                        }}
-                      />
-                    </label>
                   </div>
-                  <textarea
-                    required
-                    rows={6}
-                    placeholder="Nhập nội dung chi tiết bài viết... Có thể chèn ảnh bằng nút tải lên ở trên để thêm hình ảnh mô tả vào giữa các đoạn văn bản."
-                    value={editingBlogPost.data.content}
-                    onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, content: e.target.value } } : null)}
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none resize-none font-light font-mono text-[11px]"
+                  <RichTextEditor
+                    placeholder="Nhập nội dung chi tiết bài viết..."
+                    value={editingBlogPost.data.content || ""}
+                    onChange={(value) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, content: value } } : null)}
                   />
                 </div>
 
