@@ -121,7 +121,7 @@ export const ABOUT_SECTIONS = {
       "Bằng sáng chế Cleansing Balm hòa tan độc quyền & Công nghệ sấy chân không nhiệt độ cao cho Foam Cleanser.",
       "Nghiên cứu nguyên liệu hữu cơ thuần chay (Vegan) & Hoạt chất hỗ trợ cải thiện da dị ứng (Atopic) cho trẻ nhỏ."
     ],
-    image: "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
   },
   partners: {
     title: "ĐỐI TÁC & THƯƠNG HIỆU GIA CÔNG",
@@ -259,7 +259,7 @@ export const MANUFACTURING_CATEGORIES: ManufacturingCategory[] = [
     id: "facial-care",
     title: "Gia công Chăm sóc da mặt (Facial Care)",
     description: "Dòng sản phẩm cốt lõi mang lại doanh thu cao nhất cho mọi thương hiệu mỹ phẩm.",
-    image: "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     subCategories: [
       "Serum chống lão hóa, phục hồi da (B5, HA, Peptide, Exosome)",
       "Kem dưỡng trắng da mờ thâm nám (Niacinamide, Arbutin)",
@@ -424,7 +424,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Năm 2026 chứng kiến bước chuyển mình mạnh mẽ từ các hoạt chất hóa học truyền thống sang công nghệ sinh học tế bào. Điển hình là Exosome - chất truyền tin tế bào siêu nhỏ có khả năng kích hoạt tái tạo collagen tự thân gấp 300% so với tế bào gốc thông thường. Đồng thời, Bakuchiol tiếp tục khẳng định vị thế là ngôi sao sáng cho làn da nhạy cảm nhờ hiệu quả chống lão hóa tương đương Retinol nhưng không gây bong tróc, mẩn đỏ. Việc ứng dụng sớm các hoạt chất này giúp thương hiệu tạo ra USP mạnh mẽ.",
     date: "05 Tháng 7, 2026",
     author: "Bum-Chul Hur (Viện trưởng R&D Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
   },
   {
     title: "Kinh nghiệm tối ưu hóa chi phí sản xuất ban đầu cho startup mỹ phẩm",
@@ -487,7 +487,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Waterless Beauty (Mỹ phẩm không nước) đang là cuộc cách mạng bảo vệ môi trường toàn cầu. Bằng cách loại bỏ nước khoáng thông thường và thay thế bằng hydrolat hoa hồng, nước lô hội hữu cơ, hoặc sản xuất dưới dạng thanh sáp/bột khô, sản phẩm không cần sử dụng nhiều chất bảo quản hóa học. Điều này không chỉ giảm thiểu tối đa kích ứng da mà còn giúp tiết kiệm tài nguyên nước quý giá và giảm đáng kể lượng khí thải carbon khi vận chuyển.",
     date: "18 Tháng 6, 2026",
     author: "Bà Hoàng Thu Trang (Chuyên gia Xu hướng Tiêu dùng)",
-    image: "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
   },
   {
     title: "Chiến lược xây dựng phễu sản phẩm mỹ phẩm đột phá cho các thương hiệu mới",
@@ -550,7 +550,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Thị trường mỹ phẩm nam giới đang chứng kiến tốc độ tăng trưởng hai chữ số hằng năm. Khác với phái đẹp, nam giới ưu tiên tính tiện lợi, bao bì tối giản đậm tính nam tính và kết cấu sản phẩm thẩm thấu siêu nhanh, không bóng nhờn. Các dòng sản phẩm đa năng 3-trong-1 (sữa rửa mặt kiêm cạo râu, dưỡng ẩm kiêm chống nắng dạng nước gel mỏng nhẹ) đang là những mảnh đất màu mỡ cho các startup khai phá hiệu quả.",
     date: "01 Tháng 7, 2026",
     author: "Ông Nguyễn Đăng Khoa (Giám đốc Phát triển Thị trường Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
   },
   {
     title: "Tối ưu hóa quy trình chiết rót tự động và kiểm soát dung sai thể tích mỹ phẩm",
@@ -629,7 +629,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "PHỤC HỒI CẤP TỐC",
     "testedCount": 154,
     "hotPercent": 85,
-    "image": "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     "description": "Công thức phục hồi tế bào thế hệ mới kết hợp Panthenol (Vitamin B5) nồng độ cao và hoạt chất Exosome siêu nhỏ chiết xuất từ rau má. Giúp làm dịu mẩn đỏ tức thì, kích thích tăng sinh collagen tự thân và củng cố hàng rào bảo vệ da mạnh mẽ.",
     "ingredients": "Panthenol 10%, Exosome chiết xuất rau má, Centella Asiatica Extract, Hyaluronic Acid đa tầng, Ceramide NP.",
     "guidelines": "Thoa 3-4 giọt lên da mặt sạch sau bước toner. Vỗ nhẹ để dưỡng chất thẩm thấu sâu. Phù hợp sử dụng sau các liệu trình laser, peel da hoặc treatment nặng."
@@ -791,7 +791,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "CẤP ẨM LÀM DỊU",
     "testedCount": 52,
     "hotPercent": 55,
-    "image": "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     "description": "Nước hoa hồng cân bằng ẩm chiết xuất từ những cánh hoa cúc vạn thọ tươi nguyên chất, nhẹ nhàng làm sạch sâu, se khít lỗ chân lông và phục hồi độ ẩm mịn tự nhiên của làn da.",
     "ingredients": "Chiết xuất hoa cúc Calendula, Allantoin, Hyaluronic Acid, chiết xuất rau má dịu da.",
     "guidelines": "Thấm đều toner lên bông tẩy trang rồi nhẹ nhàng lau khắp khuôn mặt, hoặc vỗ trực tiếp bằng tay sạch sau bước rửa mặt."
@@ -951,7 +951,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "KÌ SẠCH TẾ BÀO CHẾT",
     "testedCount": 38,
     "hotPercent": 42,
-    "image": "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     "description": "Gel tẩy tế bào chết hóa học kết hợp vật lý nhờ AHA cam tươi dịu nhẹ, cuốn trôi bã nhờn, thông thoáng nang chân lông và dưỡng ẩm sâu cho làn da sần sùi bật tông láng mịn nhanh chóng.",
     "ingredients": "AHA chiết xuất cam sành tươi, Cellulose tự nhiên, Glycerin, Panthenol.",
     "guidelines": "Thoa một lượng gel vừa đủ lên da body khô ráo, massage xoay tròn nhẹ nhàng cho đến khi lớp tế bào sừng kết tủa rơi ra, sau đó tắm lại sạch."
@@ -1109,7 +1109,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "MÁI TÓC SUÔN MƯỢT",
     "testedCount": 52,
     "hotPercent": 55,
-    "image": "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     "description": "Mặt nạ phục hồi tóc chuyên sâu ứng dụng công nghệ collagen thủy phân cấu trúc phân tử siêu mịn. Giúp thấm sâu vào từng thớ tóc, tái kết cấu các liên kết keratin bị gãy rách do nhiệt và hóa chất uốn nhuộm.",
     "ingredients": "Hydrolyzed Collagen, Keratin thủy phân, Bơ hạt mỡ, dồi dào axit amin thiết yếu.",
     "guidelines": "Sau khi gội đầu, thoa lượng kem vừa đủ lên toàn bộ thân tóc (tránh da đầu). Ủ lạnh 15-20 phút hoặc hấp nóng, sau đó xả sạch hoàn toàn với nước lạnh."
@@ -1270,7 +1270,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "CHỐNG THẤM NƯỚC",
     "testedCount": 33,
     "hotPercent": 35,
-    "image": "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     "description": "Bút kẻ mắt nước đầu cọ lông mảnh chỉ 0.01mm giúp dễ dàng tạo các đường liner mảnh khảnh, sắc nét. Công nghệ màng phim thông minh chống trôi, chống lem hoàn toàn khi đổ mồ hôi hay gặp nước mưa.",
     "ingredients": "Acrylates Copolymer tạo màng phim giữ màu, carbon đen tinh khiết, nước siêu tinh khiết EDI.",
     "guidelines": "Đặt bút nằm sát đường mi mắt, vẽ một nét liền từ đầu mắt hướng ra đuôi mắt, có thể kẻ xếch nhẹ ở đuôi để tạo hiệu ứng mắt mèo."
@@ -1430,7 +1430,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "TRẮNG RĂNG TỰ NHIÊN",
     "testedCount": 78,
     "hotPercent": 65,
-    "image": "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     "description": "Kem đánh răng thảo mộc tích hợp bột than tre hoạt tính gội sạch các mảng bám ố vàng do trà và cà phê gây ra trên men răng, đồng thời củng cố độ bền chắc nướu lợi bằng chiết xuất cúc la mã.",
     "ingredients": "Bột than hoạt tính tre hữu cơ, chiết xuất cúc La Mã, Calcium Carbonate, keo ong tự nhiên bảo vệ răng.",
     "guidelines": "Sử dụng một lượng kem vừa đủ chải răng đều đặn ít nhất 2 lần mỗi ngày (sáng và tối) để bảo vệ nụ cười sáng khỏe."
@@ -1589,7 +1589,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "VI KIM SINH HỌC TẢO BIỂN",
     "testedCount": 54,
     "hotPercent": 60,
-    "image": "https://images.unsplash.com/photo-1530490125959-16e7f7ecd1c7?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
     "description": "Ứng dụng các gai vi kim sinh học silic tự nhiên siêu nhỏ chiết xuất từ tảo biển Brittany. Khơi gợi cơ chế tự sửa chữa vết thương tổn tế bào da, làm thông thoáng phễu lỗ chân lông và đẩy nhanh chu kỳ sừng hóa da giúp căng bóng mịn màng.",
     "ingredients": "Spicules tảo biển tinh khiết 100%, chiết xuất tế bào gốc nhân sâm, peptide sinh học dồi dào, vitamin B5 làm dịu.",
     "guidelines": "Dùng lượng nhỏ thoa lên vùng da sẹo thâm hoặc toàn mặt vào buổi tối. Nhấn nhẹ tay vào da để cảm nhận cảm giác kim châm li ti (hiện tượng sinh học bình thường). Sử dụng 1-2 lần một tuần."

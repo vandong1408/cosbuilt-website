@@ -62,7 +62,7 @@ export default function ArticleManagement({
                 {posts.map((post, index) => (
                   <div key={index} className="bg-white border border-stone-200 rounded-xl p-3 flex gap-3 hover:shadow-sm hover:border-emerald-green/30 transition-all duration-200 relative group">
                     <img 
-                      src={post.image || "https://images.unsplash.com/photo-1556228578-0f85a1a1d596?q=80&w=400"} 
+                      src={post.image || "https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=400"} 
                       alt={post.title} 
                       className="w-20 h-20 object-cover rounded-lg bg-stone-100 shrink-0"
                       referrerPolicy="no-referrer"

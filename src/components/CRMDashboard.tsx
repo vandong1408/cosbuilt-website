@@ -112,11 +112,11 @@ const getDefaultPackagings = (prod: any) => {
     "photo-1620916566398-39f1143ab7be",
     "photo-1601049541289-9b1b7bbbfe19",
     "photo-1611930022073-b7a4ba5fcccd",
-    "photo-1614859324967-bdf461fec769",
+    "photo-1547887537-6158d64c35b3",
     "photo-1616683693504-3ea7e9ad6fec",
-    "photo-1631730359575-38e4755d772b",
+    "photo-1551288049-bebda4e38f71",
     "photo-1612817288484-6f916006741a",
-    "photo-1629732047847-50b7ecf0cbf1"
+    "photo-1556228453-efd6c1ff04f6"
   ];
 
   const creamPool = [
@@ -124,19 +124,19 @@ const getDefaultPackagings = (prod: any) => {
     "photo-1556228720-195a672e8a03",
     "photo-1617897903246-719242758050",
     "photo-1601924994987-69e26d50dc26",
-    "photo-1620917670397-fe713e413676",
+    "photo-1584622650111-993a426fbf0a",
     "photo-1611080626919-7cf5a9dbab5b",
     "photo-1515377905703-c4788e51af15",
     "photo-1608571423902-eed4a5ad8108"
   ];
 
   const cleanserPool = [
-    "photo-1556228578-0f85a1a1d596",
+    "photo-1450133064473-71024230f91b",
     "photo-1556229174-5e42a09e45af",
     "photo-1535585209827-a15fcdbc4c2d",
     "photo-1526947425960-945c6e72858f",
-    "photo-1527799822341-478a783b83d0",
-    "photo-1519735797-402b0542195a",
+    "photo-1434626881859-194d67b2b86f",
+    "photo-1544816155-12df9643f363",
     "photo-1540555700478-4be289fbecef",
     "photo-1626806787461-102c1bfaaea1",
     "photo-1570172619644-dfd03ed5d881"
@@ -145,7 +145,7 @@ const getDefaultPackagings = (prod: any) => {
   const maskPool = [
     "photo-1512290923902-8a9f81dc236c",
     "photo-1570172619644-dfd03ed5d881",
-    "photo-1610913765184-b67ae2c0ca9c",
+    "photo-1460925895917-afdab827c52f",
     "photo-1598440947619-2c35fc9aa908",
     "photo-1608248597279-f99d160bfcbc"
   ];
