@@ -169,9 +169,17 @@ export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) 
             <div className="space-y-3 text-xs text-stone-400 leading-relaxed font-light">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-satin-gold shrink-0 mt-0.5" />
-                <span>
-                  <strong>{t("footer_address_label")}:</strong> {t("footer_address_value")}
-                </span>
+                <div>
+                  <strong className="text-stone-200 block mb-0.5">{t("footer_office_label")}:</strong>
+                  <span>{t("footer_office_address")}</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-satin-gold shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-stone-200 block mb-0.5">{t("footer_factory_label")}:</strong>
+                  <span>{t("footer_factory_address")}</span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-satin-gold shrink-0" />

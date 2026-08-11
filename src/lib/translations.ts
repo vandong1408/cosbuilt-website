@@ -66,9 +66,9 @@ export const translations: TranslationDictionary = {
     ko: "백만 달러 브랜드 창조"
   },
   "hero_desc": {
-    vi: "Nhà máy gia công mỹ phẩm trọn gói Cosbuilt đạt chuẩn quốc tế. Từ ý tưởng khoa học trong phòng Lab đến dây chuyền sản xuất hàng loạt tự động. Chúng tôi biến giấc mơ mỹ phẩm của bạn thành hiện thực vượt trội.",
-    en: "Cosbuilt is an international standard full-service cosmetics manufacturer. From scientific formulation in the R&D Lab to automated mass production lines, we turn your cosmetic brand dreams into market-leading reality.",
-    ko: "코스빌트는 국제 표준을 준수하는 화장품 OEM/ODM 종합 제조사입니다. R&D 연구소의 과학적 처방부터 자동화 대량 생산 라인까지, 고객님의 화장품 브랜드 꿈을 시장 선도적인 현실로 만들어 드립니다."
+    vi: "Tổ hợp nhà máy gia công mỹ phẩm OEM/ODM Cosbuilt đạt chuẩn quốc tế ISO 22716 / CGMP tại Hàn Quốc. Từ ý tưởng khoa học trong phòng Lab đến dây chuyền sản xuất hàng loạt tự động. '연구원들이 만드는 화장품' - biến giấc mơ thương hiệu của bạn thành hiện thực.",
+    en: "Cosbuilt is an international ISO 22716 / CGMP standard full-service cosmetics manufacturer in Korea. From scientific R&D formulation to automated mass production. 'Cosmetics made by researchers' - turning your brand dreams into reality.",
+    ko: "코스빌트은 ISO 22716 / CGMP 국제 표준을 준수하는 전문 화장품 OEM/ODM 제조사입니다. R&D 연구소의 처방부터 자동화 생산까지 '연구원들이 만드는 화장품'으로 귀사의 브랜드를 성공으로 이끕니다."
   },
   "trend_2026": {
     vi: "Xu hướng thành phần 2026",
@@ -149,11 +149,6 @@ export const translations: TranslationDictionary = {
   },
 
   // Sub menus About Us
-  "about_Cosbuilt": {
-    vi: "Về Cosbuilt",
-    en: "About Cosbuilt",
-    ko: "코스빌트 소개"
-  },
   "about_cosbuilt": {
     vi: "Về Cosbuilt",
     en: "About Cosbuilt",
@@ -494,9 +489,9 @@ export const translations: TranslationDictionary = {
 
   // Footer Titles & Notes
   "footer_intro_desc": {
-    vi: "Cosbuilt là đơn vị gia công hóa mỹ phẩm và chăm sóc cá nhân chuẩn CGMP ASEAN hàng đầu thế giới. Chúng tôi kiến tạo những sản phẩm an toàn, mang hiệu quả đột phá từ nguồn dược liệu thiên nhiên kết hợp nghiên cứu khoa học đỉnh cao.",
-    en: "Cosbuilt is a global leading cosmetics and personal care full-service contract manufacturer adhering to CGMP ASEAN standards. We create safe, revolutionary skin and body products by fusing organic botanicals with peak scientific R&D.",
-    ko: "코스빌트는 CGMP 아세안 표준을 엄격히 준수하는 화장품 및 퍼스널 케어 글로벌 제조 선도 기업입니다. 최고 수준의 R&D 과학 연구와 청정 자연 유래 원료를 융합하여 혁신적이고 안전한 화장품을 창조합니다."
+    vi: "Cosbuilt là tổ hợp nhà máy gia công mỹ phẩm OEM/ODM chuẩn quốc tế ISO 22716 / CGMP tại Hàn Quốc. Với triết lý 'Mỹ phẩm chế tạo bởi đội ngũ nhà nghiên cứu', chúng tôi kiến tạo các dòng sản phẩm chất lượng cao, độc quyền cho các thương hiệu trên toàn thế giới.",
+    en: "Cosbuilt is an international ISO 22716 / CGMP cosmetic OEM/ODM manufacturing group in South Korea. With 'Cosmetics created by researchers', we develop high quality exclusive products for global brands.",
+    ko: "코스빌트은 ISO 22716 / CGMP 국제 표준을 준수하는 화장품 OEM/ODM 전문 개발 및 제조 기업입니다. '연구원들이 만드는 화장품'을 슬로건으로 최고 품질의 화장품을 선사합니다."
   },
   "footer_service_title": {
     vi: "Dịch vụ gia công",
@@ -509,29 +504,39 @@ export const translations: TranslationDictionary = {
     ko: "생산 카테고리"
   },
   "footer_office_title": {
-    vi: "Văn phòng",
-    en: "Headquarters",
-    ko: "본사 사무실"
+    vi: "Văn phòng & Nhà máy",
+    en: "Office & Factory",
+    ko: "사무실 및 공장"
   },
-  "footer_address_label": {
-    vi: "Địa chỉ",
-    en: "Address",
-    ko: "주소"
+  "footer_office_label": {
+    vi: "Địa chỉ Văn phòng",
+    en: "Office Address",
+    ko: "사무실 주소"
   },
-  "footer_address_value": {
+  "footer_office_address": {
     vi: "Văn phòng số 2.40 khu văn phòng, tòa nhà The Prince Residence, số 19-21 Nguyễn Văn Trỗi, Phường Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam.",
     en: "Office Suite 2.40, The Prince Residence Building, 19-21 Nguyen Van Troi Str, Phu Nhuan Dist, Ho Chi Minh City, Vietnam.",
     ko: "베트남 호치민시 푸뉴언군 응웬반쪼이 19-21, 더 프린스 레지던스 빌딩 2.40호 사무실."
   },
+  "footer_factory_label": {
+    vi: "Địa chỉ Nhà máy",
+    en: "Factory Address",
+    ko: "공장 주소"
+  },
+  "footer_factory_address": {
+    vi: "Nhà máy 2 (Incheon): 35, Aenggogae-ro 449beon-gil, Namdong-gu, Incheon, Hàn Quốc | Nhà máy 1 (Gimpo): Gimpo-si, Gyeonggi-do, Hàn Quốc.",
+    en: "Factory 2 (Incheon): 35, Aenggogae-ro 449beon-gil, Namdong-gu, Incheon, Korea | Factory 1 (Gimpo): Gimpo-si, Gyeonggi-do, Korea.",
+    ko: "제2인천공장: 인천광역시 남동구 앵고개로449번길 35, 1층 | 제1김포공장: 경기도 김포시."
+  },
   "footer_working_hours": {
-    vi: "Giờ làm việc: 08:00 - 17:30 (Thứ 2 - Thứ 7)",
-    en: "Working Hours: 08:00 - 17:30 (Monday - Saturday)",
-    ko: "근무 시간: 08:00 - 17:30 (월요일 - 토요일)"
+    vi: "Giờ làm việc: 09:00 - 18:00 (Thứ 2 - Thứ 6)",
+    en: "Working Hours: 09:00 - 18:00 (Monday - Friday)",
+    ko: "근무 시간: 09:00 - 18:00 (월요일 - 금요일)"
   },
   "footer_rights": {
-    vi: "© 2026 Cosbuilt Co., Ltd. All rights reserved. Tiêu chuẩn quốc tế CGMP ASEAN.",
-    en: "© 2026 Cosbuilt Co., Ltd. All rights reserved. CGMP ASEAN International Standards.",
-    ko: "© 2026 Cosbuilt Co., Ltd. All rights reserved. 아세안 CGMP 국제 기준 준수 공장."
+    vi: "© 2026 Cosbuilt. All rights reserved. Tiêu chuẩn ISO 22716:2007 / CGMP.",
+    en: "© 2026 Cosbuilt. All rights reserved. ISO 22716:2007 / CGMP Certified.",
+    ko: "© 2026 코스빌트. All rights reserved. ISO 22716:2007 / CGMP 인증."
   },
   "footer_policy": {
     vi: "Chính sách bảo mật công thức",

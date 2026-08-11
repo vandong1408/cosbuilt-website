@@ -1577,7 +1577,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Thế mạnh vượt trội</span>
                     <h2 className="text-3xl font-serif font-bold text-stone-900">Danh Mục Gia Công Mũi Nhọn</h2>
                     <p className="text-stone-500 text-xs md:text-sm max-w-xl mx-auto">
-                      Cosbuild nghiên cứu và sản xuất trọn gói mọi phân khúc mỹ phẩm chăm sóc toàn thân chất lượng hàng đầu thế giới.
+                      Cosbuilt nghiên cứu và sản xuất trọn gói mọi phân khúc mỹ phẩm chăm sóc toàn thân chất lượng hàng đầu thế giới.
                     </p>
                   </div>
 
@@ -1809,7 +1809,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {/* Section 1: Về Cosbuild */}
+                    {/* Section 1: Về Cosbuilt */}
                     <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                       <div className="space-y-5 text-left">
                         <span className="bg-emerald-green-light text-emerald-green text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
