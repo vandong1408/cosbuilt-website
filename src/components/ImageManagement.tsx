@@ -39,7 +39,7 @@ export default function ImageManagement({
                     src={img.image} 
                     alt={img.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
-                    referrerPolicy="no-referrer"
+                    referrerPolicy="origin-when-cross-origin"
                   />
                   <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
                     <button onClick={() => onEdit(img, index)} className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"><Edit3 className="w-3 h-3" /></button>
