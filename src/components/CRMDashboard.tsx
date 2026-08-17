@@ -758,8 +758,16 @@ export default function CRMDashboard({
     }
   };
 
+  // Load leads only once authenticated. Re-runs when the admin logs in, so the
+  // list populates immediately without a manual page reload. Avoids firing
+  // unauthorized /api/leads requests (401) before login.
   useEffect(() => {
-    fetchLeads();
+    if (isLoggedIn) {
+      fetchLeads();
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
     if (sheetsConfig.spreadsheetId) {
       setSheetInput(sheetsConfig.spreadsheetId);
     }
