@@ -1,4 +1,5 @@
 import type { Env } from "../_shared/types";
+import { requireAdmin } from "../_shared/auth";
 
 const CONTENT_TYPES: Record<string, string> = {
   ".png": "image/png",
@@ -19,6 +20,9 @@ function base64ToUint8Array(base64: string): Uint8Array {
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
   try {
     const { filename, base64 } = await request.json<{ filename?: string; base64?: string }>();
     if (!filename || !base64) {

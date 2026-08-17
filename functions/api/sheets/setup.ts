@@ -1,7 +1,11 @@
 import type { Env } from "../../_shared/types";
 import { loadSheetsConfig } from "../../_shared/sheetsConfig";
+import { requireAdmin } from "../../_shared/auth";
 
-export const onRequestPost: PagesFunction<Env> = async ({ env }) => {
+export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
   try {
     const config = await loadSheetsConfig(env.DB);
     const webAppUrl = config.webAppUrl;

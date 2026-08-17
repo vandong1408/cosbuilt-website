@@ -1,4 +1,5 @@
 import type { Env } from "../../_shared/types";
+import { requireAdmin } from "../../_shared/auth";
 
 interface Lead {
   id: string;
@@ -14,7 +15,10 @@ interface Lead {
   createdAt: string;
 }
 
-export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
+export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
   const { results } = await env.DB
     .prepare("SELECT * FROM leads ORDER BY createdAt DESC")
     .all<Lead>();

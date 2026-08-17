@@ -1,5 +1,6 @@
 import type { Env } from "../../_shared/types";
 import { loadSheetsConfig, saveSheetsConfig, syncToGoogleSheets } from "../../_shared/sheetsConfig";
+import { requireAdmin } from "../../_shared/auth";
 
 export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
   const config = await loadSheetsConfig(env.DB);
@@ -14,6 +15,9 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
 };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUntil }) => {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
   try {
     const { articles, images, logos, websiteLogo, footerLogo, products, actionInfo } = await request.json<any>();
     const config = await loadSheetsConfig(env.DB);

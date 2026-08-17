@@ -1,8 +1,12 @@
 import type { Env } from "../../_shared/types";
 import { extractSpreadsheetId, fetchSheetWithFallbacks, parseSheetCSV, mapRowsToArticles, mapRowsToImages, mapRowsToProducts } from "../../_shared/csv";
 import { loadSheetsConfig, saveSheetsConfig } from "../../_shared/sheetsConfig";
+import { requireAdmin } from "../../_shared/auth";
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
   try {
     const { spreadsheetId: inputId } = await request.json<{ spreadsheetId?: string }>();
     const config = await loadSheetsConfig(env.DB);

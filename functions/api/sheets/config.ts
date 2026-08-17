@@ -1,6 +1,7 @@
 import type { Env } from "../../_shared/types";
 import { extractSpreadsheetId } from "../../_shared/csv";
 import { loadSheetsConfig, saveSheetsConfig } from "../../_shared/sheetsConfig";
+import { requireAdmin } from "../../_shared/auth";
 
 export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
   const config = await loadSheetsConfig(env.DB);
@@ -14,6 +15,9 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
 };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
   const { spreadsheetId: inputId, webAppUrl } = await request.json<{ spreadsheetId?: string; webAppUrl?: string }>();
   const config = await loadSheetsConfig(env.DB);
 

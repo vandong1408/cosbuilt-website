@@ -39,11 +39,12 @@ import {
   ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { 
-  initAuth, 
-  googleSignIn, 
-  googleLogout, 
-  getAccessToken 
+import { authHeaders, setAdminToken, clearAdminToken, verifyAdminToken } from "../lib/adminAuth";
+import {
+  initAuth,
+  googleSignIn,
+  googleLogout,
+  getAccessToken
 } from "../firebase";
 import { 
   extractSpreadsheetId, 
@@ -316,22 +317,39 @@ export default function CRMDashboard({
 }: CRMDashboardProps) {
   // Admin Authentication State
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("cosbuilt_admin_logged_in") === "true";
+    // Require BOTH the logged-in flag and a stored admin token, so that a stale
+    // flag from before the server-auth upgrade never grants access on its own.
+    return localStorage.getItem("cosbuilt_admin_logged_in") === "true"
+      && !!localStorage.getItem("cosbuilt_admin_token");
   });
   const [activeSidebarTab, setActiveSidebarTab] = useState("articles");
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   
-  // Admin Credentials State
+  // Admin Credentials State. The username is a cosmetic first gate stored
+  // locally; the real password is verified server-side against ADMIN_TOKEN.
   const [adminUsername, setAdminUsername] = useState(() => localStorage.getItem("admin_username") || "admin");
-  const [adminPassword, setAdminPassword] = useState(() => localStorage.getItem("admin_password") || "1234");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [showAdminPassword, setShowAdminPassword] = useState(false);
 
-  const handleLogin = (e: FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (usernameInput.trim().toLowerCase() === adminUsername.trim().toLowerCase() && passwordInput.trim() === adminPassword.trim()) {
+    if (usernameInput.trim().toLowerCase() !== adminUsername.trim().toLowerCase()) {
+      setLoginError("Tên đăng nhập hoặc mật khẩu quản trị không chính xác.");
+      return;
+    }
+
+    // The password IS the server-side ADMIN_TOKEN. Verify it against the
+    // server so that access to sensitive data is enforced by the backend,
+    // not just the browser.
+    const token = passwordInput.trim();
+    setIsLoggingIn(true);
+    const ok = await verifyAdminToken(token);
+    setIsLoggingIn(false);
+
+    if (ok) {
+      setAdminToken(token);
       setIsLoggedIn(true);
       localStorage.setItem("cosbuilt_admin_logged_in", "true");
       setLoginError("");
@@ -343,6 +361,7 @@ export default function CRMDashboard({
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    clearAdminToken();
     localStorage.removeItem("cosbuilt_admin_logged_in");
     setUsernameInput("");
     setPasswordInput("");
@@ -409,7 +428,7 @@ export default function CRMDashboard({
       // 1. Save locally to server database cache first
       const res = await fetch("/api/sheets/data", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(true),
         body: JSON.stringify(payload)
       });
       if (res.ok) {
@@ -695,7 +714,7 @@ export default function CRMDashboard({
         try {
           const res = await fetch("/api/upload", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: authHeaders(true),
             body: JSON.stringify({
               filename: file.name,
               base64: reader.result as string
@@ -727,7 +746,7 @@ export default function CRMDashboard({
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/leads");
+      const res = await fetch("/api/leads", { headers: authHeaders() });
       if (res.ok) {
         const data = await res.json();
         setLeads(data);
@@ -775,7 +794,7 @@ export default function CRMDashboard({
     try {
       const res = await fetch(`/api/leads/${selectedLead.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(true),
         body: JSON.stringify({
           status: leadStatus,
           notes: adminNotes
@@ -797,7 +816,8 @@ export default function CRMDashboard({
   const handleDeleteLead = async (id: string) => {
     try {
       const res = await fetch(`/api/leads/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: authHeaders()
       });
       if (res.ok) {
         fetchLeads();
@@ -812,7 +832,7 @@ export default function CRMDashboard({
     try {
       const res = await fetch(`/api/leads/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(true),
         body: JSON.stringify({
           status: updatedStatus,
           notes: updatedNotes
@@ -879,7 +899,7 @@ export default function CRMDashboard({
       // Save configuration
       const configRes = await fetch("/api/sheets/config", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(true),
         body: JSON.stringify({ spreadsheetId })
       });
       if (!configRes.ok) throw new Error("Không thể lưu cấu hình");
@@ -923,7 +943,7 @@ export default function CRMDashboard({
       // Save configuration
       const configRes = await fetch("/api/sheets/config", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(true),
         body: JSON.stringify({ spreadsheetId })
       });
       if (!configRes.ok) throw new Error("Không thể lưu cấu hình");
@@ -986,7 +1006,7 @@ export default function CRMDashboard({
           const nowStr = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
           await fetch("/api/sheets/config", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: authHeaders(true),
             body: JSON.stringify({ spreadsheetId })
           });
           
@@ -1199,9 +1219,10 @@ export default function CRMDashboard({
 
             <button
               type="submit"
-              className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer tracking-wider uppercase"
+              disabled={isLoggingIn}
+              className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer tracking-wider uppercase disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <span>Đăng nhập hệ thống</span>
+              <span>{isLoggingIn ? "Đang xác thực..." : "Đăng nhập hệ thống"}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
@@ -1960,11 +1981,11 @@ export default function CRMDashboard({
         {activeSubTab === "admin-settings" && (
           <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6 text-left pt-2">
             <h3 className="font-serif font-bold text-xl text-stone-900">Quản lý Tài khoản Admin</h3>
-            <p className="text-stone-500 text-sm font-light">Cập nhật tên đăng nhập và mật khẩu quản trị hệ thống.</p>
-            
+            <p className="text-stone-500 text-sm font-light">Cập nhật tên đăng nhập hiển thị. Mật khẩu quản trị được bảo vệ ở phía máy chủ.</p>
+
             <div className="space-y-4 max-w-sm">
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">Tên đăng nhập mới</label>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">Tên đăng nhập</label>
                 <input
                   type="text"
                   placeholder="admin"
@@ -1973,30 +1994,18 @@ export default function CRMDashboard({
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:border-emerald-green focus:outline-none transition-all"
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">Mật khẩu mới</label>
-                <div className="relative">
-                  <input
-                    type={showAdminPassword ? "text" : "password"}
-                    placeholder="••••"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:border-emerald-green focus:outline-none transition-all pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowAdminPassword(!showAdminPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 hover:text-stone-600"
-                  >
-                    {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-1.5">
+                <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider">Mật khẩu bảo mật</label>
+                <p className="text-xs text-amber-800 font-light leading-relaxed">
+                  Mật khẩu đăng nhập chính là giá trị secret <code className="font-mono font-bold">ADMIN_TOKEN</code> được đặt trên Cloudflare.
+                  Để đổi mật khẩu, cập nhật secret này trong Cloudflare Pages (Settings → Environment variables / Secrets) rồi deploy lại.
+                  Không thể đổi mật khẩu trực tiếp tại đây vì lý do an toàn.
+                </p>
               </div>
               <button
                 onClick={() => {
                   localStorage.setItem("admin_username", adminUsername);
-                  localStorage.setItem("admin_password", adminPassword);
-                  alert("Đã lưu thông tin tài khoản admin!");
+                  alert("Đã lưu tên đăng nhập admin!");
                 }}
                 className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-3 px-6 rounded-xl transition-all cursor-pointer shadow-xs"
               >
