@@ -1051,7 +1051,9 @@ export default function App() {
     }
   };
 
-  // Load sheets configuration, data, and CRM leads on component mount
+  // Load sheets configuration and public content on component mount.
+  // CRM leads are NOT loaded here — they are sensitive customer data and are
+  // fetched only inside the authenticated admin dashboard (CRMDashboard).
   useEffect(() => {
     const fetchSheetsData = async () => {
       try {
@@ -1091,20 +1093,7 @@ export default function App() {
       }
     };
     
-    const loadLeadsData = async () => {
-      try {
-        const res = await fetch("/api/leads");
-        if (res.ok) {
-          const data = await res.json();
-          setLeads(data);
-        }
-      } catch (error) {
-        console.error("Failed to load leads:", error);
-      }
-    };
-    
     fetchSheetsData();
-    loadLeadsData();
   }, []);
   
   // Interactive Estimator States
@@ -1249,6 +1238,13 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   };
 
   const handleTabChange = (tabId: string, subId?: string) => {
+    if (tabId !== "crm" && location.pathname === "/admin") {
+      // Full reload back to "/" - client-side navigate() away from /admin left
+      // the CRM dashboard mounted alongside the main site in this app's router
+      // setup, so force a clean reload instead of a SPA transition here.
+      window.location.href = "/";
+      return;
+    }
     setActiveTab(tabId);
     setActiveSubTab(subId);
     setSearchQuery(""); // Clear search on tab switch
@@ -1297,38 +1293,19 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     }
   };
 
-  const [leads, setLeads] = useState<any[]>([]);
-  const [isLoadingLeads, setIsLoadingLeads] = useState(false);
-
-  const fetchLeads = async () => {
-    setIsLoadingLeads(true);
-    try {
-      const res = await fetch("/api/leads");
-      if (res.ok) {
-        const data = await res.json();
-        setLeads(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch leads:", error);
-    } finally {
-      setIsLoadingLeads(false);
-    }
-  };
-
   const handleContactSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmittedEmail(contactForm.email);
     setIsFormSubmitted(true);
-    
+
     try {
-      const res = await fetch("/api/leads", {
+      // Public lead submission — no auth required. The admin CRM refreshes its
+      // own list (authenticated) when the owner opens it.
+      await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(contactForm)
       });
-      if (res.ok) {
-        fetchLeads(); // refresh CRM list if open or cache updated
-      }
     } catch (err) {
       console.error("Error submitting lead to server API:", err);
     }
