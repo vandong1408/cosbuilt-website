@@ -8,7 +8,8 @@ export interface SheetsConfig {
   images: any[];
   products: any[];
   logos?: any[];
-  websiteLogo?: { name: string; slogan: string };
+  websiteLogo?: { name: string; slogan?: string; image?: string };
+  footerLogo?: { name: string; slogan?: string; image?: string };
 }
 
 const KEY = "sheets_config";

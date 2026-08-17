@@ -271,6 +271,7 @@ export default function App() {
   const [customImages, setCustomImages] = useState<any[]>(DEFAULT_GALLERY_IMAGES);
   const [customLogos, setCustomLogos] = useState<any[]>(ABOUT_SECTIONS.partners.logos);
   const [websiteLogo, setWebsiteLogo] = useState<any>({ name: "COSBUILT" });
+  const [footerLogo, setFooterLogo] = useState<any>({ name: "COSBUILT" });
   const [customProducts, setCustomProducts] = useState<FormulaProduct[]>(FORMULA_PRODUCTS);
 
   const localizedAboutSections = {
@@ -1077,6 +1078,9 @@ export default function App() {
           }
           if (data.websiteLogo) {
             setWebsiteLogo(data.websiteLogo);
+          }
+          if (data.footerLogo) {
+            setFooterLogo(data.footerLogo);
           }
           if (data.products && data.products.length > 0) {
             setCustomProducts(data.products);
@@ -3986,12 +3990,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 customImages={customImages}
                 customLogos={customLogos}
                 websiteLogo={websiteLogo}
+                footerLogo={footerLogo}
                 customProducts={customProducts}
                 sheetsConfig={sheetsConfig}
                 setCustomBlogPosts={setCustomBlogPosts}
                 setCustomImages={setCustomImages}
                 setCustomLogos={setCustomLogos}
                 setWebsiteLogo={setWebsiteLogo}
+                setFooterLogo={setFooterLogo}
                 setCustomProducts={setCustomProducts}
                 setSheetsConfig={setSheetsConfig}
                 onTabChange={handleTabChange}
@@ -4162,7 +4168,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
         )}
       </AnimatePresence>
 
-      {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={websiteLogo} />}
+      {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={footerLogo} />}
       
       {/* Contact Buttons */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">

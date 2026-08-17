@@ -280,12 +280,14 @@ interface CRMDashboardProps {
   customImages: any[];
   customLogos: any[];
   websiteLogo: any;
+  footerLogo: any;
   customProducts: any[];
   sheetsConfig: any;
   setCustomBlogPosts: (posts: any[]) => void;
   setCustomImages: (images: any[]) => void;
   setCustomLogos: (logos: any[]) => void;
   setWebsiteLogo: (logo: any) => void;
+  setFooterLogo: (logo: any) => void;
   setCustomProducts: (products: any[]) => void;
   setSheetsConfig: (config: any) => void;
   onTabChange: (tab: string) => void;
@@ -298,12 +300,14 @@ export default function CRMDashboard({
   customImages,
   customLogos,
   websiteLogo,
+  footerLogo,
   customProducts,
   sheetsConfig,
   setCustomBlogPosts,
   setCustomImages,
   setCustomLogos,
   setWebsiteLogo,
+  setFooterLogo,
   setCustomProducts,
   setSheetsConfig,
   onTabChange,
@@ -353,10 +357,16 @@ export default function CRMDashboard({
   const [editingPkgIdx, setEditingPkgIdx] = useState<number | null>(null);
   const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [isEditingWebsiteLogo, setIsEditingWebsiteLogo] = useState(false);
-  const [tempWebsiteLogo, setTempWebsiteLogo] = useState({ 
-    name: websiteLogo?.name || "COSBUILT", 
+  const [tempWebsiteLogo, setTempWebsiteLogo] = useState({
+    name: websiteLogo?.name || "COSBUILT",
     slogan: websiteLogo?.slogan || "ESTD 1999",
     image: websiteLogo?.image || ""
+  });
+  const [isEditingFooterLogo, setIsEditingFooterLogo] = useState(false);
+  const [tempFooterLogo, setTempFooterLogo] = useState({
+    name: footerLogo?.name || "COSBUILT",
+    slogan: footerLogo?.slogan || "ESTD 1999",
+    image: footerLogo?.image || ""
   });
   const [actionMessage, setActionMessage] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
   const [isSavingContent, setIsSavingContent] = useState(false);
@@ -369,17 +379,28 @@ export default function CRMDashboard({
   // Initialize tempWebsiteLogo whenever websiteLogo updates
   useEffect(() => {
     if (websiteLogo) {
-      setTempWebsiteLogo({ 
-        name: websiteLogo.name, 
+      setTempWebsiteLogo({
+        name: websiteLogo.name,
         slogan: websiteLogo.slogan,
         image: websiteLogo.image || ""
       });
     }
   }, [websiteLogo]);
 
+  // Initialize tempFooterLogo whenever footerLogo updates
+  useEffect(() => {
+    if (footerLogo) {
+      setTempFooterLogo({
+        name: footerLogo.name,
+        slogan: footerLogo.slogan,
+        image: footerLogo.image || ""
+      });
+    }
+  }, [footerLogo]);
+
   // Sync / Save dynamic changes helper
   const saveAllContent = async (
-    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any; products?: any[] },
+    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any; footerLogo?: any; products?: any[] },
     actionInfo?: { action: "add" | "update" | "delete"; sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm"; index?: number; data?: any }
   ) => {
     setIsSavingContent(true);
@@ -398,6 +419,7 @@ export default function CRMDashboard({
           if (payload.images !== undefined) setCustomImages(result.data.images);
           if (payload.logos !== undefined) setCustomLogos(result.data.logos);
           if (payload.websiteLogo !== undefined) setWebsiteLogo(result.data.websiteLogo);
+          if (payload.footerLogo !== undefined) setFooterLogo(result.data.footerLogo);
           if (payload.products !== undefined) setCustomProducts(result.data.products);
           
           // 2. If logged in with Google and a Spreadsheet ID exists, perform direct sync!
@@ -599,6 +621,13 @@ export default function CRMDashboard({
     const success = await saveAllContent({ websiteLogo: tempWebsiteLogo });
     if (success) {
       setIsEditingWebsiteLogo(false);
+    }
+  };
+
+  const handleSaveFooterLogo = async () => {
+    const success = await saveAllContent({ footerLogo: tempFooterLogo });
+    if (success) {
+      setIsEditingFooterLogo(false);
     }
   };
 
@@ -2525,7 +2554,7 @@ export default function CRMDashboard({
                     <div className="flex items-center justify-between border-b border-stone-200 pb-2">
                       <div className="text-left">
                         <h3 className="font-serif font-bold text-lg text-stone-900">Cấu Hình Chung & Logo Website</h3>
-                        <p className="text-stone-400 text-xs font-light">Tùy biến tên thương hiệu và hình ảnh logo hiển thị chính trên thanh Menu chính</p>
+                        <p className="text-stone-400 text-xs font-light">Tùy biến logo Navbar và logo Footer riêng biệt, mỗi logo cập nhật độc lập trên website</p>
                       </div>
                     </div>
 
@@ -2636,6 +2665,118 @@ export default function CRMDashboard({
                           </div>
                           <div className="text-xs text-stone-500 font-light max-w-sm text-left">
                             Tên thương hiệu và hình ảnh logo này sẽ được cập nhật đồng bộ ở đầu trang menu (Navbar) cho khách truy cập website.
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-3xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Briefcase className="w-5 h-5 text-emerald-green" />
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Logo chân trang (Footer)</h3>
+                        </div>
+                        {!isEditingFooterLogo ? (
+                          <button
+                            onClick={() => {
+                              setTempFooterLogo({
+                                name: footerLogo?.name || "COSBUILT",
+                                slogan: footerLogo?.slogan || "",
+                                image: footerLogo?.image || ""
+                              });
+                              setIsEditingFooterLogo(true);
+                            }}
+                            className="border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            Sửa Logo
+                          </button>
+                        ) : null}
+                      </div>
+
+                      {isEditingFooterLogo ? (
+                        <div className="space-y-4 pt-1 text-left">
+                          <div>
+                            <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Tên hiển thị (Logo Text)</label>
+                            <input
+                              type="text"
+                              value={tempFooterLogo.name}
+                              onChange={(e) => setTempFooterLogo(prev => ({ ...prev, name: e.target.value }))}
+                              className="w-full border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                            />
+                          </div>
+
+                          <div className="space-y-1.5 pt-1">
+                            <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Hình ảnh Logo (Tùy chọn - Thay cho dạng chữ)</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Có thể upload file bên cạnh hoặc điền link ảnh..."
+                                value={tempFooterLogo.image}
+                                onChange={(e) => setTempFooterLogo(prev => ({ ...prev, image: e.target.value }))}
+                                className="flex-1 border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                              />
+                              <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                                {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                                <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  disabled={isUploading}
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      try {
+                                        const url = await handleImageUpload(file);
+                                        setTempFooterLogo(prev => ({ ...prev, image: url }));
+                                      } catch (err: any) {
+                                        alert("Lỗi tải ảnh lên: " + err.message);
+                                      }
+                                    }
+                                  }}
+                                />
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end gap-2 pt-2">
+                            <button
+                              onClick={() => setIsEditingFooterLogo(false)}
+                              className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                            >
+                              Hủy
+                            </button>
+                            <button
+                              onClick={handleSaveFooterLogo}
+                              disabled={isSavingContent}
+                              className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              Lưu Logo
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-4">
+                            {footerLogo?.image ? (
+                              <div className="bg-stone-950 p-2 rounded-xl border border-stone-150 shrink-0">
+                                <img
+                                  src={footerLogo.image}
+                                  alt={footerLogo.name}
+                                  className="h-12 w-auto object-contain max-w-[150px]"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+                            ) : null}
+                            <div className="text-left">
+                              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Tên hiển thị hiện tại</div>
+                              <div className="font-serif font-black text-2xl text-stone-900 tracking-widest mt-1 uppercase">{footerLogo?.name || "COSBUILT"}</div>
+                            </div>
+                          </div>
+                          <div className="text-xs text-stone-500 font-light max-w-sm text-left">
+                            Tên thương hiệu và hình ảnh logo này sẽ được cập nhật đồng bộ ở cuối trang (Footer) cho khách truy cập website.
                           </div>
                         </div>
                       )}

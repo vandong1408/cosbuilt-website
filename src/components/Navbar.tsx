@@ -148,19 +148,19 @@ export default function Navbar({
             className="flex items-center cursor-pointer select-none shrink-0"
           >
             {websiteLogo.image ? (
-              <img 
-                src={websiteLogo.image} 
-                alt={websiteLogo.name} 
-                className="h-10 sm:h-12 w-auto object-contain max-w-[180px]"
+              <img
+                src={websiteLogo.image}
+                alt={websiteLogo.name}
+                className="h-14 sm:h-16 w-auto object-contain max-w-[220px]"
                 referrerPolicy="no-referrer"
               />
             ) : (
               <div className="flex flex-col items-start">
-                <span className="text-2xl sm:text-3xl font-serif font-black tracking-widest text-stone-950 leading-none">
+                <span className="text-3xl sm:text-4xl font-serif font-black tracking-widest text-stone-950 leading-none">
                   {websiteLogo.name}
                 </span>
                 {websiteLogo.slogan ? (
-                  <span className="text-[9px] font-bold text-stone-400 tracking-[0.25em] uppercase mt-1 self-center">
+                  <span className="text-[10px] font-bold text-stone-400 tracking-[0.25em] uppercase mt-1 self-center">
                     {websiteLogo.slogan}
                   </span>
                 ) : null}
