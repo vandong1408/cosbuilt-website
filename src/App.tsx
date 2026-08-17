@@ -4162,7 +4162,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
         )}
       </AnimatePresence>
 
-      {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} />}
+      {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={websiteLogo} />}
       
       {/* Contact Buttons */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">

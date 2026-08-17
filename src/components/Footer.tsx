@@ -13,10 +13,12 @@ import { useLanguage } from "../contexts/LanguageContext";
 interface FooterProps {
   onTabChange: (tabId: string, subId?: string) => void;
   onToggleAdminMode?: () => void;
+  websiteLogo?: { name: string; slogan?: string; image?: string };
 }
 
-export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) {
+export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = { name: "COSBUILT" } }: FooterProps) {
   const { t } = useLanguage();
+  const logoInitials = websiteLogo.name?.trim().slice(0, 2).toLowerCase() || "cb";
 
   return (
     <footer className="bg-stone-950 text-stone-300 border-t border-stone-800">
@@ -28,17 +30,28 @@ export default function Footer({ onTabChange, onToggleAdminMode }: FooterProps) 
           
           {/* Company Brief */}
           <div className="space-y-4 text-left">
-            <div 
+            <div
               onDoubleClick={onToggleAdminMode}
               className="flex items-center gap-2 cursor-pointer select-none"
               title={t("footer_double_click_admin") || "Double click to toggle admin mode"}
             >
-              <div className="w-9 h-9 bg-emerald-green rounded-lg flex items-center justify-center border border-satin-gold/20 shadow-md">
-                <span className="text-satin-gold font-serif font-bold text-base tracking-wider">cb</span>
-              </div>
-              <span className="text-lg font-serif font-black tracking-wider text-white">
-                Cosbuilt
-              </span>
+              {websiteLogo.image ? (
+                <img
+                  src={websiteLogo.image}
+                  alt={websiteLogo.name}
+                  className="h-9 w-auto max-w-[140px] object-contain"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <>
+                  <div className="w-9 h-9 bg-emerald-green rounded-lg flex items-center justify-center border border-satin-gold/20 shadow-md">
+                    <span className="text-satin-gold font-serif font-bold text-base tracking-wider">{logoInitials}</span>
+                  </div>
+                  <span className="text-lg font-serif font-black tracking-wider text-white">
+                    {websiteLogo.name}
+                  </span>
+                </>
+              )}
             </div>
             <p className="text-xs text-stone-400 leading-relaxed font-light">
               {t("footer_intro_desc")}
