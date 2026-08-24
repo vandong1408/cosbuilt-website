@@ -1618,13 +1618,15 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     item.priceRange.toLowerCase().includes(priceSearch.toLowerCase())
   );
 
+  // Draft articles are hidden from the public site (admin still sees them).
+  const isPublished = (post: any) => (post?.status || "published") !== "draft";
   const filteredBlogPosts = localizedBlogPosts.filter(post => {
     const matchesCategory = blogCategoryFilter === "all" || post.category === blogCategoryFilter;
     const matchesSearch = searchQuery ? (
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.summary.toLowerCase().includes(searchQuery.toLowerCase())
     ) : true;
-    return matchesCategory && matchesSearch;
+    return isPublished(post) && matchesCategory && matchesSearch;
   });
 
   return (
@@ -1951,7 +1953,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                  {customBlogPosts.slice(0, 2).map((post, idx) => (
+                  {customBlogPosts.filter(isPublished).slice(0, 2).map((post, idx) => (
                     <div 
                       key={idx} 
                       onClick={() => handleSelectBlog(post)}
@@ -3814,7 +3816,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     
                     {/* Related Posts */}
                     <div className="space-y-4">
-                      {customBlogPosts.slice(0, 3).map((post, idx) => (
+                      {customBlogPosts.filter(isPublished).slice(0, 3).map((post, idx) => (
                         <div key={idx} className="flex gap-4 items-start">
                           <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-lg shrink-0" />
                           <div className="space-y-1">

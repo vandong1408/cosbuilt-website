@@ -32,6 +32,7 @@ import {
   Briefcase,
   Check,
   Save,
+  FileText,
   Sparkles,
   ArrowUpToLine,
   Upload,
@@ -371,6 +372,9 @@ export default function CRMDashboard({
 
   // Modals & State for CRUD
   const [editingBlogPost, setEditingBlogPost] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  // JSON snapshot of the article as opened, to detect unsaved changes on exit.
+  const [blogInitialSnapshot, setBlogInitialSnapshot] = useState<string>("");
+  const [showBlogExitPrompt, setShowBlogExitPrompt] = useState(false);
   const [editingImage, setEditingImage] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [editingProduct, setEditingProduct] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [newPkg, setNewPkg] = useState<{ type: "bottle" | "jar" | "tube" | "dropper" | "sachet"; name: string; image: string; description: string } | null>(null);
@@ -537,11 +541,19 @@ export default function CRMDashboard({
     return false;
   };
 
-  const handleSaveBlogPost = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!editingBlogPost) return;
-    const { index, isNew, data } = editingBlogPost;
-    let newPosts = [...customBlogPosts];
+  // Open the full-page article editor and remember a snapshot for the
+  // unsaved-changes check on exit.
+  const openBlogEditor = (payload: { index: number; isNew: boolean; data: any }) => {
+    setBlogInitialSnapshot(JSON.stringify(payload.data));
+    setShowBlogExitPrompt(false);
+    setEditingBlogPost(payload);
+  };
+
+  // Persist the given article data (core save used by both "publish" and "draft").
+  const persistBlogPost = async (data: any) => {
+    if (!editingBlogPost) return false;
+    const { index, isNew } = editingBlogPost;
+    const newPosts = [...customBlogPosts];
     let actionDetails: any;
     if (isNew) {
       newPosts.push(data);
@@ -552,6 +564,32 @@ export default function CRMDashboard({
     }
     const success = await saveAllContent({ articles: newPosts }, actionDetails);
     if (success) {
+      setShowBlogExitPrompt(false);
+      setEditingBlogPost(null);
+    }
+    return success;
+  };
+
+  const handleSaveBlogPost = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingBlogPost) return;
+    // Explicit save = publish, unless the author kept it a draft on purpose.
+    const data = { ...editingBlogPost.data, status: editingBlogPost.data.status || "published" };
+    await persistBlogPost(data);
+  };
+
+  // "Save as draft" from the exit prompt: keep the work, hide it from the public site.
+  const handleSaveBlogDraft = async () => {
+    if (!editingBlogPost) return;
+    await persistBlogPost({ ...editingBlogPost.data, status: "draft" });
+  };
+
+  // Close the editor. Warn if there are unsaved changes.
+  const handleCloseBlogEditor = () => {
+    const dirty = editingBlogPost && JSON.stringify(editingBlogPost.data) !== blogInitialSnapshot;
+    if (dirty) {
+      setShowBlogExitPrompt(true);
+    } else {
       setEditingBlogPost(null);
     }
   };
@@ -2116,7 +2154,7 @@ export default function CRMDashboard({
                     <button
                       onClick={() => {
                         if (cmsSubTab === "articles") {
-                          setEditingBlogPost({
+                          openBlogEditor({
                             index: -1,
                             isNew: true,
                             data: {
@@ -2126,6 +2164,7 @@ export default function CRMDashboard({
                               category: "cẩm nang",
                               summary: "",
                               content: "",
+                              status: "published",
                               date: new Date().toLocaleDateString("vi-VN"),
                               author: "Cosbuilt",
                               image: ""
@@ -2203,7 +2242,7 @@ export default function CRMDashboard({
                       searchTerm={cmsSearchTerm}
                       onEdit={(post, index) => {
                           const originalIndex = customBlogPosts.findIndex(p => p.title === post.title);
-                          setEditingBlogPost({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...post } })
+                          openBlogEditor({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...post } });
                       }}
                       onDelete={(index) => {
                           const post = paginatedArticles[index];
@@ -2930,26 +2969,42 @@ export default function CRMDashboard({
 
         {/* CMS: EDIT BLOG POST MODAL */}
         {editingBlogPost && (
-          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl border border-stone-150 max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-            >
-              <div className="p-6 border-b border-stone-150 flex justify-between items-center bg-stone-50">
-                <h3 className="font-serif font-bold text-lg text-stone-950">
+          <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col">
+            {/* Full-page editor header */}
+            <div className="px-5 sm:px-8 py-4 border-b border-stone-200 flex justify-between items-center bg-white shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  type="button"
+                  onClick={handleCloseBlogEditor}
+                  className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-emerald-green transition-colors cursor-pointer shrink-0"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Quay lại danh sách
+                </button>
+                <span className="w-px h-5 bg-stone-200 hidden sm:block" />
+                <h3 className="font-serif font-bold text-base sm:text-lg text-stone-950 truncate">
                   {editingBlogPost.isNew ? "Thêm Bài Viết Mới" : "Sửa Bài Viết"}
                 </h3>
-                <button
-                  onClick={() => setEditingBlogPost(null)}
-                  className="p-1.5 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
-                >
-                  <XCircle className="w-6 h-6" />
-                </button>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                  editingBlogPost.data.status === "draft"
+                    ? "bg-amber-100 text-amber-700"
+                    : "bg-emerald-green-light text-emerald-green"
+                }`}>
+                  {editingBlogPost.data.status === "draft" ? "Bản nháp" : "Xuất bản"}
+                </span>
               </div>
+              <button
+                type="submit"
+                form="blog-editor-form"
+                className="flex items-center gap-1.5 bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs shrink-0"
+              >
+                <Save className="w-3.5 h-3.5" />
+                Lưu & Xuất bản
+              </button>
+            </div>
 
-              <form onSubmit={handleSaveBlogPost} className="flex-1 overflow-y-auto p-6 space-y-4 text-left text-xs sm:text-sm">
+            <div className="flex-1 overflow-y-auto">
+              <form id="blog-editor-form" onSubmit={handleSaveBlogPost} className="max-w-3xl mx-auto p-5 sm:p-8 space-y-4 text-left text-xs sm:text-sm">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tiêu đề bài viết</label>
@@ -2994,6 +3049,17 @@ export default function CRMDashboard({
                       onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, date: e.target.value } } : null)}
                       className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
                     />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Trạng thái</label>
+                    <select
+                      value={editingBlogPost.data.status || "published"}
+                      onChange={(e) => setEditingBlogPost(prev => prev ? { ...prev, data: { ...prev.data, status: e.target.value } } : null)}
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none cursor-pointer font-bold"
+                    >
+                      <option value="published">✅ Xuất bản (hiển thị trên web)</option>
+                      <option value="draft">📝 Bản nháp (ẩn với khách)</option>
+                    </select>
                   </div>
                 </div>
 
@@ -3098,13 +3164,22 @@ export default function CRMDashboard({
                   />
                 </div>
 
-                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-3 justify-end -mx-6 -mb-6">
+                <div className="pt-4 border-t border-stone-200 flex flex-wrap gap-3 justify-end">
                   <button
                     type="button"
-                    onClick={() => setEditingBlogPost(null)}
+                    onClick={handleCloseBlogEditor}
                     className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all"
                   >
                     Hủy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveBlogDraft}
+                    disabled={isSavingContent}
+                    className="bg-amber-50 border border-amber-200 hover:bg-amber-100 text-amber-700 font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1.5"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Lưu nháp</span>
                   </button>
                   <button
                     type="submit"
@@ -3112,11 +3187,48 @@ export default function CRMDashboard({
                     className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shadow-2xs"
                   >
                     {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                    <span>Lưu bài viết</span>
+                    <span>Lưu & Xuất bản</span>
                   </button>
                 </div>
               </form>
-            </motion.div>
+            </div>
+
+            {/* Unsaved-changes exit prompt */}
+            {showBlogExitPrompt && (
+              <div className="fixed inset-0 z-[60] bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl border border-stone-200 shadow-2xl max-w-sm w-full p-6 text-left space-y-4">
+                  <h4 className="font-serif font-bold text-base text-stone-950">Bài viết chưa được lưu</h4>
+                  <p className="text-xs text-stone-500 font-light leading-relaxed">
+                    Bạn có thay đổi chưa lưu. Bạn muốn lưu lại thành bản nháp trước khi thoát không?
+                  </p>
+                  <div className="flex flex-col gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleSaveBlogDraft}
+                      disabled={isSavingContent}
+                      className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5"
+                    >
+                      {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+                      Lưu nháp & Thoát
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowBlogExitPrompt(false); setEditingBlogPost(null); }}
+                      className="w-full bg-white border border-stone-200 hover:bg-red-50 hover:text-red-600 text-stone-700 font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all"
+                    >
+                      Thoát không lưu
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowBlogExitPrompt(false)}
+                      className="w-full text-stone-500 hover:text-stone-800 font-bold text-xs py-2 rounded-xl cursor-pointer transition-all"
+                    >
+                      Tiếp tục viết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
