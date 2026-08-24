@@ -320,13 +320,73 @@ const parseLocation = (pathname: string): ParsedLocation => {
     return { tab: "categories", productSlug: parts[1] };
   }
   const tab = PATH_TO_TAB[root] || "home";
-  if (tab === "categories" && parts[1]) return { tab, category: parts[1] };
+  // Convert the Vietnamese URL slug back to the internal id (old English slugs
+  // still resolve via the fallback, so previously shared links keep working).
+  if (tab === "categories" && parts[1]) {
+    return { tab, category: CATEGORY_IDS[parts[1]] || parts[1] };
+  }
   if (tab === "news" && parts[1]) return { tab, blogSlug: parts[1] };
   // About / Services sub-sections are their own addressable tabs
-  // (e.g. /dich-vu/oem-odm, /gioi-thieu/factory-capacity).
-  if ((tab === "about" || tab === "services") && parts[1]) return { tab, subTab: parts[1] };
+  // (e.g. /dich-vu/gia-cong-tron-goi, /gioi-thieu/nha-may-nang-luc).
+  if (tab === "about" && parts[1]) return { tab, subTab: ABOUT_IDS[parts[1]] || parts[1] };
+  if (tab === "services" && parts[1]) return { tab, subTab: SERVICE_IDS[parts[1]] || parts[1] };
   return { tab };
 };
+
+// Vietnamese URL slugs for the internal ids used in code/data, so every URL
+// segment reads in Vietnamese (no English). Internal ids stay unchanged.
+const CATEGORY_SLUGS: Record<string, string> = {
+  "facial-care": "cham-soc-da-mat",
+  "body-care": "cham-soc-co-the",
+  "hair-care": "cham-soc-toc",
+  "makeup": "trang-diem",
+  "personal-care": "cham-soc-ca-nhan",
+  "new-tech": "cong-nghe-moi",
+};
+const ABOUT_SLUGS: Record<string, string> = {
+  "about-us": "ve-chung-toi",
+  "factory-capacity": "nha-may-nang-luc",
+  "certifications": "chung-nhan-tieu-chuan",
+  "rd-team": "doi-ngu-nghien-cuu",
+  "partners": "doi-tac",
+};
+const SERVICE_SLUGS: Record<string, string> = {
+  "oem-odm": "gia-cong-tron-goi",
+  "formula-development": "phat-trien-cong-thuc",
+  "packaging-print": "bao-bi-in-an",
+  "legal-service": "phap-ly-cong-bo",
+  "logistics": "van-chuyen-thong-quan",
+  "cooperation-process": "quy-trinh-hop-tac",
+  "cooperation-benefits": "loi-ich-hop-tac",
+};
+const invertSlugs = (m: Record<string, string>): Record<string, string> =>
+  Object.entries(m).reduce((acc, [id, slug]) => {
+    acc[slug] = id;
+    return acc;
+  }, {} as Record<string, string>);
+// Secondary filters live in the query string (?loai-da=..., ?chuyen-muc=...)
+// so they stack cleanly on top of the category / news path without ambiguity.
+const SKIN_SLUGS: Record<string, string> = {
+  "Dành cho da khô": "da-kho",
+  "Dành cho da dầu mụn": "da-dau-mun",
+  "Dành cho da nhạy cảm": "da-nhay-cam",
+  "Mọi loại da": "moi-loai-da",
+};
+const NEWS_SLUGS: Record<string, string> = {
+  "cẩm nang": "cam-nang",
+  "xu hướng": "xu-huong",
+};
+const CATEGORY_IDS = invertSlugs(CATEGORY_SLUGS);
+const ABOUT_IDS = invertSlugs(ABOUT_SLUGS);
+const SERVICE_IDS = invertSlugs(SERVICE_SLUGS);
+const SKIN_BY_SLUG = invertSlugs(SKIN_SLUGS);
+const NEWS_BY_SLUG = invertSlugs(NEWS_SLUGS);
+const SKIN_ALL = "Tất cả loại da";
+
+// URL slug for a product = its Vietnamese title slugified (falls back to id).
+// Parenthetical notes like "(Mẫu thử gia công)" are dropped to keep URLs short.
+const productSlugOf = (prod: { id: string; title?: string }): string =>
+  (prod.title ? slugify(prod.title.replace(/\([^)]*\)/g, " ")) : "") || prod.id;
 
 // Build the canonical URL for a blog post (stable across UI languages).
 const blogPath = (post: { slug?: string; title: string }): string =>
@@ -1287,15 +1347,16 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   // It also re-runs when products/articles load from the server, so a deep link
   // opened before the data arrived still resolves to the right item.
   useEffect(() => {
-    const path = location.pathname;
+    const fullPath = location.pathname + location.search;
     if (skipReconcileRef.current) {
       skipReconcileRef.current = false;
-      lastPathRef.current = path;
+      lastPathRef.current = fullPath;
       return;
     }
-    const parsed = parseLocation(path);
-    const pathChanged = path !== lastPathRef.current;
-    lastPathRef.current = path;
+    const parsed = parseLocation(location.pathname);
+    const params = new URLSearchParams(location.search);
+    const pathChanged = fullPath !== lastPathRef.current;
+    lastPathRef.current = fullPath;
 
     setActiveTab(parsed.tab);
 
@@ -1303,9 +1364,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       setSelectedCategory(parsed.category || "all");
       setSelectedProductDetails(
         parsed.productSlug
-          ? customProducts.find((p) => p.id === parsed.productSlug) || null
+          ? customProducts.find(
+              (p) => productSlugOf(p) === parsed.productSlug || p.id === parsed.productSlug
+            ) || null
           : null
       );
+      // Secondary skin-type filter comes from ?loai-da=...
+      const skinSlug = params.get("loai-da");
+      setSelectedSkinType(skinSlug ? SKIN_BY_SLUG[skinSlug] || SKIN_ALL : SKIN_ALL);
     } else {
       setSelectedProductDetails(null);
     }
@@ -1316,12 +1382,19 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
           ? customBlogPosts.find((p) => (p.slug || slugify(p.title)) === parsed.blogSlug) || null
           : null
       );
+      // News sub-category filter comes from ?chuyen-muc=...
+      const newsSlug = params.get("chuyen-muc");
+      setBlogCategoryFilter(
+        newsSlug && NEWS_BY_SLUG[newsSlug]
+          ? (NEWS_BY_SLUG[newsSlug] as "cẩm nang" | "xu hướng")
+          : "all"
+      );
     } else {
       setSelectedBlog(null);
     }
 
     // About / Services sub-section comes from the URL too, so it survives a
-    // refresh or a shared deep link (e.g. /dich-vu/oem-odm).
+    // refresh or a shared deep link (e.g. /dich-vu/gia-cong-tron-goi).
     if (parsed.tab === "about") setActiveAboutTab(parsed.subTab || "about-us");
     if (parsed.tab === "services") setActiveServiceTab(parsed.subTab || "oem-odm");
 
@@ -1332,7 +1405,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       setSearchQuery("");
       window.scrollTo({ top: 0, behavior: "auto" });
     }
-  }, [location.pathname, customProducts, customBlogPosts]);
+  }, [location.pathname, location.search, customProducts, customBlogPosts]);
 
   const prevActiveTabRef = useRef(activeTab);
   useEffect(() => {
@@ -1371,7 +1444,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     setActiveDetailsTab("mô tả");
     setDetailsQuantity(1);
     setActiveTab("categories");
-    const targetPath = `${PRODUCT_PATH}/${prod.id}`;
+    const targetPath = `${PRODUCT_PATH}/${productSlugOf(prod)}`;
     if (location.pathname !== targetPath) {
       skipReconcileRef.current = true;
       navigate(targetPath);
@@ -1384,7 +1457,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     setSelectedProductDetails(null);
     const targetPath =
       selectedCategory && selectedCategory !== "all"
-        ? `${TAB_TO_PATH.categories}/${selectedCategory}`
+        ? `${TAB_TO_PATH.categories}/${CATEGORY_SLUGS[selectedCategory] || selectedCategory}`
         : TAB_TO_PATH.categories;
     if (location.pathname !== targetPath) {
       skipReconcileRef.current = true;
@@ -1403,14 +1476,58 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
+  // Skin-type filter -> reflected in the URL as ?loai-da=... (kept on the
+  // current category path). "Tất cả loại da" clears the param.
+  const handleSelectSkinType = (skin: string) => {
+    setSelectedSkinType(skin);
+    const vn = getVNSkinType(skin);
+    const slug = SKIN_SLUGS[vn];
+    const params = new URLSearchParams(location.search);
+    if (slug) params.set("loai-da", slug);
+    else params.delete("loai-da");
+    const qs = params.toString();
+    const targetPath = location.pathname + (qs ? `?${qs}` : "");
+    if (location.pathname + location.search !== targetPath) {
+      skipReconcileRef.current = true;
+      navigate(targetPath);
+    }
+  };
+
+  // News sub-category filter -> reflected in the URL as ?chuyen-muc=...
+  const handleBlogCategory = (cat: "all" | "cẩm nang" | "xu hướng") => {
+    setBlogCategoryFilter(cat);
+    const params = new URLSearchParams(location.search);
+    const slug = cat !== "all" ? NEWS_SLUGS[cat] : "";
+    if (slug) params.set("chuyen-muc", slug);
+    else params.delete("chuyen-muc");
+    const qs = params.toString();
+    const targetPath = TAB_TO_PATH.news + (qs ? `?${qs}` : "");
+    if (location.pathname + location.search !== targetPath) {
+      skipReconcileRef.current = true;
+      navigate(targetPath);
+    }
+  };
+
   const handleTabChange = (tabId: string, subId?: string) => {
-    // Sub-menu items get their own URL: a category (/danh-muc-gia-cong/hair-care)
-    // and About/Services sub-sections (/gioi-thieu/factory-capacity, /dich-vu/oem-odm).
+    // Sub-menu items get their own Vietnamese URL: a category
+    // (/danh-muc-gia-cong/cham-soc-toc) and About/Services sub-sections
+    // (/gioi-thieu/nha-may-nang-luc, /dich-vu/gia-cong-tron-goi).
     let targetPath = TAB_TO_PATH[tabId] || "/";
+    // News dropdown items are sub-category filters -> ?chuyen-muc=...
+    const newsCat =
+      tabId === "news" && subId === "manufacturing-guide"
+        ? "cẩm nang"
+        : tabId === "news" && subId === "ingredient-trends"
+        ? "xu hướng"
+        : null;
     if (tabId === "categories" && subId && subId !== "all") {
-      targetPath = `${TAB_TO_PATH.categories}/${subId}`;
-    } else if ((tabId === "about" || tabId === "services") && subId) {
-      targetPath = `${TAB_TO_PATH[tabId]}/${subId}`;
+      targetPath = `${TAB_TO_PATH.categories}/${CATEGORY_SLUGS[subId] || subId}`;
+    } else if (tabId === "about" && subId) {
+      targetPath = `${TAB_TO_PATH.about}/${ABOUT_SLUGS[subId] || subId}`;
+    } else if (tabId === "services" && subId) {
+      targetPath = `${TAB_TO_PATH.services}/${SERVICE_SLUGS[subId] || subId}`;
+    } else if (newsCat) {
+      targetPath = `${TAB_TO_PATH.news}?chuyen-muc=${NEWS_SLUGS[newsCat]}`;
     }
     if (tabId !== "crm" && location.pathname === "/admin") {
       // Full reload when leaving /admin - a client-side transition away from
@@ -1433,8 +1550,11 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     if (tabId === "categories") {
       setSelectedCategory(subId || "all");
     }
+    if (tabId === "news") {
+      setBlogCategoryFilter(newsCat || "all");
+    }
     // Reflect the section in the URL so it is linkable / shareable.
-    if (location.pathname !== targetPath) {
+    if (location.pathname + location.search !== targetPath) {
       skipReconcileRef.current = true; // state already applied above; effect skips reset
       navigate(targetPath);
     }
@@ -2686,7 +2806,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         {localizedSkinTypes.map((skin) => (
                           <button
                             key={skin}
-                            onClick={() => setSelectedSkinType(skin)}
+                            onClick={() => handleSelectSkinType(skin)}
                             className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                               selectedSkinType === skin
                                 ? "bg-emerald-green text-white shadow-xs"
@@ -3740,7 +3860,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-stone-200 shadow-2xs">
                     <div className="flex gap-2">
                       <button 
-                        onClick={() => setBlogCategoryFilter("all")}
+                        onClick={() => handleBlogCategory("all")}
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           blogCategoryFilter === "all" 
                             ? "bg-stone-900 text-white" 
@@ -3750,7 +3870,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         {language === "en" ? "All Articles" : language === "ko" ? "전체 칼럼" : "Tất cả bài viết"}
                       </button>
                       <button 
-                        onClick={() => setBlogCategoryFilter("cẩm nang")}
+                        onClick={() => handleBlogCategory("cẩm nang")}
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           blogCategoryFilter === "cẩm nang" 
                             ? "bg-stone-900 text-white" 
@@ -3760,7 +3880,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         {language === "en" ? "Compliance Manual" : language === "ko" ? "인허가 실무 가이드" : "Cẩm nang gia công"}
                       </button>
                       <button 
-                        onClick={() => setBlogCategoryFilter("xu hướng")}
+                        onClick={() => handleBlogCategory("xu hướng")}
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           blogCategoryFilter === "xu hướng" 
                             ? "bg-stone-900 text-white" 
