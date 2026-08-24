@@ -1,5 +1,6 @@
 import React from 'react';
 import RichTextEditor from './RichTextEditor';
+import { slugify } from '../lib/slug';
 
 interface PostEditorProps {
   post: any;
@@ -35,22 +36,37 @@ export default function PostEditor({ post, onChange, onSave }: PostEditorProps) 
         <label className="block text-xs font-bold text-stone-500">Ngày xuất bản</label>
         <input type="date" value={post.date || ""} onChange={(e) => onChange({ ...post, date: e.target.value })} className="w-full text-xs border p-2 rounded" />
         
-        <label className="block text-xs font-bold text-stone-500">Đường dẫn bài viết (URL / Slug)</label>
+        <div className="flex items-center justify-between">
+          <label className="block text-xs font-bold text-stone-500">Đường dẫn bài viết (URL / Slug)</label>
+          <button
+            type="button"
+            onClick={() => {
+              const s = slugify(post.title || "");
+              onChange({ ...post, slug: s, url: s ? `https://cosbuilt.vn/tin-tuc/${s}` : "" });
+            }}
+            className="text-[10px] font-bold text-emerald-green hover:underline shrink-0"
+          >
+            Tạo từ tiêu đề
+          </button>
+        </div>
         <div className="flex items-center rounded-lg border border-stone-300 bg-white overflow-hidden focus-within:border-emerald-green">
           <span className="bg-stone-100 text-stone-500 text-[11px] font-mono px-2.5 py-2 border-r border-stone-200 shrink-0 select-none">
-            https://cosbuilt.vn/
+            cosbuilt.vn/tin-tuc/
           </span>
-          <input 
-            type="text" 
-            placeholder="cam-nang-quy-trinh-dang-ky..." 
-            value={(post.slug || post.url || "").replace(/^https?:\/\/cosbuilt\.vn\//, "")} 
+          <input
+            type="text"
+            placeholder="cam-nang-quy-trinh-dang-ky..."
+            value={post.slug || ""}
             onChange={(e) => {
-              const val = e.target.value.replace(/^https?:\/\/cosbuilt\.vn\//, "");
-              onChange({ ...post, slug: val, url: val ? `https://cosbuilt.vn/${val}` : "" });
-            }} 
-            className="w-full text-xs p-2 focus:outline-none font-mono" 
+              const val = slugify(e.target.value);
+              onChange({ ...post, slug: val, url: val ? `https://cosbuilt.vn/tin-tuc/${val}` : "" });
+            }}
+            className="w-full text-xs p-2 focus:outline-none font-mono"
           />
         </div>
+        <p className="text-[10px] text-stone-400 leading-snug">
+          Để trống sẽ tự tạo từ tiêu đề. Chỉ dùng chữ thường không dấu và dấu gạch ngang.
+        </p>
         
         <label className="block text-xs font-bold text-stone-500">Tác giả</label>
         <input type="text" value={post.author || ""} onChange={(e) => onChange({ ...post, author: e.target.value })} className="w-full text-xs border p-2 rounded" />

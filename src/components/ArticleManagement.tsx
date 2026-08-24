@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { BookOpen, Calendar, Edit3, Trash2, ChevronLeft, ChevronRight, PlusCircle, Folder, Tag } from "lucide-react";
+import { BookOpen, Calendar, Edit3, Trash2, ChevronLeft, ChevronRight, PlusCircle, Folder, Tag, Link2 } from "lucide-react";
 import PostEditor from "./PostEditor";
+import { slugify } from "../lib/slug";
 
 export default function ArticleManagement({
   posts,
@@ -73,6 +74,10 @@ export default function ArticleManagement({
                       </span>
                       <h4 className="font-bold text-stone-900 text-xs sm:text-sm line-clamp-1 pr-10">{post.title}</h4>
                       <p className="text-stone-500 text-[10px] leading-snug line-clamp-2 font-light">{post.summary}</p>
+                      <div className="flex items-center gap-1 text-[9px] text-stone-400 font-mono truncate pt-0.5">
+                        <Link2 className="w-2.5 h-2.5 shrink-0" />
+                        <span className="truncate">/tin-tuc/{post.slug || slugify(post.title || "")}</span>
+                      </div>
                     </div>
 
                     <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-all duration-150">

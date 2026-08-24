@@ -64,6 +64,7 @@ import {
   DEFAULT_GALLERY_IMAGES
 } from "./data";
 import { BlogPost, ManufacturingCategory, FormulaProduct, ProductPackaging } from "./types";
+import { slugify } from "./lib/slug";
 
 export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   if (prod.packagings && prod.packagings.length > 0) {
@@ -287,17 +288,6 @@ const PATH_TO_TAB: Record<string, string> = Object.entries(TAB_TO_PATH).reduce(
 // Individual products get their own URL under this prefix (e.g. /san-pham/serum-b5).
 const PRODUCT_PATH = "/san-pham";
 
-// Turn any string (incl. Vietnamese) into a URL-safe slug. Used to give each
-// blog article its own shareable path (e.g. /tin-tuc/cam-nang-cong-bo-my-pham).
-const slugify = (input: string): string =>
-  (input || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
 
 interface ParsedLocation {
   tab: string;

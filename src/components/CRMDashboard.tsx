@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { authHeaders, setAdminToken, clearAdminToken, verifyAdminToken } from "../lib/adminAuth";
+import { slugify } from "../lib/slug";
 import {
   initAuth,
   googleSignIn,
@@ -2997,29 +2998,47 @@ export default function CRMDashboard({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đường dẫn bài viết (URL / Slug)</label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đường dẫn bài viết (URL / Slug)</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const s = slugify(editingBlogPost.data.title || "");
+                        setEditingBlogPost(prev => prev ? {
+                          ...prev,
+                          data: { ...prev.data, slug: s, url: s ? `https://cosbuilt.vn/tin-tuc/${s}` : "" }
+                        } : null);
+                      }}
+                      className="text-[10px] font-bold text-emerald-green hover:underline shrink-0"
+                    >
+                      Tạo từ tiêu đề
+                    </button>
+                  </div>
                   <div className="flex items-center rounded-xl border border-stone-300 bg-white overflow-hidden focus-within:border-emerald-green">
                     <span className="bg-stone-100 text-stone-500 text-xs font-mono px-3 py-2 border-r border-stone-200 shrink-0 select-none">
-                      https://cosbuilt.vn/
+                      cosbuilt.vn/tin-tuc/
                     </span>
                     <input
                       type="text"
                       placeholder="cam-nang-quy-trinh-dang-ky-giay-phep"
-                      value={(editingBlogPost.data.slug || editingBlogPost.data.url || "").replace(/^https?:\/\/cosbuilt\.vn\//, "")}
+                      value={editingBlogPost.data.slug || ""}
                       onChange={(e) => {
-                        const val = e.target.value.replace(/^https?:\/\/cosbuilt\.vn\//, "");
-                        setEditingBlogPost(prev => prev ? { 
-                          ...prev, 
-                          data: { 
-                            ...prev.data, 
-                            slug: val, 
-                            url: val ? `https://cosbuilt.vn/${val}` : "" 
-                          } 
+                        const val = slugify(e.target.value);
+                        setEditingBlogPost(prev => prev ? {
+                          ...prev,
+                          data: {
+                            ...prev.data,
+                            slug: val,
+                            url: val ? `https://cosbuilt.vn/tin-tuc/${val}` : ""
+                          }
                         } : null);
                       }}
                       className="w-full bg-transparent px-3 py-2 text-xs focus:outline-none font-mono text-[11px]"
                     />
                   </div>
+                  <p className="text-[10px] text-stone-400 leading-snug">
+                    Để trống sẽ tự tạo từ tiêu đề. Chỉ chữ thường không dấu và dấu gạch ngang.
+                  </p>
                 </div>
 
                 <div className="space-y-1.5">
