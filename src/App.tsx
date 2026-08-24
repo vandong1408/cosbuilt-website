@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft,
   ArrowRight, 
@@ -262,9 +262,76 @@ export const getProductPriceRange = (prod: any, quantity = 1) => {
   }
 };
 
+// Map between the main content tabs and real URL paths so every section is
+// directly linkable (e.g. /gioi-thieu), shareable, and works with the browser
+// back/forward buttons and page refresh. "crm" keeps its existing /admin path.
+const TAB_TO_PATH: Record<string, string> = {
+  home: "/",
+  about: "/gioi-thieu",
+  services: "/dich-vu",
+  categories: "/danh-muc-gia-cong",
+  pricing: "/bang-gia-gia-cong",
+  news: "/tin-tuc",
+  contact: "/lien-he",
+  crm: "/admin",
+};
+
+const PATH_TO_TAB: Record<string, string> = Object.entries(TAB_TO_PATH).reduce(
+  (acc, [tab, path]) => {
+    acc[path] = tab;
+    return acc;
+  },
+  {} as Record<string, string>
+);
+
+// Individual products get their own URL under this prefix (e.g. /san-pham/serum-b5).
+const PRODUCT_PATH = "/san-pham";
+
+// Turn any string (incl. Vietnamese) into a URL-safe slug. Used to give each
+// blog article its own shareable path (e.g. /tin-tuc/cam-nang-cong-bo-my-pham).
+const slugify = (input: string): string =>
+  (input || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+
+interface ParsedLocation {
+  tab: string;
+  category?: string; // categories tab: which manufacturing category is filtered
+  productSlug?: string; // categories tab: a specific product detail is open
+  blogSlug?: string; // news tab: a specific article is open
+}
+
+// Resolve a URL pathname to the view it represents. Tolerates a trailing slash;
+// unknown paths fall back to the home tab. Product paths (/san-pham/:id) render
+// inside the categories tab as a product detail view.
+const parseLocation = (pathname: string): ParsedLocation => {
+  const clean = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  if (clean === "/admin") return { tab: "crm" };
+  const parts = clean.split("/").filter(Boolean);
+  if (parts.length === 0) return { tab: "home" };
+  const root = "/" + parts[0];
+  if (root === PRODUCT_PATH) {
+    return { tab: "categories", productSlug: parts[1] };
+  }
+  const tab = PATH_TO_TAB[root] || "home";
+  if (tab === "categories" && parts[1]) return { tab, category: parts[1] };
+  if (tab === "news" && parts[1]) return { tab, blogSlug: parts[1] };
+  return { tab };
+};
+
+// Build the canonical URL for a blog post (stable across UI languages).
+const blogPath = (post: { slug?: string; title: string }): string =>
+  `/tin-tuc/${post.slug || slugify(post.title)}`;
+
 export default function App() {
   const { t, language } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Google Sheets Dynamic States (Moved to top to prevent block-scoped variable hoisting errors)
   const [customBlogPosts, setCustomBlogPosts] = useState<BlogPost[]>(BLOG_POSTS);
@@ -846,7 +913,7 @@ export default function App() {
     return prod;
   });
 
-  const localizedBlogPosts = customBlogPosts.map((post, idx) => {
+  const _localizedBlogPostsBase = customBlogPosts.map((post, idx) => {
     if (idx < 4) {
       if (language === "en") {
         const enTitles = [
@@ -944,8 +1011,20 @@ export default function App() {
     }
     return post;
   });
+  // Attach a stable, language-independent slug (derived from the base Vietnamese
+  // title) so each article keeps the same URL regardless of the UI language.
+  const localizedBlogPosts = _localizedBlogPostsBase.map((post, idx) => ({
+    ...post,
+    slug: customBlogPosts[idx].slug || slugify(customBlogPosts[idx].title),
+  }));
   const [activeTab, setActiveTab] = useState("home");
   const [activeSubTab, setActiveSubTab] = useState<string | undefined>(undefined);
+  // Set true by internal navigation right before it calls navigate(), so the
+  // URL-reconcile effect knows the view state is already applied and skips its
+  // (external-navigation) reset. lastPathRef tracks the last reconciled path so
+  // the effect can tell a real navigation apart from a data-driven re-run.
+  const skipReconcileRef = useRef(false);
+  const lastPathRef = useRef(location.pathname);
   const [searchQuery, setSearchQuery] = useState("");
   
   // B2B Sample Cart states
@@ -1151,6 +1230,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     });
     
     setActiveTab("contact");
+    if (location.pathname !== "/lien-he") {
+      skipReconcileRef.current = true;
+      navigate("/lien-he");
+    }
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 100);
@@ -1192,15 +1275,57 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     }
   }, [estGroup]);
 
-  // Scroll to top of window only when the main activeTab changes to prevent "sliding back up"
-  // Sync tab with URL
+  // Reconcile the whole view (tab, category filter, open product, open article)
+  // from the URL. This is the single source of truth for EXTERNAL navigation:
+  // deep links, page refresh, and the browser back/forward buttons. Internal
+  // navigation sets skipReconcileRef before it calls navigate() (it already
+  // applied the state itself), so this effect skips the reset for those.
+  // It also re-runs when products/articles load from the server, so a deep link
+  // opened before the data arrived still resolves to the right item.
   useEffect(() => {
-    if (location.pathname === "/admin") {
-      setActiveTab("crm");
-    } else if (activeTab === "crm") {
-      setActiveTab("home");
+    const path = location.pathname;
+    if (skipReconcileRef.current) {
+      skipReconcileRef.current = false;
+      lastPathRef.current = path;
+      return;
     }
-  }, [location.pathname]);
+    const parsed = parseLocation(path);
+    const pathChanged = path !== lastPathRef.current;
+    lastPathRef.current = path;
+
+    setActiveTab(parsed.tab);
+
+    if (parsed.tab === "categories") {
+      setSelectedCategory(parsed.category || "all");
+      setSelectedProductDetails(
+        parsed.productSlug
+          ? customProducts.find((p) => p.id === parsed.productSlug) || null
+          : null
+      );
+    } else {
+      setSelectedProductDetails(null);
+    }
+
+    if (parsed.tab === "news") {
+      setSelectedBlog(
+        parsed.blogSlug
+          ? customBlogPosts.find((p) => (p.slug || slugify(p.title)) === parsed.blogSlug) || null
+          : null
+      );
+    } else {
+      setSelectedBlog(null);
+    }
+
+    // Only reset transient in-page state and scroll on a genuine navigation,
+    // never on a background data refresh that leaves the path unchanged.
+    if (pathChanged) {
+      setActiveSubTab(undefined);
+      setSearchQuery("");
+      if (parsed.tab === "about") setActiveAboutTab("about-us");
+      if (parsed.tab === "services") setActiveServiceTab("oem-odm");
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [location.pathname, customProducts, customBlogPosts]);
 
   const prevActiveTabRef = useRef(activeTab);
   useEffect(() => {
@@ -1226,6 +1351,11 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   const handleSelectBlog = (post: BlogPost) => {
     setSelectedBlog(post);
     setActiveTab("news");
+    const targetPath = blogPath(post);
+    if (location.pathname !== targetPath) {
+      skipReconcileRef.current = true;
+      navigate(targetPath);
+    }
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
@@ -1234,15 +1364,50 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     setActiveDetailsTab("mô tả");
     setDetailsQuantity(1);
     setActiveTab("categories");
+    const targetPath = `${PRODUCT_PATH}/${prod.id}`;
+    if (location.pathname !== targetPath) {
+      skipReconcileRef.current = true;
+      navigate(targetPath);
+    }
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  // Close a product detail and return to its category list (keeps the filter).
+  const handleBackToProducts = () => {
+    setSelectedProductDetails(null);
+    const targetPath =
+      selectedCategory && selectedCategory !== "all"
+        ? `${TAB_TO_PATH.categories}/${selectedCategory}`
+        : TAB_TO_PATH.categories;
+    if (location.pathname !== targetPath) {
+      skipReconcileRef.current = true;
+      navigate(targetPath);
+    }
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  // Close an article and return to the news list.
+  const handleBackToNews = () => {
+    setSelectedBlog(null);
+    if (location.pathname !== TAB_TO_PATH.news) {
+      skipReconcileRef.current = true;
+      navigate(TAB_TO_PATH.news);
+    }
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   const handleTabChange = (tabId: string, subId?: string) => {
+    // A manufacturing category gets its own URL (e.g. /danh-muc-gia-cong/hair-care);
+    // about/services sub-tabs are in-page anchors and stay off the URL.
+    let targetPath = TAB_TO_PATH[tabId] || "/";
+    if (tabId === "categories" && subId && subId !== "all") {
+      targetPath = `${TAB_TO_PATH.categories}/${subId}`;
+    }
     if (tabId !== "crm" && location.pathname === "/admin") {
-      // Full reload back to "/" - client-side navigate() away from /admin left
-      // the CRM dashboard mounted alongside the main site in this app's router
-      // setup, so force a clean reload instead of a SPA transition here.
-      window.location.href = "/";
+      // Full reload when leaving /admin - a client-side transition away from
+      // /admin left the CRM dashboard mounted alongside the main site in this
+      // app's router setup, so force a clean reload to the target page instead.
+      window.location.href = targetPath;
       return;
     }
     setActiveTab(tabId);
@@ -1251,21 +1416,18 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     setSelectedBlog(null); // Reset selected blog to list view on any tab change
     setSelectedProductDetails(null); // Reset selected product to list view on any tab change
     if (tabId === "about") {
-      if (subId) {
-        setActiveAboutTab(subId);
-      } else {
-        setActiveAboutTab("about-us");
-      }
+      setActiveAboutTab(subId || "about-us");
     }
     if (tabId === "services") {
-      if (subId) {
-        setActiveServiceTab(subId);
-      } else {
-        setActiveServiceTab("oem-odm");
-      }
+      setActiveServiceTab(subId || "oem-odm");
     }
     if (tabId === "categories") {
       setSelectedCategory(subId || "all");
+    }
+    // Reflect the section in the URL so it is linkable / shareable.
+    if (location.pathname !== targetPath) {
+      skipReconcileRef.current = true; // state already applied above; effect skips reset
+      navigate(targetPath);
     }
     // Instantly scroll to the top of the window on any navigation-triggered tab change
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -1275,21 +1437,29 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     setSearchQuery(query);
     // Determine where to route based on query context
     const lowerQuery = query.toLowerCase();
+    let target = "services";
     if (lowerQuery.includes("giá") || lowerQuery.includes("bảng giá") || lowerQuery.includes("bao nhiêu") || lowerQuery.includes("chi phí")) {
-      setActiveTab("pricing");
+      target = "pricing";
     } else if (lowerQuery.includes("tin tức") || lowerQuery.includes("xu hướng") || lowerQuery.includes("cẩm nang") || lowerQuery.includes("bài viết")) {
-      setActiveTab("news");
+      target = "news";
     } else if (lowerQuery.includes("da mặt") || lowerQuery.includes("body") || lowerQuery.includes("tóc") || lowerQuery.includes("son") || lowerQuery.includes("trang điểm") || lowerQuery.includes("cá nhân")) {
-      setActiveTab("categories");
+      target = "categories";
       if (lowerQuery.includes("da mặt")) setSelectedCategory("facial-care");
       else if (lowerQuery.includes("body") || lowerQuery.includes("cơ thể")) setSelectedCategory("body-care");
       else if (lowerQuery.includes("tóc")) setSelectedCategory("hair-care");
       else if (lowerQuery.includes("son") || lowerQuery.includes("trang điểm") || lowerQuery.includes("makeup")) setSelectedCategory("makeup");
       else if (lowerQuery.includes("cá nhân") || lowerQuery.includes("vệ sinh")) setSelectedCategory("personal-care");
     } else if (lowerQuery.includes("liên hệ") || lowerQuery.includes("tư vấn") || lowerQuery.includes("đăng ký") || lowerQuery.includes("sđt") || lowerQuery.includes("email")) {
-      setActiveTab("contact");
-    } else {
-      setActiveTab("services");
+      target = "contact";
+    }
+    // Switch section (keeping the search query) and reflect it in the URL.
+    setActiveTab(target);
+    setSelectedBlog(null);
+    setSelectedProductDetails(null);
+    const targetPath = TAB_TO_PATH[target] || "/";
+    if (location.pathname !== targetPath) {
+      skipReconcileRef.current = true; // keep the search query the effect would clear
+      navigate(targetPath);
     }
   };
 
@@ -2199,7 +2369,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="max-w-6xl mx-auto space-y-10 text-left animate-in fade-in duration-300">
                     {/* Back button */}
                     <button 
-                      onClick={() => setSelectedProductDetails(null)}
+                      onClick={handleBackToProducts}
                       className="flex items-center gap-2 text-stone-500 hover:text-emerald-green font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
                     >
                       <ArrowLeft className="w-4 h-4" />
@@ -3453,7 +3623,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="lg:col-span-2 space-y-8">
                     {/* Back button */}
                     <button 
-                      onClick={() => setSelectedBlog(null)}
+                      onClick={handleBackToNews}
                       className="flex items-center gap-2 text-stone-500 hover:text-emerald-green font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
                     >
                       <ArrowLeft className="w-4 h-4" />
