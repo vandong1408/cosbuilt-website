@@ -2653,7 +2653,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                   <strong className="font-bold text-stone-850 block text-[11px] uppercase tracking-wider">
                                     {language === "en" ? "Formulation Specifications" : language === "ko" ? "포뮬러 규격 상세" : "Thông số công thức:"}
                                   </strong>
-                                  <p className="leading-relaxed font-medium text-stone-600">{selectedProductDetails.description}</p>
+                                  <p className="leading-relaxed font-medium text-stone-600 whitespace-pre-line">{selectedProductDetails.description}</p>
                                 </div>
                               )}
                               {activeDetailsTab === "thành phần" && (
@@ -2661,7 +2661,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                   <strong className="font-bold text-stone-850 block text-[11px] uppercase tracking-wider">
                                     {language === "en" ? "Key Cosmeceutical Actives" : language === "ko" ? "코스메슈티컬 핵심 활성 성분" : "Hoạt chất dược mỹ phẩm chính:"}
                                   </strong>
-                                  <p className="leading-relaxed font-medium text-stone-600">{selectedProductDetails.ingredients}</p>
+                                  <p className="leading-relaxed font-medium text-stone-600 whitespace-pre-line">{selectedProductDetails.ingredients}</p>
                                 </div>
                               )}
                               {activeDetailsTab === "cảm quan" && (
@@ -2669,7 +2669,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                   <strong className="font-bold text-stone-850 block text-[11px] uppercase tracking-wider">
                                     {language === "en" ? "Lab Evaluation Guidelines" : language === "ko" ? "연구실 자체 사용감 감정 가이드" : "Hướng dẫn thẩm định tại phòng Lab:"}
                                   </strong>
-                                  <p className="leading-relaxed font-medium text-stone-600">{selectedProductDetails.guidelines}</p>
+                                  <p className="leading-relaxed font-medium text-stone-600 whitespace-pre-line">{selectedProductDetails.guidelines}</p>
                                 </div>
                               )}
                             </div>
