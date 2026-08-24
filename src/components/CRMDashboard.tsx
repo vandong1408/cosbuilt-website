@@ -377,6 +377,8 @@ export default function CRMDashboard({
   const [showBlogExitPrompt, setShowBlogExitPrompt] = useState(false);
   const [editingImage, setEditingImage] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [editingProduct, setEditingProduct] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [productInitialSnapshot, setProductInitialSnapshot] = useState<string>("");
+  const [showProductExitPrompt, setShowProductExitPrompt] = useState(false);
   const [newPkg, setNewPkg] = useState<{ type: "bottle" | "jar" | "tube" | "dropper" | "sachet"; name: string; image: string; description: string } | null>(null);
   const [editingPkgIdx, setEditingPkgIdx] = useState<number | null>(null);
   const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
@@ -627,6 +629,12 @@ export default function CRMDashboard({
     await saveAllContent({ images: newImages }, { action: "delete", sheetName: "Hình ảnh", index, data: deletedItem });
   };
 
+  const openProductEditor = (payload: { index: number; isNew: boolean; data: any }) => {
+    setProductInitialSnapshot(JSON.stringify(payload.data));
+    setShowProductExitPrompt(false);
+    setEditingProduct(payload);
+  };
+
   const handleSaveProduct = async (e: FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
@@ -642,8 +650,15 @@ export default function CRMDashboard({
     }
     const success = await saveAllContent({ products: newProducts }, actionDetails);
     if (success) {
+      setShowProductExitPrompt(false);
       setEditingProduct(null);
     }
+  };
+
+  const handleCloseProductEditor = () => {
+    const dirty = editingProduct && JSON.stringify(editingProduct.data) !== productInitialSnapshot;
+    if (dirty) setShowProductExitPrompt(true);
+    else setEditingProduct(null);
   };
 
   const handleDeleteProduct = async (index: number) => {
@@ -2171,7 +2186,7 @@ export default function CRMDashboard({
                             }
                           });
                         } else if (cmsSubTab === "products") {
-                          setEditingProduct({
+                          openProductEditor({
                             index: -1,
                             isNew: true,
                             data: {
@@ -2339,7 +2354,7 @@ export default function CRMDashboard({
                                   <div className="absolute top-3 right-3 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-150">
                                     <button
                                       type="button"
-                                      onClick={() => setEditingProduct({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...prod } })}
+                                      onClick={() => openProductEditor({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...prod } })}
                                       className="p-1.5 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
                                       title="Sửa sản phẩm"
                                     >
@@ -3346,26 +3361,34 @@ export default function CRMDashboard({
 
         {/* CMS: EDIT PRODUCT MODAL */}
         {editingProduct && (
-          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl border border-stone-150 max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-            >
-              <div className="p-6 border-b border-stone-150 flex justify-between items-center bg-stone-50">
-                <h3 className="font-serif font-bold text-lg text-stone-950">
+          <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col">
+            <div className="px-5 sm:px-8 py-4 border-b border-stone-200 flex justify-between items-center bg-white shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  type="button"
+                  onClick={handleCloseProductEditor}
+                  className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-emerald-green transition-colors cursor-pointer shrink-0"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Quay lại danh sách
+                </button>
+                <span className="w-px h-5 bg-stone-200 hidden sm:block" />
+                <h3 className="font-serif font-bold text-base sm:text-lg text-stone-950 truncate">
                   {editingProduct.isNew ? "Thêm Sản Phẩm Mới" : "Sửa Sản Phẩm"}
                 </h3>
-                <button
-                  onClick={() => setEditingProduct(null)}
-                  className="p-1.5 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
-                >
-                  <XCircle className="w-6 h-6" />
-                </button>
               </div>
+              <button
+                type="submit"
+                form="product-editor-form"
+                className="flex items-center gap-1.5 bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs shrink-0"
+              >
+                <Save className="w-3.5 h-3.5" />
+                Lưu sản phẩm
+              </button>
+            </div>
 
-              <form onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-6 space-y-4 text-left text-xs sm:text-sm">
+            <div className="flex-1 overflow-y-auto">
+              <form id="product-editor-form" onSubmit={handleSaveProduct} className="max-w-3xl mx-auto p-5 sm:p-8 space-y-4 text-left text-xs sm:text-sm">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên sản phẩm</label>
@@ -3810,25 +3833,52 @@ export default function CRMDashboard({
                   })()}
                 </div>
 
-                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-6 -mb-6 pt-3 mt-4">
+                <div className="pt-4 border-t border-stone-200 flex flex-wrap gap-3 justify-end">
                   <button
                     type="button"
-                    onClick={() => setEditingProduct(null)}
-                    className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                    onClick={handleCloseProductEditor}
+                    className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all"
                   >
                     Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={isSavingContent}
-                    className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1 shadow-2xs"
+                    className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shadow-2xs"
                   >
-                    {isSavingContent ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                    {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                     <span>Lưu sản phẩm</span>
                   </button>
                 </div>
               </form>
-            </motion.div>
+            </div>
+
+            {showProductExitPrompt && (
+              <div className="fixed inset-0 z-[60] bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl border border-stone-200 shadow-2xl max-w-sm w-full p-6 text-left space-y-4">
+                  <h4 className="font-serif font-bold text-base text-stone-950">Thay đổi chưa được lưu</h4>
+                  <p className="text-xs text-stone-500 font-light leading-relaxed">
+                    Bạn có thay đổi chưa lưu ở sản phẩm này. Bạn có chắc muốn thoát?
+                  </p>
+                  <div className="flex flex-col gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => { setShowProductExitPrompt(false); setEditingProduct(null); }}
+                      className="w-full bg-white border border-stone-200 hover:bg-red-50 hover:text-red-600 text-stone-700 font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all"
+                    >
+                      Thoát không lưu
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowProductExitPrompt(false)}
+                      className="w-full text-stone-500 hover:text-stone-800 font-bold text-xs py-2 rounded-xl cursor-pointer transition-all"
+                    >
+                      Tiếp tục chỉnh sửa
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
