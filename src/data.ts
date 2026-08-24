@@ -630,9 +630,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 154,
     "hotPercent": 85,
     "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
-    "description": "Công thức phục hồi tế bào thế hệ mới kết hợp Panthenol (Vitamin B5) nồng độ cao và hoạt chất Exosome siêu nhỏ chiết xuất từ rau má. Giúp làm dịu mẩn đỏ tức thì, kích thích tăng sinh collagen tự thân và củng cố hàng rào bảo vệ da mạnh mẽ.",
-    "ingredients": "Panthenol 10%, Exosome chiết xuất rau má, Centella Asiatica Extract, Hyaluronic Acid đa tầng, Ceramide NP.",
-    "guidelines": "Thoa 3-4 giọt lên da mặt sạch sau bước toner. Vỗ nhẹ để dưỡng chất thẩm thấu sâu. Phù hợp sử dụng sau các liệu trình laser, peel da hoặc treatment nặng."
+    "description": "Công thức phục hồi tế bào thế hệ mới kết hợp Panthenol (Vitamin B5) nồng độ cao và hoạt chất Exosome siêu nhỏ chiết xuất từ rau má. Serum thẩm thấu tức thì, làm dịu nhanh các vùng da mẩn đỏ, kích ứng, đồng thời gửi tín hiệu kích thích nguyên bào sợi tăng sinh collagen tự thân. Kết cấu lỏng nhẹ, không nhờn rít, phù hợp cả da nhạy cảm và da sau liệu trình xâm lấn, giúp củng cố hàng rào bảo vệ da khỏe mạnh từ bên trong.",
+    "ingredients": "Panthenol (Vitamin B5) 10% - phục hồi, làm dịu\nExosome chiết xuất rau má - kích hoạt tái tạo tế bào\nCentella Asiatica Extract - kháng viêm, giảm đỏ\nHyaluronic Acid đa tầng - cấp ẩm sâu\nCeramide NP - tái tạo màng lipid bảo vệ da",
+    "guidelines": "Bước 1: Rửa mặt sạch và cân bằng da bằng toner.\nBước 2: Nhỏ 3-4 giọt serum ra tay, vỗ nhẹ đều khắp mặt.\nBước 3: Đợi thẩm thấu 1-2 phút rồi khóa ẩm bằng kem dưỡng.\nDùng sáng và tối. Rất phù hợp sau laser, peel hoặc treatment nặng."
   },
   {
     "id": "cream-niacinamide",
@@ -653,9 +653,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 92,
     "hotPercent": 62,
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
-    "description": "Kem dưỡng ẩm trắng da tích hợp màng bọc khóa ẩm thông minh. Chứa Niacinamide tinh khiết giúp dưỡng trắng sáng da chuyên sâu, ức chế melanin di chuyển lên bề mặt da, mang lại làn da trắng hồng rạng rỡ sau 21 ngày.",
-    "ingredients": "Niacinamide 5%, Alpha-Arbutin 1%, Squalane tự nhiên, Chiết xuất rễ cam thảo, Hyaluronic Acid.",
-    "guidelines": "Lấy một lượng kem vừa đủ thoa đều lên vùng mặt và cổ vào buổi sáng và tối. Massage nhẹ nhàng theo chuyển động tròn hướng lên để da săn chắc."
+    "description": "Kem dưỡng ẩm - dưỡng sáng tích hợp màng bọc khóa ẩm thông minh, mang lại làn da trắng hồng rạng rỡ mà không gây bí da. Niacinamide tinh khiết kết hợp Alpha-Arbutin ức chế quá trình melanin di chuyển lên bề mặt, làm mờ thâm nám và đều màu da rõ rệt sau khoảng 21 ngày sử dụng đều đặn. Squalane tự nhiên khóa ẩm mềm mượt, phù hợp dùng hằng ngày cho hầu hết các loại da.",
+    "ingredients": "Niacinamide 5% - dưỡng sáng, mờ thâm\nAlpha-Arbutin 1% - ức chế melanin\nSqualane tự nhiên - khóa ẩm, làm mềm\nChiết xuất rễ cam thảo - làm dịu, chống oxy hóa\nHyaluronic Acid - cấp ẩm căng mọng",
+    "guidelines": "Bước 1: Sau serum, lấy một lượng kem vừa đủ (bằng hạt đậu).\nBước 2: Chấm 5 điểm lên mặt và massage đều theo chuyển động tròn hướng lên.\nBước 3: Thoa nhẹ xuống vùng cổ.\nDùng sáng và tối; buổi sáng nhớ dùng kèm kem chống nắng."
   },
   {
     "id": "cleanser-centella",
@@ -677,9 +677,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 45,
     "hotPercent": 40,
     "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
-    "description": "Sữa rửa mặt tạo bọt mịn tự nhiên giúp lấy đi bụi bẩn, bã nhờn sâu trong lỗ chân lông mà không làm khô căng da nhờ chiết xuất rau má dồi dào và độ pH chuẩn 5.5 lý tưởng cho da.",
-    "ingredients": "Chiết xuất rau má bản địa, Decyl Glucoside, Glycerin, Panthenol, Tinh dầu tràm trà kiểm soát mụn.",
-    "guidelines": "Lấy một lượng bọt vừa đủ, thoa đều lên da ẩm và massage nhẹ nhàng từ 30s đến 1 phút, sau đó rửa sạch lại với nước ấm."
+    "description": "Sữa rửa mặt tạo bọt bông mịn tự nhiên, làm sạch sâu bụi bẩn và bã nhờn trong lỗ chân lông mà không gây khô căng nhờ hệ chất diện hoạt dịu nhẹ gốc đường. Độ pH chuẩn 5.5 lý tưởng giúp bảo toàn màng ẩm tự nhiên của da. Chiết xuất rau má bản địa dồi dào kết hợp tinh dầu tràm trà làm dịu, hỗ trợ kiểm soát mụn, trả lại làn da sạch thoáng và mềm mịn sau mỗi lần rửa.",
+    "ingredients": "Chiết xuất rau má bản địa - làm dịu, phục hồi\nDecyl Glucoside - chất tạo bọt dịu nhẹ gốc đường\nGlycerin - giữ ẩm\nPanthenol (B5) - làm mềm da\nTinh dầu tràm trà - kháng khuẩn, kiểm soát mụn",
+    "guidelines": "Bước 1: Làm ướt mặt bằng nước ấm.\nBước 2: Lấy một lượng vừa đủ, tạo bọt trong lòng bàn tay.\nBước 3: Massage nhẹ nhàng 30-60 giây, tập trung vùng chữ T.\nBước 4: Rửa sạch lại với nước. Dùng 1-2 lần/ngày."
   },
   {
     "id": "mask-coconut",
@@ -700,9 +700,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 210,
     "hotPercent": 92,
     "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
-    "description": "Mặt nạ giấy sinh học được dệt từ nước dừa tươi lên men tự nhiên, ôm khít khuôn mặt như làn da thứ hai. Truyền dẫn lượng ẩm dồi dào gấp 10 lần mặt nạ giấy thông thường, đem lại làn da căng mọng tức thì.",
-    "ingredients": "Nước dừa tươi lên men sinh học, Hyaluronic Acid đa tầng, Niacinamide 2%, chiết xuất nha đam.",
-    "guidelines": "Đắp mặt nạ lên da sạch trong vòng 15-20 phút. Gỡ mặt nạ ra và vỗ nhẹ để tinh chất thẩm thấu hết. Không cần rửa lại với nước."
+    "description": "Mặt nạ giấy sinh học dệt từ nước dừa tươi lên men tự nhiên (bio-cellulose), ôm khít từng đường nét khuôn mặt như làn da thứ hai để truyền dẫn tối đa dưỡng chất. Khả năng giữ và cấp ẩm vượt trội giúp làn da căng mọng, mềm mại tức thì chỉ sau một lần đắp. Bảng thành phần lành tính, dịu nhẹ, thích hợp phục hồi da khô, thiếu nước và làm dịu da sau khi đi nắng.",
+    "ingredients": "Nước dừa tươi lên men sinh học - cấp ẩm, nuôi dưỡng\nHyaluronic Acid đa tầng - giữ nước căng mọng\nNiacinamide 2% - dưỡng sáng nhẹ\nChiết xuất nha đam - làm dịu, phục hồi",
+    "guidelines": "Bước 1: Rửa mặt sạch, thấm khô nhẹ.\nBước 2: Trải mặt nạ ôm khít khuôn mặt, để yên 15-20 phút.\nBước 3: Gỡ mặt nạ, vỗ nhẹ cho tinh chất còn lại thẩm thấu hết.\nKhông cần rửa lại. Dùng 2-3 lần/tuần."
   },
   {
     "id": "mask-tea-tree",
@@ -723,9 +723,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 140,
     "hotPercent": 78,
     "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
-    "description": "Mặt nạ sợi cotton tự nhiên tẩm tinh chất tràm trà Úc và rau má giúp kháng khuẩn, kháng viêm cực mạnh. Làm xẹp các nốt mụn sưng đỏ nhanh chóng và điều tiết lượng dầu thừa hiệu quả trên da mặt.",
-    "ingredients": "Tinh dầu tràm trà Melaleuca Alternifolia, salicylic acid (BHA) 0.5%, chiết xuất trà xanh kháng oxy hóa.",
-    "guidelines": "Sau khi rửa mặt sạch, đắp mặt nạ đều lên khuôn mặt. Giữ nguyên từ 10-15 phút rồi tháo bỏ. Vỗ nhẹ cho tinh chất khô thoáng tự nhiên."
+    "description": "Mặt nạ sợi cotton tự nhiên thấm đẫm tinh chất tràm trà Úc và rau má, mang lại khả năng kháng khuẩn - kháng viêm mạnh mẽ cho làn da đang gặp vấn đề mụn. Sản phẩm giúp làm xẹp nhanh các nốt mụn sưng đỏ, đồng thời điều tiết lượng dầu thừa và se khít lỗ chân lông. Kết cấu tinh chất mát dịu, phù hợp dùng định kỳ để duy trì làn da sạch thoáng, giảm mụn tái phát.",
+    "ingredients": "Tinh dầu tràm trà (Melaleuca Alternifolia) - kháng khuẩn\nSalicylic Acid (BHA) 0.5% - làm sạch lỗ chân lông\nChiết xuất trà xanh - chống oxy hóa, làm dịu\nChiết xuất rau má - phục hồi da",
+    "guidelines": "Bước 1: Rửa mặt sạch, thấm khô.\nBước 2: Đắp mặt nạ đều khắp khuôn mặt, giữ 10-15 phút.\nBước 3: Gỡ ra, vỗ nhẹ cho tinh chất thấm.\nDùng 2-3 lần/tuần. Có thể đắp điểm lên nốt mụn sưng."
   },
   {
     "id": "mask-collagen",
@@ -746,9 +746,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 88,
     "hotPercent": 65,
     "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
-    "description": "Dòng mặt nạ cao cấp chứa collagen thủy phân kích thước nano và phức hợp tế bào gốc thực vật giúp kích thích tái tạo collagen tự nhiên dưới da, tăng cường độ đàn hồi và làm mờ nếp nhăn li ti rõ rệt.",
-    "ingredients": "Collagen thủy phân từ cá biển sâu, tế bào gốc nho đỏ hữu cơ, Adenosine ngăn lão hóa da, Beta-glucan làm dịu.",
-    "guidelines": "Sử dụng 2-3 lần một tuần. Đắp mặt nạ từ 15-20 phút, sau đó mát-xa mặt nhẹ nhàng theo chiều nâng cơ từ dưới lên trên."
+    "description": "Dòng mặt nạ cao cấp chứa collagen thủy phân kích thước nano và phức hợp tế bào gốc thực vật, giúp kích thích tái tạo collagen tự nhiên dưới da, tăng cường độ đàn hồi và làm mờ nếp nhăn li ti rõ rệt. Adenosine hỗ trợ chống lão hóa trong khi Beta-glucan làm dịu và cấp ẩm sâu. Thích hợp cho làn da cần nâng cơ, săn chắc và phục hồi dấu hiệu lão hóa sớm.",
+    "ingredients": "Collagen thủy phân từ cá biển sâu - nâng cơ, săn chắc\nTế bào gốc nho đỏ hữu cơ - tái tạo, chống oxy hóa\nAdenosine - làm mờ nếp nhăn\nBeta-glucan - làm dịu, cấp ẩm",
+    "guidelines": "Bước 1: Rửa mặt sạch, dùng toner.\nBước 2: Đắp mặt nạ 15-20 phút.\nBước 3: Gỡ ra và massage nhẹ theo chiều nâng cơ từ dưới lên.\nDùng 2-3 lần/tuần để cảm nhận hiệu quả săn chắc."
   },
   {
     "id": "sunscreen-centella",
@@ -769,9 +769,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 65,
     "hotPercent": 72,
     "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
-    "description": "Kem chống nắng thuần vật lý với chiết xuất rau má làm dịu da tức thì, bảo vệ da toàn diện dưới ánh nắng mặt trời đồng thời kiểm soát dầu thừa hiệu quả suốt 8 tiếng không gây bết rít.",
-    "ingredients": "Chiết xuất rau má, Zinc Oxide, Titanium Dioxide, Niacinamide, Adenosine.",
-    "guidelines": "Thoa lượng vừa đủ lên da trước khi ra nắng 20 phút. Thoa lại sau mỗi 4 tiếng nếu hoạt động ngoài trời liên tục."
+    "description": "Kem chống nắng chiết xuất rau má với kết cấu mỏng nhẹ, thấm nhanh, không để lại vệt trắng bệt hay cảm giác bí nhờn. Màng lọc quang phổ rộng SPF50 bảo vệ da tối ưu trước tia UVA/UVB, đồng thời hệ kiềm dầu thông minh giữ da khô thoáng suốt nhiều giờ. Bổ sung rau má và chiết xuất làm dịu giúp bảo vệ da nhạy cảm, da dầu mụn khỏi tác nhân môi trường mà vẫn dưỡng da khỏe mạnh.",
+    "ingredients": "Màng lọc UVA/UVB SPF50 PA++++ - bảo vệ quang phổ rộng\nChiết xuất rau má - làm dịu, chống oxy hóa\nNiacinamide - dưỡng sáng, kiềm dầu\nSilica - hút dầu, giữ da khô thoáng",
+    "guidelines": "Bước 1: Là bước cuối cùng trong chu trình dưỡng buổi sáng.\nBước 2: Thoa một lượng đủ (khoảng 2 đốt ngón tay) đều khắp mặt và cổ.\nBước 3: Đợi 15 phút trước khi ra nắng.\nThoa lại sau mỗi 2-3 giờ nếu hoạt động ngoài trời."
   },
   {
     "id": "toner-calendula",
@@ -792,9 +792,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 52,
     "hotPercent": 55,
     "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
-    "description": "Nước hoa hồng cân bằng ẩm chiết xuất từ những cánh hoa cúc vạn thọ tươi nguyên chất, nhẹ nhàng làm sạch sâu, se khít lỗ chân lông và phục hồi độ ẩm mịn tự nhiên của làn da.",
-    "ingredients": "Chiết xuất hoa cúc Calendula, Allantoin, Hyaluronic Acid, chiết xuất rau má dịu da.",
-    "guidelines": "Thấm đều toner lên bông tẩy trang rồi nhẹ nhàng lau khắp khuôn mặt, hoặc vỗ trực tiếp bằng tay sạch sau bước rửa mặt."
+    "description": "Toner hoa cúc dịu nhẹ không cồn, giúp cân bằng độ pH và cấp ẩm tức thì sau bước làm sạch, đưa da về trạng thái sẵn sàng hấp thu dưỡng chất tốt nhất. Chiết xuất hoa cúc Calendula làm dịu vùng da nhạy cảm, ửng đỏ, trong khi Hyaluronic Acid và Panthenol khóa ẩm mềm mượt. Kết cấu nước trong mát, thẩm thấu nhanh, phù hợp dùng hằng ngày cho mọi loại da.",
+    "ingredients": "Chiết xuất hoa cúc Calendula - làm dịu, chống viêm\nHyaluronic Acid - cấp ẩm sâu\nPanthenol (B5) - phục hồi hàng rào da\nGlycerin - giữ ẩm mềm mượt",
+    "guidelines": "Bước 1: Sau khi rửa mặt, cho toner ra bông tẩy trang hoặc lòng bàn tay.\nBước 2: Lau/vỗ nhẹ đều khắp mặt, tránh vùng mắt.\nBước 3: Tiếp tục các bước serum và kem dưỡng.\nDùng sáng và tối."
   },
   {
     "id": "shower-gel",
@@ -815,9 +815,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 110,
     "hotPercent": 75,
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
-    "description": "Sữa tắm dạng gel chứa hàng triệu hạt vitamin E tự tan, nhẹ nhàng làm sạch bụi bẩn và tế bào chết xỉn màu. Hương thơm nước hoa Pháp quý phái lưu hương suốt 8 tiếng, kết hợp các dưỡng chất làm trắng da bật tông tự nhiên.",
-    "ingredients": "Glutathione, Chiết xuất dâu tằm trắng, Vitamin E, Tinh dầu nước hoa Pháp cao cấp, Cocamidopropyl Betaine.",
-    "guidelines": "Lấy lượng sữa tắm vừa đủ ra bông tắm, tạo bọt mịn và xoa đều toàn thân. Massage nhẹ nhàng 3-5 phút để hạt vitamin tan ra và thấm thấu vào da, sau đó xả sạch."
+    "description": "Sữa tắm dưỡng trắng với hương nước hoa lưu hương lâu, mang lại trải nghiệm tắm sang trọng như spa tại nhà. Bọt kem mềm mịn làm sạch dịu nhẹ, không gây khô da nhờ bổ sung Glycerin và các dưỡng chất giữ ẩm. Hoạt chất làm sáng giúp cải thiện tông da toàn thân đều màu, mềm mượt sau thời gian sử dụng, đồng thời lưu lại làn hương quyến rũ suốt nhiều giờ.",
+    "ingredients": "Niacinamide - dưỡng sáng đều màu body\nGlycerin - giữ ẩm, chống khô\nChất diện hoạt dịu nhẹ - làm sạch không rít\nHương nước hoa cao cấp - lưu hương lâu",
+    "guidelines": "Bước 1: Làm ướt cơ thể, lấy lượng sữa tắm vừa đủ ra bông tắm.\nBước 2: Tạo bọt và massage nhẹ khắp cơ thể.\nBước 3: Xả sạch lại với nước.\nDùng hằng ngày để duy trì làn da sáng mịn và thơm mát."
   },
   {
     "id": "body-scrub",
@@ -838,9 +838,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 64,
     "hotPercent": 48,
     "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
-    "description": "Sự kết hợp hoàn hảo giữa những hạt cà phê Đăk Lăk xay nhuyễn sàng lọc kích thước siêu nhỏ, không gây xước da, và bơ hạt mỡ hữu cơ. Giúp cuốn trôi lớp tế bào chết sần sùi, giải quyết tình trạng viêm nang lông và nuôi dưỡng làn da body mịn màng như em bé.",
-    "ingredients": "Hạt cà phê nguyên chất Đăk Lăk, Bơ hạt mỡ (Shea Butter) hữu cơ, Dầu dừa tinh khiết, Tocopheryl Acetate (Vitamin E).",
-    "guidelines": "Làm ướt cơ thể. Thoa một lượng vừa đủ scrub lên da và massage nhẹ nhàng từ 5-10 phút, đặc biệt chú ý vùng khuỷu tay, đầu gối. Rửa sạch lại bằng nước."
+    "description": "Tẩy tế bào chết body từ hạt cà phê Đắk Lắk nguyên chất, nhẹ nhàng loại bỏ lớp da xỉn màu, sần sùi để lộ làn da mới mịn màng, tươi sáng. Hạt cà phê giàu chất chống oxy hóa kết hợp dầu dưỡng tự nhiên vừa massage vừa nuôi dưỡng, kích thích tuần hoàn máu và làm da mềm mượt. Hương cà phê ấm áp thư giãn, phù hợp dùng định kỳ để da luôn láng mịn.",
+    "ingredients": "Hạt cà phê Đắk Lắk - tẩy tế bào chết, chống oxy hóa\nĐường mía tự nhiên - làm sạch dịu nhẹ\nDầu dừa/dầu hạnh nhân - dưỡng ẩm, làm mềm\nVitamin E - nuôi dưỡng da",
+    "guidelines": "Bước 1: Làm ướt da khi tắm.\nBước 2: Lấy một lượng vừa đủ, massage tròn nhẹ khắp cơ thể, tập trung vùng khuỷu tay, đầu gối, gót chân.\nBước 3: Xả sạch với nước.\nDùng 2-3 lần/tuần."
   },
   {
     "id": "body-lotion",
@@ -861,9 +861,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 96,
     "hotPercent": 70,
     "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
-    "description": "Sữa dưỡng thể cao cấp kết hợp Glutathione tinh khiết giúp ức chế sắc tố melanin và màng chống nắng UV kép vật lý bảo vệ làn da khỏi tác hại ánh mặt trời, giúp nâng tone da trắng mịn màng và đều màu chỉ sau 2-3 tuần.",
-    "ingredients": "Glutathione nồng độ cao, Alpha Arbutin, Titanium Dioxide, Vitamin C ổn định, Chiết xuất dâu tây rừng.",
-    "guidelines": "Thoa đều toàn thân vào mỗi sáng và tối sau khi tắm sạch. Massage nhẹ nhàng để dưỡng chất thấm hoàn toàn."
+    "description": "Sữa dưỡng thể dưỡng trắng tích hợp Glutathione và màng chống nắng nhẹ, vừa nuôi dưỡng làn da sáng mịn vừa bảo vệ khỏi tác động của môi trường ban ngày. Kết cấu lotion mỏng nhẹ thấm nhanh, không nhờn dính, khóa ẩm suốt cả ngày dài. Sử dụng đều đặn giúp cải thiện tông da toàn thân đều màu, mềm mại và rạng rỡ tự nhiên.",
+    "ingredients": "Glutathione - dưỡng trắng, chống oxy hóa\nNiacinamide - làm đều màu da\nMàng lọc chống nắng nhẹ - bảo vệ ban ngày\nShea Butter - dưỡng ẩm, làm mềm",
+    "guidelines": "Bước 1: Sau khi tắm và lau khô da.\nBước 2: Thoa đều lotion khắp cơ thể, massage nhẹ đến khi thấm.\nBước 3: Ưu tiên dùng buổi sáng để tận dụng lớp bảo vệ chống nắng.\nDùng hằng ngày."
   },
   {
     "id": "body-mist",
@@ -883,9 +883,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 55,
     "hotPercent": 50,
     "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
-    "description": "Sự hòa quyện tuyệt vời của tinh dầu hoa đào Nhật Bản ngọt ngào, lê mọng nước và gỗ hổ phách ấm áp đem lại hương thơm dịu nhẹ, lôi cuốn tự nhiên cùng khả năng bổ sung ẩm tức thì cho da body mượt mà.",
-    "ingredients": "Alcohol hữu cơ cất từ lúa mì, Tinh dầu hoa anh đào tự nhiên, Glycerin cấp ẩm, lô hội làm dịu da.",
-    "guidelines": "Xịt trực tiếp lên da cơ thể ở khoảng cách 15-20cm, tập trung vào các điểm nhạy cảm hương như cổ tay, vùng sau gáy để giữ hương bền vững."
+    "description": "Xịt thơm toàn thân hương hoa anh đào tươi mát, mang lại cảm giác thư thái và quyến rũ tức thì. Công thức dạng sương mịn phủ đều, lưu hương vừa phải, thanh lịch, phù hợp làm mới cơ thể suốt ngày dài mà không gây nồng gắt. Bổ sung dưỡng chất giữ ẩm nhẹ giúp da mềm mượt, thoang thoảng hương thơm tinh tế.",
+    "ingredients": "Hương hoa anh đào (Sakura) - thanh lịch, tươi mát\nPanthenol - giữ ẩm nhẹ\nCồn dược phẩm bay nhanh - định hương\nNước tinh khiết - dịu nhẹ trên da",
+    "guidelines": "Bước 1: Lắc nhẹ chai trước khi dùng.\nBước 2: Xịt cách cơ thể 15-20cm vào các vùng như cổ, cổ tay, sau tai.\nBước 3: Xịt lại khi cần làm mới hương thơm.\nTránh xịt trực tiếp lên mặt và vùng da tổn thương."
   },
   {
     "id": "hand-cream",
@@ -906,9 +906,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 38,
     "hotPercent": 30,
     "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
-    "description": "Hỗn hợp dưỡng ẩm siêu đậm đặc từ dầu dừa nguyên chất ép lạnh và bơ hạt mỡ. Giúp phục hồi nhanh chóng làn da tay bị khô ráp, bong tróc do tiếp xúc hóa chất tẩy rửa hoặc ngồi máy lạnh thường xuyên.",
-    "ingredients": "Dầu dừa hữu cơ ép lạnh, Shea Butter hữu cơ, Vitamin B5, chiết xuất rễ cam thảo làm mờ vết thâm.",
-    "guidelines": "Lấy một lượng kem nhỏ thoa đều và mát-xa hai bàn tay bất cứ khi nào cảm thấy da bị khô xơ hoặc sau khi rửa tay sạch."
+    "description": "Kem dưỡng da tay chiết xuất sữa dừa, thấm nhanh không để lại cảm giác nhờn dính, phục hồi làn da tay khô ráp, nứt nẻ trở nên mềm mại tức thì. Công thức giàu dưỡng chất khóa ẩm lâu dài, bảo vệ da tay khỏi tác động của nước rửa và thời tiết. Tuýp nhỏ gọn tiện mang theo, hương thơm dịu nhẹ dễ chịu.",
+    "ingredients": "Chiết xuất sữa dừa - dưỡng ẩm, làm mềm\nShea Butter - phục hồi da khô nứt\nGlycerin - giữ nước\nVitamin E - nuôi dưỡng, chống lão hóa da tay",
+    "guidelines": "Bước 1: Lấy một lượng nhỏ kem ra lòng bàn tay.\nBước 2: Xoa đều hai tay, massage kỹ các kẽ ngón và móng.\nBước 3: Dùng lại sau mỗi lần rửa tay hoặc khi da khô.\nDùng nhiều lần trong ngày."
   },
   {
     "id": "body-wrap",
@@ -929,9 +929,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 72,
     "hotPercent": 60,
     "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
-    "description": "Giải pháp ủ trắng body chuẩn spa tại nhà nhờ chiết xuất tảo biển Pháp dồi dào khoáng chất và bùn khoáng thiên nhiên. Đào thải độc tố, bã nhờn sâu trong lỗ chân lông và nuôi dưỡng làn da body trắng hồng mướt mịn rõ rệt.",
-    "ingredients": "Bột tảo biển Brittany Pháp, Bùn khoáng Bentonite tinh lọc, Niacinamide 3%, dịch chiết nhân sâm trắng.",
-    "guidelines": "Thoa một lớp kem ủ mỏng lên toàn bộ da body sau khi tẩy tế bào chết. Ủ trong 15-20 phút, sau đó tắm sạch lại với nước ấm."
+    "description": "Kem ủ trắng body chiết xuất tảo biển Pháp, mang lại hiệu quả dưỡng sáng và cấp ẩm chuyên sâu như liệu trình spa. Khoáng chất từ tảo biển nuôi dưỡng da mềm mịn, trong khi các hoạt chất làm sáng cải thiện tông da xỉn màu, không đều màu. Kết cấu kem đặc mịn, dễ tán, thẩm thấu tốt, thích hợp ủ định kỳ để da toàn thân sáng khỏe rạng rỡ.",
+    "ingredients": "Chiết xuất tảo biển Pháp - khoáng hóa, nuôi dưỡng\nGlutathione & Niacinamide - dưỡng trắng\nCollagen - tăng đàn hồi\nBơ hạt mỡ - dưỡng ẩm sâu",
+    "guidelines": "Bước 1: Tắm sạch, lau khô da.\nBước 2: Thoa lớp kem ủ dày lên vùng da cần dưỡng.\nBước 3: Ủ 15-20 phút cho dưỡng chất thấm rồi rửa lại (hoặc massage đến khi thấm).\nDùng 2-3 lần/tuần."
   },
   {
     "id": "body-peel",
@@ -952,9 +952,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 38,
     "hotPercent": 42,
     "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
-    "description": "Gel tẩy tế bào chết hóa học kết hợp vật lý nhờ AHA cam tươi dịu nhẹ, cuốn trôi bã nhờn, thông thoáng nang chân lông và dưỡng ẩm sâu cho làn da sần sùi bật tông láng mịn nhanh chóng.",
-    "ingredients": "AHA chiết xuất cam sành tươi, Cellulose tự nhiên, Glycerin, Panthenol.",
-    "guidelines": "Thoa một lượng gel vừa đủ lên da body khô ráo, massage xoay tròn nhẹ nhàng cho đến khi lớp tế bào sừng kết tủa rơi ra, sau đó tắm lại sạch."
+    "description": "Gel tẩy tế bào chết body chứa AHA và tinh chất cam, nhẹ nhàng làm bong lớp da chết mà không cần chà xát mạnh gây tổn thương da. AHA hòa tan liên kết tế bào sừng già cỗi, trả lại làn da mới láng mịn và tươi sáng, đồng thời tinh chất cam giàu Vitamin C giúp da rạng rỡ, đều màu hơn. Phù hợp cho các vùng da sần sùi, thâm sạm.",
+    "ingredients": "AHA (Glycolic/Lactic Acid) - tẩy tế bào chết hóa học\nTinh chất cam (Vitamin C) - làm sáng, đều màu\nChiết xuất lô hội - làm dịu\nGlycerin - cấp ẩm",
+    "guidelines": "Bước 1: Làm ẩm da, thoa gel lên vùng cần tẩy.\nBước 2: Massage nhẹ, gel sẽ vón lại kéo theo tế bào chết.\nBước 3: Xả sạch với nước.\nDùng 1-2 lần/tuần; sau đó dưỡng ẩm và chống nắng kỹ."
   },
   {
     "id": "body-oil",
@@ -975,9 +975,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 48,
     "hotPercent": 68,
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
-    "description": "Dầu massage dưỡng thể kết hợp các loại dầu hạt ép lạnh hữu cơ cùng tinh dầu oải hương chuẩn Pháp, giải tỏa mệt mỏi cơ bắp và đem lại giấc ngủ ngon mượt mà.",
-    "ingredients": "Tinh dầu Lavender Pháp, Dầu hạnh nhân ngọt, Dầu Jojoba ép lạnh, Vitamin E.",
-    "guidelines": "Sau khi tắm xong và da còn ẩm, thoa vài giọt dầu lên cơ thể rồi massage nhẹ nhàng đến khi thấm hết để khóa ẩm sâu."
+    "description": "Dầu dưỡng thể hoa oải hương với hương thơm thư giãn, nuôi dưỡng làn da khô ráp trở nên mềm mượt, căng bóng và tràn đầy sức sống. Hỗn hợp dầu thực vật quý thẩm thấu nhanh, không gây bết dính, khóa ẩm sâu và tạo lớp màng bảo vệ mềm mại. Hương oải hương dịu nhẹ giúp giải tỏa căng thẳng, lý tưởng dùng buổi tối trước khi ngủ.",
+    "ingredients": "Tinh dầu oải hương - thư giãn, kháng khuẩn nhẹ\nDầu Jojoba - dưỡng ẩm tương thích da\nDầu hạnh nhân ngọt - làm mềm, mượt da\nVitamin E - chống oxy hóa",
+    "guidelines": "Bước 1: Lấy vài giọt dầu ra lòng bàn tay, xoa ấm.\nBước 2: Massage đều lên da còn hơi ẩm sau khi tắm để khóa ẩm tốt nhất.\nBước 3: Massage kỹ vùng da khô như khuỷu, gối.\nDùng hằng ngày, đặc biệt buổi tối."
   },
   {
     "id": "shampoo-grapefruit",
@@ -998,9 +998,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 180,
     "hotPercent": 90,
     "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
-    "description": "Dầu gội thảo dược không chứa sulfate, silicon hay paraben gây hại da đầu. Được điều chế từ tinh dầu vỏ bưởi da xanh nguyên chất kết hợp cùng chiết xuất cỏ mần trầu, hà thủ ô. Giúp làm sạch tóc dịu nhẹ, ngăn rụng tóc rõ rệt sau 2 tuần và kích thích nang tóc mới mọc nhanh chóng.",
-    "ingredients": "Tinh dầu vỏ bưởi da xanh, Chiết xuất cỏ mần trầu, Chiết xuất hà thủ ô, Biotin, Panthenol.",
-    "guidelines": "Làm ướt tóc hoàn toàn, lấy một lượng gội vừa đủ xoa đều lòng bàn tay để tạo bọt rồi massage nhẹ nhàng lên da đầu trong 3-5 phút. Xả sạch với nước ấm."
+    "description": "Dầu gội bưởi đậm đặc chuyên biệt cho tóc gãy rụng, kết hợp tinh dầu vỏ bưởi và các dưỡng chất kích thích nang tóc, giúp giảm rụng và thúc đẩy mọc tóc con. Công thức làm sạch dịu nhẹ, không chứa sulfate mạnh, giữ da đầu cân bằng và sạch thoáng. Sử dụng đều đặn giúp mái tóc chắc khỏe từ gốc, dày dặn và bồng bềnh hơn.",
+    "ingredients": "Tinh dầu vỏ bưởi - kích thích mọc tóc, giảm rụng\nBiotin (Vitamin B7) - chắc khỏe nang tóc\nChiết xuất hà thủ ô, bồ kết - dưỡng tóc chắc gốc\nChất tẩy rửa dịu nhẹ không sulfate",
+    "guidelines": "Bước 1: Làm ướt tóc, lấy lượng dầu gội vừa đủ.\nBước 2: Tạo bọt và massage da đầu 2-3 phút để dưỡng chất thẩm thấu.\nBước 3: Xả sạch với nước.\nDùng 3-4 lần/tuần; kết hợp kem xả cùng dòng để tối ưu hiệu quả."
   },
   {
     "id": "conditioner-grapefruit",
@@ -1020,9 +1020,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 45,
     "hotPercent": 35,
     "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
-    "description": "Kem xả giàu dưỡng chất chiết xuất từ tinh dầu vỏ bưởi da xanh kết hợp protein tơ tằm. Cung cấp độ ẩm dồi dào cho sợi tóc, phục hồi lớp biểu bì tóc bị hư tổn do hóa chất uốn nhuộm, giúp tóc suôn mượt, giảm chẻ ngọn và bóng khỏe tự nhiên.",
-    "ingredients": "Tinh dầu vỏ bưởi, Thủy phân Protein tơ tằm, Dầu Argan hữu cơ, Lactic Acid, Vitamin B5.",
-    "guidelines": "Sau khi gội sạch, vắt bớt nước trên tóc. Thoa kem xả từ thân đến ngọn tóc (tránh thoa trực tiếp lên da đầu). Để yên 2-3 phút cho dưỡng chất ngấm sâu rồi xả sạch."
+    "description": "Kem xả tóc tinh dầu bưởi phục hồi hư tổn, cung cấp dưỡng chất sâu vào từng sợi tóc khô xơ, chẻ ngọn, trả lại mái tóc mềm mượt, óng ả và dễ vào nếp. Công thức bổ sung Keratin và dầu Argan tái cấu trúc thân tóc, làm mượt lớp biểu bì và giảm rối. Hương bưởi tươi mát lưu lại nhẹ nhàng trên tóc.",
+    "ingredients": "Tinh dầu vỏ bưởi - dưỡng tóc, kích thích nang\nKeratin thủy phân - phục hồi hư tổn\nDầu Argan - làm mượt, giảm xơ rối\nBơ hạt mỡ - dưỡng ẩm thân tóc",
+    "guidelines": "Bước 1: Sau khi gội, vắt bớt nước trên tóc.\nBước 2: Thoa kem xả từ giữa thân đến ngọn tóc, tránh da đầu.\nBước 3: Ủ 2-3 phút rồi xả sạch.\nDùng sau mỗi lần gội."
   },
   {
     "id": "hair-serum",
@@ -1043,9 +1043,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 78,
     "hotPercent": 72,
     "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
-    "description": "Serum dưỡng tóc chứa dầu Argan hữu cơ từ Maroc kết hợp với Vitamin E đậm đặc. Thấm tức thì vào lõi tóc, lấp đầy các hư tổn biểu bì và tạo màng chắn bảo vệ tóc khỏi nhiệt độ cao của máy sấy, máy uốn.",
-    "ingredients": "Dầu Argan hữu cơ ép lạnh, tinh dầu dừa phân đoạn, vitamin E, chiết xuất hạt lanh thiên nhiên.",
-    "guidelines": "Lấy 2-3 giọt serum xoa đều giữa hai lòng bàn tay rồi vuốt nhẹ lên thân và đuôi tóc ẩm hoặc khô. Không xả lại với nước."
+    "description": "Tinh dầu dưỡng tóc Argan phục hồi bóng mượt, tạo lớp màng bảo vệ giúp tóc chống lại hư tổn từ nhiệt và môi trường. Dầu Argan quý giàu Vitamin E và axit béo thẩm thấu nhanh, làm mượt tóc khô xơ, giảm chẻ ngọn và xù rối tức thì mà không gây bết. Vài giọt nhỏ cho mái tóc óng ả, vào nếp và thơm nhẹ suốt ngày dài.",
+    "ingredients": "Dầu Argan nguyên chất - phục hồi, tạo bóng\nDầu hạt Macadamia - làm mượt, chống xơ rối\nVitamin E - chống oxy hóa, bảo vệ tóc\nSilicone nhẹ - tạo màng bóng không bết",
+    "guidelines": "Bước 1: Lấy 2-3 giọt serum ra lòng bàn tay, xoa đều.\nBước 2: Vuốt nhẹ lên phần thân và ngọn tóc (tóc khô hoặc ẩm), tránh chân tóc.\nBước 3: Tạo kiểu như bình thường.\nDùng hằng ngày khi cần."
   },
   {
     "id": "hair-mist",
@@ -1065,9 +1065,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 95,
     "hotPercent": 68,
     "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
-    "description": "Xịt dưỡng tóc hai lớp kết hợp tinh dầu vỏ bưởi nguyên chất và Biotin đậm đặc. Thẩm thấu sâu trực tiếp vào các gốc nang tóc giúp kích thích mọc tóc con mạnh mẽ, cho mái tóc dày mượt bồng bềnh tự nhiên.",
-    "ingredients": "Tinh dầu vỏ bưởi da xanh chưng cất hơi nước, Biotin (Vitamin B7), Panthenol, chiết xuất nhân sâm.",
-    "guidelines": "Lắc đều chai trước khi dùng để hai pha hòa quyện. Xịt trực tiếp lên da đầu khô hoặc sau khi gội và lau ráo tóc, mát-xa nhẹ nhàng bằng các đầu ngón tay."
+    "description": "Xịt dưỡng tóc vỏ bưởi và Biotin dạng sương mịn, bổ sung dưỡng chất tức thì cho mái tóc mỏng yếu, dễ gãy rụng. Công thức thẩm thấu nhanh vào da đầu và thân tóc, nuôi dưỡng nang tóc chắc khỏe, kích thích mọc tóc con và mang lại cảm giác tóc dày, bồng bềnh hơn. Hương bưởi tươi mát dễ chịu, tiện dùng nhiều lần trong ngày.",
+    "ingredients": "Tinh dầu vỏ bưởi - kích thích mọc tóc\nBiotin - nuôi dưỡng nang tóc chắc khỏe\nChiết xuất nhân sâm - tăng cường sức sống tóc\nPanthenol - dưỡng ẩm thân tóc",
+    "guidelines": "Bước 1: Lắc đều chai trước khi dùng.\nBước 2: Xịt trực tiếp lên da đầu và thân tóc (tóc khô hoặc ẩm).\nBước 3: Massage nhẹ da đầu để thẩm thấu, không cần xả lại.\nDùng 1-2 lần/ngày."
   },
   {
     "id": "scalp-scrub",
@@ -1088,9 +1088,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 42,
     "hotPercent": 45,
     "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
-    "description": "Cơ chế tẩy sạch sâu tế bào chết bằng các hạt tinh thể muối biển Đại Dương kết hợp cùng tinh dầu bạc hà mát lạnh. Giúp giải phóng nang tóc khỏi gàu ngứa, dầu thừa bít tắc và ngăn gàu quay trở lại rõ rệt.",
-    "ingredients": "Hạt muối biển hồng và trắng mịn, tinh dầu bạc hà (menthol), salicylic acid tự nhiên, chiết xuất gừng làm ấm kích thích tuần hoàn.",
-    "guidelines": "Làm ướt tóc, thoa một lượng scrub vừa đủ trực tiếp lên các đường rẽ ngôi da đầu. Massage nhẹ nhàng 3-5 phút tạo bọt dịu nhẹ rồi xả sạch bằng nước ấm."
+    "description": "Tẩy tế bào chết da đầu với muối biển và bạc hà, làm sạch sâu bã nhờn, gàu và bụi bẩn tích tụ ở chân tóc - nguyên nhân khiến tóc bết và yếu. Hạt muối biển massage nhẹ nhàng kích thích tuần hoàn da đầu, trong khi bạc hà mang lại cảm giác the mát sảng khoái. Da đầu sạch thoáng giúp nang tóc khỏe mạnh và tóc mọc tốt hơn.",
+    "ingredients": "Muối biển khoáng - tẩy tế bào chết, làm sạch sâu\nTinh dầu bạc hà - the mát, kháng khuẩn\nChiết xuất tràm trà - giảm gàu, ngứa\nDầu dừa - dưỡng ẩm da đầu",
+    "guidelines": "Bước 1: Làm ướt tóc và da đầu.\nBước 2: Lấy lượng vừa đủ, massage tròn nhẹ nhàng lên da đầu 2-3 phút.\nBước 3: Xả sạch rồi gội đầu như bình thường.\nDùng 1-2 lần/tuần."
   },
   {
     "id": "hair-mask-salon",
@@ -1110,9 +1110,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 52,
     "hotPercent": 55,
     "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
-    "description": "Mặt nạ phục hồi tóc chuyên sâu ứng dụng công nghệ collagen thủy phân cấu trúc phân tử siêu mịn. Giúp thấm sâu vào từng thớ tóc, tái kết cấu các liên kết keratin bị gãy rách do nhiệt và hóa chất uốn nhuộm.",
-    "ingredients": "Hydrolyzed Collagen, Keratin thủy phân, Bơ hạt mỡ, dồi dào axit amin thiết yếu.",
-    "guidelines": "Sau khi gội đầu, thoa lượng kem vừa đủ lên toàn bộ thân tóc (tránh da đầu). Ủ lạnh 15-20 phút hoặc hấp nóng, sau đó xả sạch hoàn toàn với nước lạnh."
+    "description": "Kem ủ tóc collagen thủy phân chuẩn salon, phục hồi chuyên sâu cho mái tóc hư tổn nặng do uốn, nhuộm, tẩy. Collagen và Keratin thẩm thấu sâu tái cấu trúc sợi tóc từ bên trong, trả lại độ chắc khỏe, đàn hồi và bóng mượt như vừa bước ra từ tiệm. Kết cấu kem giàu dưỡng chất, thẩm thấu tốt, giảm gãy rụng và xơ rối rõ rệt.",
+    "ingredients": "Collagen thủy phân - phục hồi, tăng đàn hồi\nKeratin - tái cấu trúc sợi tóc\nDầu Argan & bơ hạt mỡ - dưỡng ẩm sâu\nCeramide - làm mượt lớp biểu bì tóc",
+    "guidelines": "Bước 1: Sau khi gội, vắt ráo nước.\nBước 2: Thoa đều kem ủ từ thân đến ngọn tóc, tránh da đầu.\nBước 3: Ủ 10-15 phút (có thể dùng mũ ủ nhiệt) rồi xả sạch.\nDùng 2 lần/tuần cho tóc hư tổn."
   },
   {
     "id": "shampoo-locust",
@@ -1133,9 +1133,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 54,
     "hotPercent": 62,
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
-    "description": "Sự hồi sinh hoàn hảo của công thức bồ kết, hương nhu chưng cất dân gian kết hợp cùng bưởi bồng. Cân bằng bã nhờn, gội sạch tận gốc gàu nấm ngứa cứng đầu và nuôi dưỡng mái tóc đen bóng tự nhiên bồng bềnh quyến rũ.",
-    "ingredients": "Dịch chiết quả bồ kết nướng, Tinh dầu cỏ hương nhu, cỏ mần trầu, tinh chất gừng ấm.",
-    "guidelines": "Làm ướt tóc và da đầu. Lấy một lượng vừa đủ massage nhẹ nhàng để bọt tự nhiên len lỏi vào chân tóc, sau đó gội rửa thật sạch."
+    "description": "Dầu gội bồ kết cô đặc theo bí quyết dân gian kết hợp công nghệ hiện đại, làm sạch sâu và ngăn ngừa gàu, nấm da đầu hiệu quả. Chiết xuất bồ kết giàu saponin tự nhiên tạo bọt dịu nhẹ, nuôi dưỡng tóc đen mượt, chắc khỏe từ gốc. Da đầu sạch thoáng, hết ngứa, giảm gàu, phù hợp cho người có da đầu nhạy cảm, dễ gàu ngứa.",
+    "ingredients": "Chiết xuất bồ kết - làm sạch, dưỡng tóc đen mượt\nChiết xuất vỏ bưởi - kích thích nang tóc\nTinh dầu tràm trà - kháng nấm, giảm gàu\nMenthol - the mát, giảm ngứa",
+    "guidelines": "Bước 1: Làm ướt tóc, lấy lượng vừa đủ.\nBước 2: Tạo bọt và massage da đầu 2-3 phút.\nBước 3: Xả sạch với nước; nếu gàu nhiều có thể gội lại lần hai.\nDùng 3-4 lần/tuần."
   },
   {
     "id": "hair-heat-protect",
@@ -1156,9 +1156,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 30,
     "hotPercent": 35,
     "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
-    "description": "Màng chắn nhiệt tối ưu cho sợi tóc mỏng manh trước tác động của máy sấy, máy uốn, duỗi nhiệt cao. Cung cấp màng bọc keratin phục hồi liên kết đứt gãy tức thì.",
-    "ingredients": "Keratin thủy phân, chiết xuất tơ tằm, dầu Argan, màng bọc silicone chịu nhiệt.",
-    "guidelines": "Xịt đều lên tóc ẩm trước khi sấy khô hoặc xịt lên tóc khô trước khi sử dụng các thiết bị tạo kiểu bằng nhiệt."
+    "description": "Xịt dưỡng tóc bảo vệ nhiệt chứa Keratin, tạo lớp màng chắn giúp tóc chống lại tổn thương khi sấy, duỗi, uốn ở nhiệt độ cao. Công thức dạng sương mịn phủ đều, thẩm thấu nhanh, vừa bảo vệ vừa dưỡng ẩm giúp tóc mềm mượt và bóng khỏe sau tạo kiểu. Giảm xơ rối và chẻ ngọn do nhiệt, cho mái tóc luôn vào nếp và khỏe đẹp.",
+    "ingredients": "Keratin thủy phân - tạo màng bảo vệ nhiệt\nDầu Argan - dưỡng ẩm, làm mượt\nPanthenol - phục hồi thân tóc\nProtein lúa mì - tăng độ bền sợi tóc",
+    "guidelines": "Bước 1: Xịt đều lên tóc khô hoặc ẩm trước khi dùng máy tạo kiểu.\nBước 2: Chải đều để phủ khắp thân tóc.\nBước 3: Sấy/duỗi/uốn như bình thường.\nDùng mỗi khi tạo kiểu nhiệt."
   },
   {
     "id": "lip-tint",
@@ -1180,9 +1180,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 28,
     "hotPercent": 28,
     "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
-    "description": "Công thức son kem bùn bọc nước độc đáo mang kết cấu xốp mịn như nhung. Màu lên chuẩn sắc chỉ sau một lần quẹt, nhẹ tênh không gây khô môi hay lộ rãnh môi nhờ chứa dầu bơ và Vitamin E giữ ẩm sâu. Độ bám màu lên đến 8 tiếng.",
-    "ingredients": "Dầu bơ ép lạnh hữu cơ, Vitamin E tự nhiên, Màu khoáng tiêu chuẩn FDA Mỹ, Sáp ong trắng tinh khiết.",
-    "guidelines": "Thoa một lớp mỏng lên môi, bặm nhẹ và đợi 30 giây để lớp son tự set màu. Cảm nhận độ xốp, mướt mịn và khả năng giữ màu sau khi ăn uống nhẹ."
+    "description": "Son kem lì velvet siêu mịn môi, lên màu chuẩn chỉ với một lớp và bám lâu suốt nhiều giờ mà không gây khô nứt. Kết cấu mousse nhẹ như không, tán đều mượt mà cho lớp finish lì mịn hiện đại, tôn da. Bổ sung dưỡng chất giữ ẩm giúp môi mềm mại, thoải mái cả ngày dài, không bị bết hay lộ vân môi.",
+    "ingredients": "Hệ màu bột mịn cao cấp - lên màu chuẩn, bám lâu\nVitamin E - dưỡng ẩm, chống oxy hóa\nDầu Jojoba - làm mềm môi\nSáp thực vật - tạo finish lì mịn",
+    "guidelines": "Bước 1: Tẩy tế bào chết và dưỡng ẩm môi trước khi dùng.\nBước 2: Thoa từ giữa môi tán ra hai bên.\nBước 3: Có thể chồng lớp để tăng độ đậm.\nDùng tẩy trang chuyên dụng để làm sạch cuối ngày."
   },
   {
     "id": "cushion",
@@ -1204,9 +1204,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 73,
     "hotPercent": 73,
     "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
-    "description": "Cushion thế hệ mới tích hợp màng lọc chống nắng vật lý phổ rộng và hạt phấn nano siêu mịn. Mang lại lớp nền mỏng nhẹ tự nhiên nhưng che phủ hoàn hảo các khuyết điểm, mụn thâm, lỗ chân lông to và kiểm soát dầu thừa suốt 12 tiếng.",
-    "ingredients": "Chiết xuất tràm trà, Niacinamide 2%, Zinc Oxide, Titanium Dioxide, Vitamin B5 phục hồi.",
-    "guidelines": "Dùng bông mút dặm nhẹ phấn lên da mặt từ trong ra ngoài. Cảm nhận độ che phủ, tính kiềm dầu và độ mỏng nhẹ không bí bách của lớp nền."
+    "description": "Phấn nước cushion che phủ hoàn hảo, cho lớp nền mịn màng tự nhiên và khả năng kiềm dầu vượt trội suốt ngày dài. Tích hợp màng lọc chống nắng SPF50 bảo vệ da khỏi tia UV, đồng thời bổ sung dưỡng chất chăm sóc da ngay trong lúc trang điểm. Đầu bông mút mềm mại giúp tán đều, che khuyết điểm mà vẫn mỏng nhẹ, không bết mảng.",
+    "ingredients": "Màng lọc chống nắng SPF50 PA+++ - bảo vệ UV\nHạt phấn siêu mịn - che phủ tự nhiên\nNiacinamide - dưỡng sáng da\nSilica - kiềm dầu, giữ lớp nền lâu trôi",
+    "guidelines": "Bước 1: Dưỡng ẩm và dùng kem lót trước.\nBước 2: Ấn nhẹ mút vào lõi phấn, chấm đều lên mặt.\nBước 3: Dặm nhẹ để tán đều, che khuyết điểm.\nDặm lại trong ngày khi cần."
   },
   {
     "id": "lipstick",
@@ -1226,9 +1226,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 42,
     "hotPercent": 50,
     "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
-    "description": "Son thỏi lì với lớp finish satin bóng nhẹ tự nhiên mang lại vẻ sang quý đầy mê hoặc. Kết cấu sáp mềm dồi dào hyaluronic acid nuôi dưỡng môi căng mướt suốt cả ngày, bền màu tới 6h không gây bong tróc da môi.",
-    "ingredients": "Hyaluronic Acid bọc hạt, Sáp Candelilla tự nhiên, dầu Jojoba hữu cơ, màu khoáng tinh khiết FDA.",
-    "guidelines": "Thoa trực tiếp lên môi từ lòng môi ra ngoài mép. Có thể thoa 2 lớp để màu son lên đậm đà sắc nét hơn."
+    "description": "Son thỏi lì satin cao cấp cho đôi môi căng mịn quyến rũ, lên màu sang trọng và bám màu bền bỉ. Kết cấu satin mềm mượt lướt nhẹ trên môi, che phủ đều màu mà không làm khô hay lộ vân môi. Bảng màu tôn da, dưỡng chất trong son giúp môi mềm mại, đầy đặn suốt thời gian sử dụng.",
+    "ingredients": "Hệ sắc tố cao cấp - lên màu chuẩn, sang trọng\nBơ hạt mỡ & dầu thầu dầu - dưỡng ẩm môi\nVitamin E - chống oxy hóa\nSáp ong/sáp thực vật - kết cấu satin mượt",
+    "guidelines": "Bước 1: Dưỡng môi và tẩy tế bào chết trước khi thoa.\nBước 2: Thoa son từ giữa môi tán ra, có thể dùng chì kẻ viền để sắc nét.\nBước 3: Thấm nhẹ và chồng lớp hai để tăng độ bền màu."
   },
   {
     "id": "foundation",
@@ -1249,9 +1249,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 61,
     "hotPercent": 55,
     "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
-    "description": "Kem nền dạng lỏng (Liquid) có kết cấu siêu mỏng nhẹ, dễ dàng dàn đều trên da, tiệp màu hoàn hảo và che phủ 90% khuyết điểm thâm mụn, mạch máu nổi giúp làn da sáng mịn tự nhiên không tì vết.",
-    "ingredients": "Glycerin ngậm nước, màng silicon thông minh thông thoáng lỗ chân lông, chiết xuất ngọc trai dưỡng sáng.",
-    "guidelines": "Lấy một vài giọt chấm lên các điểm trên khuôn mặt, dùng cọ nền hoặc mút ẩm tán đều từ trong ra ngoài."
+    "description": "Kem nền liquid foundation che phủ mỏng nhẹ, cho lớp nền tự nhiên như da thật (skin-like finish) mà vẫn che được khuyết điểm. Kết cấu lỏng mịn dễ tán, thấm nhanh, không gây cảm giác nặng mặt hay bí da. Bổ sung dưỡng chất giữ ẩm giúp lớp nền mượt mà, bền màu và không bị mốc, xuống tông trong ngày dài.",
+    "ingredients": "Hạt phấn siêu mịn - che phủ tự nhiên\nHyaluronic Acid - giữ ẩm, mượt nền\nNiacinamide - dưỡng sáng\nHệ polymer bám dính - giữ lớp nền lâu trôi",
+    "guidelines": "Bước 1: Dưỡng ẩm và dùng kem lót.\nBước 2: Lấy vài giọt kem nền, tán đều từ trung tâm mặt ra ngoài bằng cọ/mút.\nBước 3: Phủ phấn bột để cố định lớp nền.\nTẩy trang kỹ cuối ngày."
   },
   {
     "id": "eyeliner",
@@ -1271,9 +1271,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 33,
     "hotPercent": 35,
     "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
-    "description": "Bút kẻ mắt nước đầu cọ lông mảnh chỉ 0.01mm giúp dễ dàng tạo các đường liner mảnh khảnh, sắc nét. Công nghệ màng phim thông minh chống trôi, chống lem hoàn toàn khi đổ mồ hôi hay gặp nước mưa.",
-    "ingredients": "Acrylates Copolymer tạo màng phim giữ màu, carbon đen tinh khiết, nước siêu tinh khiết EDI.",
-    "guidelines": "Đặt bút nằm sát đường mi mắt, vẽ một nét liền từ đầu mắt hướng ra đuôi mắt, có thể kẻ xếch nhẹ ở đuôi để tạo hiệu ứng mắt mèo."
+    "description": "Bút kẻ mắt nước đầu cọ mảnh siêu sắc nét, cho đường kẻ chuẩn xác, đều màu chỉ trong một lần lướt. Mực đen tuyền, khô nhanh và chống trôi, chống lem suốt cả ngày dù trong điều kiện nóng ẩm. Đầu cọ linh hoạt dễ dàng tạo dáng mắt từ thanh mảnh đến sắc sảo, phù hợp cả người mới tập kẻ mắt.",
+    "ingredients": "Mực gốc nước lâu trôi - chống lem, chống nước\nHệ polymer bám màu - giữ đường kẻ cả ngày\nĐầu cọ sợi mảnh - kẻ chuẩn xác, sắc nét",
+    "guidelines": "Bước 1: Lắc nhẹ bút trước khi dùng.\nBước 2: Kẻ sát chân mi từ đầu mắt ra đuôi mắt.\nBước 3: Tạo dáng đuôi mắt tùy ý, đợi khô hẳn.\nTẩy trang bằng nước tẩy chuyên dụng vùng mắt."
   },
   {
     "id": "makeup-remover",
@@ -1294,9 +1294,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 88,
     "hotPercent": 65,
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
-    "description": "Ứng dụng các phân tử micellar thông minh như thỏi nam châm hút sạch bụi mịn, kem chống nắng và các lớp trang điểm cứng đầu, hòa quyện dịch cất nước hoa hồng hữu cơ nuôi dưỡng làn da mát lành tức thì.",
-    "ingredients": "Dịch cất nước hoa hồng Damask hữu cơ, Glycerin, Poloxamer 184 dịu nhẹ, chiết xuất cúc La Mã.",
-    "guidelines": "Thấm đều nước tẩy trang lên bông cotton, nhẹ nhàng lau khắp da mặt và cổ theo chiều cấu tạo da. Không cần rửa lại với nước."
+    "description": "Nước tẩy trang Micellar nước hoa hồng làm sạch dịu nhẹ lớp trang điểm, bụi bẩn và bã nhờn mà không cần rửa lại, không gây khô căng da. Các phân tử micelle thông minh 'hút' sạch cặn trang điểm kể cả lớp lì lâu trôi, trong khi chiết xuất hoa hồng làm dịu và cấp ẩm. Phù hợp cho mọi loại da, kể cả da nhạy cảm và vùng mắt.",
+    "ingredients": "Micelle làm sạch thông minh - lấy sạch makeup\nChiết xuất nước hoa hồng - làm dịu, cấp ẩm\nGlycerin - giữ ẩm, chống khô\nKhông cồn, không hương liệu gây kích ứng",
+    "guidelines": "Bước 1: Thấm nước tẩy trang ra bông tẩy trang.\nBước 2: Đặt bông lên da vài giây rồi lau nhẹ nhàng lớp trang điểm.\nBước 3: Lặp lại đến khi bông sạch.\nSau đó rửa mặt lại bằng sữa rửa mặt (double cleansing)."
   },
   {
     "id": "lip-oil",
@@ -1317,9 +1317,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 34,
     "hotPercent": 48,
     "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
-    "description": "Dầu bóng dưỡng môi dồi dào màng bảo vệ từ collagen thủy phân và dầu hạt quý hiếm. Mang lại hiệu ứng môi gương pha lê căng bóng, lấp lánh và dưỡng ẩm mịn sâu tức thì.",
-    "ingredients": "Collagen thủy phân từ biển sâu, Dầu hạt tầm xuân hữu cơ, Vitamin E, Tinh dầu bạc hà tự nhiên.",
-    "guidelines": "Thoa trực tiếp lên môi để dưỡng ẩm sâu hoặc phủ đè lên một lớp son màu để tạo độ bóng mượt pha lê quyến rũ."
+    "description": "Son bóng dưỡng môi collagen glow cho đôi môi căng mọng, bóng khỏe và ngậm nước tức thì. Kết cấu dầu dưỡng nhẹ, không dính bết, vừa tạo hiệu ứng bóng gương quyến rũ vừa nuôi dưỡng môi mềm mại, giảm khô nứt. Ánh màu trong nhẹ tôn sắc môi tự nhiên, thích hợp dùng riêng hoặc phủ lên son lì để cấp ẩm.",
+    "ingredients": "Collagen - làm căng mọng môi\nDầu Jojoba & dầu hạnh nhân - dưỡng ẩm sâu\nVitamin E - chống oxy hóa, làm mềm\nAnh màu trong nhẹ - tạo hiệu ứng bóng khỏe",
+    "guidelines": "Bước 1: Thoa trực tiếp lên môi bằng đầu cọ.\nBước 2: Dùng riêng để cấp ẩm hoặc phủ lên son lì tạo hiệu ứng bóng.\nBước 3: Thoa lại khi cần trong ngày.\nCó thể dùng như son dưỡng ban đêm."
   },
   {
     "id": "setting-powder",
@@ -1340,9 +1340,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 42,
     "hotPercent": 55,
     "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
-    "description": "Phấn phủ dạng bột khoáng siêu tinh khiết kiềm dầu mạnh mẽ tới 10 tiếng, làm mịn kết cấu lỗ chân lông, tạo hiệu ứng mờ nhẹ tự nhiên không gây mốc trắng.",
-    "ingredients": "Silica tự nhiên, Bột bắp hữu cơ, Silica bọc Hyaluronic Acid, Chiết xuất trà xanh kháng khuẩn.",
-    "guidelines": "Dùng bông phấn hoặc cọ phủ đều một lớp mỏng lên vùng da chữ T nhiều dầu hoặc toàn mặt sau khi đánh nền."
+    "description": "Phấn phủ bột khoáng kiềm dầu giúp cố định lớp nền, kiểm soát bóng dầu và làm mờ lỗ chân lông cho lớp trang điểm mịn lì suốt ngày dài. Hạt bột khoáng siêu mịn tệp vào da tự nhiên, không gây bột mảng hay khô mốc. Bổ sung thành phần lành tính giúp da thông thoáng, phù hợp cả da dầu mụn nhạy cảm.",
+    "ingredients": "Bột khoáng siêu mịn - kiềm dầu, làm mờ lỗ chân lông\nSilica - hút dầu, giữ nền lâu trôi\nKẽm Oxide - làm dịu, kháng khuẩn nhẹ\nKhông talc, không hương liệu",
+    "guidelines": "Bước 1: Sau khi hoàn tất lớp nền.\nBước 2: Lấy một lượng nhỏ phấn lên bông/cọ, dặm nhẹ vùng chữ T và toàn mặt.\nBước 3: Dặm lại trong ngày để kiềm dầu.\nDùng lượng vừa đủ tránh bột mảng."
   },
   {
     "id": "intimate-wash",
@@ -1363,9 +1363,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 85,
     "hotPercent": 55,
     "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
-    "description": "Dịch chiết xuất từ lá trầu không bản địa kết hợp cùng trà xanh, hoa cúc La Mã và Acid Lactic cân bằng độ pH hoàn hảo. Giúp làm sạch vùng kín dịu nhẹ, kháng khuẩn bảo vệ, khử mùi hiệu quả và dưỡng da mềm mại.",
-    "ingredients": "Dịch chiết lá trầu không, Chiết xuất trà xanh, Chiết xuất cúc La Mã, Lactic Acid (pH 4.5), Nano Bạc kháng khuẩn.",
-    "guidelines": "Làm ướt vùng kín, lấy một lượng nhỏ gel tạo bọt nhẹ nhàng trong lòng bàn tay và xoa rửa ngoài da trong 1 phút, sau đó rửa lại thật sạch bằng nước."
+    "description": "Dung dịch vệ sinh phụ nữ chiết xuất trầu không dịu nhẹ, làm sạch và kháng khuẩn tự nhiên, giúp vùng kín luôn khô thoáng, sạch sẽ và tự tin. Công thức cân bằng độ pH sinh lý, không gây khô rát hay mất cân bằng hệ vi sinh tự nhiên. Hương thảo mộc thanh khiết mang lại cảm giác dễ chịu, phù hợp dùng hằng ngày cho da nhạy cảm.",
+    "ingredients": "Chiết xuất trầu không - kháng khuẩn, khử mùi tự nhiên\nAcid Lactic - cân bằng pH sinh lý\nChiết xuất trà xanh - làm dịu, chống viêm\nBisabolol - làm dịu vùng nhạy cảm",
+    "guidelines": "Bước 1: Làm ướt vùng vệ sinh với nước.\nBước 2: Lấy một lượng nhỏ, tạo bọt và rửa nhẹ nhàng bên ngoài.\nBước 3: Rửa sạch lại với nước.\nDùng 1-2 lần/ngày; không thụt rửa sâu."
   },
   {
     "id": "mouthwash",
@@ -1385,9 +1385,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 38,
     "hotPercent": 40,
     "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
-    "description": "Nước súc miệng thảo mộc chiết xuất từ lá trà xanh bản địa, bạc hà và muối biển tinh khiết giúp tiêu diệt 99.9% vi khuẩn gây mùi trong khoang miệng, ngăn ngừa mảng bám gội sạch hơi thở thơm mát dễ chịu.",
-    "ingredients": "Chiết xuất trà xanh kháng khuẩn, Tinh dầu bạc hà, tinh dầu húng quế, tinh thể muối đại dương, Xylitol bảo vệ men răng.",
-    "guidelines": "Sau khi chải răng sạch, súc miệng với 15-20ml dung dịch thảo mộc trong 30 giây rồi nhổ ra. Không cần súc lại với nước sinh hoạt."
+    "description": "Nước súc miệng thảo mộc khử mùi và mang lại hơi thở thơm mát suốt nhiều giờ, đồng thời hỗ trợ kháng khuẩn, bảo vệ nướu và răng miệng khỏe mạnh. Công thức dịu nhẹ không cồn gắt, không gây rát miệng, phù hợp dùng hằng ngày. Chiết xuất thảo mộc tự nhiên giúp làm sạch khoang miệng và ngăn ngừa vi khuẩn gây mùi.",
+    "ingredients": "Chiết xuất bạc hà - thơm mát, khử mùi\nTinh dầu tràm trà - kháng khuẩn\nChiết xuất lá trầu không - bảo vệ nướu\nXylitol - chống sâu răng, vị dịu ngọt",
+    "guidelines": "Bước 1: Sau khi đánh răng, lấy khoảng 15-20ml dung dịch.\nBước 2: Súc miệng kỹ trong 30 giây, đảo đều khắp khoang miệng.\nBước 3: Nhổ ra, không cần súc lại với nước.\nDùng 2 lần/ngày sáng và tối."
   },
   {
     "id": "deodorant",
@@ -1408,9 +1408,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 56,
     "hotPercent": 48,
     "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
-    "description": "Công thức khử mùi sinh học dạng lăn không chứa cồn hay muối nhôm gây thâm nách. Sử dụng phức hợp enzyme men và tinh dầu tràm trà để ức chế hoàn toàn vi khuẩn gây mùi cơ thể dưới cánh tay, duy trì sự khô thoáng thơm mát suốt 24 tiếng.",
-    "ingredients": "Phức hợp Enzyme saccharomyces lên men, Tinh dầu tràm trà Úc, bột bắp hữu cơ hút ẩm, chiết xuất rễ cam thảo sáng da.",
-    "guidelines": "Lăn đều 2-3 lượt lên vùng da dưới cánh tay đã được tắm sạch và lau khô hoàn toàn vào mỗi sáng."
+    "description": "Lăn khử mùi sinh học tràm trà và bạc hà, kiểm soát mùi cơ thể hiệu quả suốt ngày dài nhờ cơ chế kháng khuẩn tự nhiên thay vì bịt kín tuyến mồ hôi. Kết cấu lăn khô thoáng, thấm nhanh, không để lại vệt trắng trên áo. Bổ sung dưỡng chất làm dịu vùng da dưới cánh tay nhạy cảm, an toàn cho làn da và sức khỏe.",
+    "ingredients": "Tinh dầu tràm trà - kháng khuẩn khử mùi\nMenthol (bạc hà) - the mát, sảng khoái\nPhèn chua tự nhiên (Alum) - se khít, kiểm soát mồ hôi\nKhông chứa muối nhôm tổng hợp, không paraben",
+    "guidelines": "Bước 1: Vệ sinh và lau khô vùng da dưới cánh tay.\nBước 2: Lăn đều 2-3 đường lên mỗi bên.\nBước 3: Đợi khô thoáng trước khi mặc áo.\nDùng buổi sáng và sau khi tắm."
   },
   {
     "id": "toothpaste",
@@ -1431,9 +1431,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 78,
     "hotPercent": 65,
     "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
-    "description": "Kem đánh răng thảo mộc tích hợp bột than tre hoạt tính gội sạch các mảng bám ố vàng do trà và cà phê gây ra trên men răng, đồng thời củng cố độ bền chắc nướu lợi bằng chiết xuất cúc la mã.",
-    "ingredients": "Bột than hoạt tính tre hữu cơ, chiết xuất cúc La Mã, Calcium Carbonate, keo ong tự nhiên bảo vệ răng.",
-    "guidelines": "Sử dụng một lượng kem vừa đủ chải răng đều đặn ít nhất 2 lần mỗi ngày (sáng và tối) để bảo vệ nụ cười sáng khỏe."
+    "description": "Kem đánh răng than hoạt tính làm trắng răng tự nhiên, nhẹ nhàng loại bỏ mảng bám và vết ố xỉn màu từ trà, cà phê, thuốc lá mà không gây mài mòn men răng. Than hoạt tính hấp phụ vi khuẩn và độc tố, kết hợp thảo mộc bảo vệ nướu, mang lại hàm răng trắng sáng và hơi thở thơm mát. Vị bạc hà dịu nhẹ dễ chịu.",
+    "ingredients": "Than hoạt tính (Activated Charcoal) - làm trắng, hút bám\nFluoride/Hydroxyapatite - chống sâu răng, chắc men\nChiết xuất bạc hà - thơm mát\nChiết xuất trà xanh - bảo vệ nướu",
+    "guidelines": "Bước 1: Lấy một lượng kem bằng hạt đậu lên bàn chải.\nBước 2: Chải kỹ mọi mặt răng trong 2 phút.\nBước 3: Súc miệng sạch với nước.\nDùng 2 lần/ngày sáng và tối."
   },
   {
     "id": "hand-wash",
@@ -1453,9 +1453,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 30,
     "hotPercent": 25,
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
-    "description": "Sữa rửa tay thế hệ mới tự tạo lớp bọt bông xốp siêu dịu nhẹ. Chứa 99% chiết xuất từ trà xanh và lô hội hữu cơ giúp loại bỏ nhanh chóng mùi thức ăn tanh hôi và vi khuẩn có hại bám dính mà vẫn giữ đôi bàn tay mềm mượt.",
-    "ingredients": "Dịch chiết trà xanh hữu cơ, gel lô hội tươi, dầu tràm, chất tạo bọt dịu nhẹ gốc dừa.",
-    "guidelines": "Ấn vòi lấy một lượng bọt xốp vừa đủ xoa đều mát-xa hai bàn tay trong ít nhất 20-30 giây rồi rửa sạch hoàn toàn dưới vòi nước chảy."
+    "description": "Sữa rửa tay tạo bọt trà xanh kháng khuẩn, làm sạch nhẹ nhàng bụi bẩn và vi khuẩn mà vẫn giữ ẩm cho da tay không bị khô rát. Dạng bọt bông mịn tiện lợi, tiết kiệm, lan đều nhanh chóng. Chiết xuất trà xanh chống oxy hóa kết hợp dưỡng chất giữ ẩm giúp đôi tay sạch thơm, mềm mại sau mỗi lần rửa.",
+    "ingredients": "Chiết xuất trà xanh - kháng khuẩn, chống oxy hóa\nChất diện hoạt dịu nhẹ - làm sạch không khô\nGlycerin - giữ ẩm da tay\nPanthenol - làm mềm, phục hồi",
+    "guidelines": "Bước 1: Làm ướt tay, nhấn vòi lấy bọt.\nBước 2: Xoa đều bọt khắp bàn tay, kẽ ngón trong 20-30 giây.\nBước 3: Rửa sạch lại với nước.\nDùng nhiều lần trong ngày."
   },
   {
     "id": "breath-spray",
@@ -1475,9 +1475,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 44,
     "hotPercent": 40,
     "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
-    "description": "Xịt thơm miệng nhỏ gọn tiện lợi mang theo người. Chiết xuất từ tinh dầu bạc hà núi cao mang lại cảm giác sảng khoái và hơi thở thơm mát tức thì chỉ sau một lần xịt, tự tin trong mọi cuộc giao tiếp.",
-    "ingredients": "Tinh dầu bạc hà tự nhiên, chiết xuất cam thảo ngọt mát, keo ong bảo vệ vòm họng.",
-    "guidelines": "Xịt trực tiếp vào khoang miệng từ 1-2 lần mỗi khi cảm thấy hơi thở có mùi hoặc sau khi dùng bữa ăn nặng mùi."
+    "description": "Xịt thơm miệng thảo mộc bạc hà dạng bỏ túi tiện lợi, mang lại hơi thở thơm mát tức thì chỉ trong vài giây. Công thức cô đặc, kháng khuẩn nhẹ giúp trung hòa mùi hôi miệng và tạo cảm giác sảng khoái, tự tin khi giao tiếp. Thiết kế nhỏ gọn dễ mang theo, dùng mọi lúc sau bữa ăn hoặc khi cần làm mới hơi thở.",
+    "ingredients": "Tinh dầu bạc hà cô đặc - thơm mát tức thì\nChiết xuất thảo mộc - kháng khuẩn khử mùi\nXylitol - vị dịu, chống sâu răng\nMenthol - sảng khoái, mát lạnh",
+    "guidelines": "Bước 1: Mở nắp, hướng vòi xịt vào khoang miệng.\nBước 2: Xịt 1-2 lần lên lưỡi và trong miệng.\nBước 3: Ngậm nhẹ để hương lan tỏa.\nDùng khi cần làm mới hơi thở, sau bữa ăn."
   },
   {
     "id": "men-wash",
@@ -1498,9 +1498,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 24,
     "hotPercent": 35,
     "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
-    "description": "Dung dạo bọt mát lạnh tột đỉnh từ bạc hà và trầu không, khử mùi hôi nam giới, đem lại sự sạch sâu khô thoáng tự tin tuyệt đối.",
-    "ingredients": "Dịch chiết trầu không, Tinh thể bạc hà, Lactic Acid, Vitamin E.",
-    "guidelines": "Xoa tạo bọt nhẹ nhàng vùng kín ngoài da trong 1 phút sau đó xả sạch kỹ với nước."
+    "description": "Dung dịch vệ sinh nam giới bạc hà và trầu không, làm sạch và khử mùi vùng nhạy cảm, mang lại cảm giác khô thoáng, sạch sẽ và the mát sảng khoái suốt ngày dài. Công thức cân bằng pH phù hợp sinh lý nam giới, kháng khuẩn tự nhiên, không gây khô rát. Hương thảo mộc nam tính, dùng hằng ngày để luôn tự tin.",
+    "ingredients": "Chiết xuất trầu không - kháng khuẩn, khử mùi\nMenthol (bạc hà) - the mát, sảng khoái\nAcid Lactic - cân bằng pH\nChiết xuất trà xanh - làm dịu, chống viêm",
+    "guidelines": "Bước 1: Làm ướt vùng vệ sinh.\nBước 2: Lấy một lượng vừa đủ, tạo bọt và rửa nhẹ bên ngoài.\nBước 3: Rửa sạch lại với nước.\nDùng 1-2 lần/ngày."
   },
   {
     "id": "massage-oil",
@@ -1520,9 +1520,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 36,
     "hotPercent": 50,
     "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
-    "description": "Dầu massage dưỡng da cơ thể chiết xuất sả chanh nguyên chất, giúp làm ấm, đào thải độc tố và xoa dịu stress mệt mỏi.",
-    "ingredients": "Tinh dầu sả chanh, Dầu cám gạo ép lạnh, Dầu hướng dương, chiết xuất gừng ấm.",
-    "guidelines": "Thoa một lượng dầu vừa đủ lên cơ thể và tiến hành mát-xa xoa bóp huyệt đạo thư giãn sâu."
+    "description": "Dầu massage sả chanh bừng tỉnh năng lượng, mang lại trải nghiệm thư giãn và trẻ hóa cho cơ thể mệt mỏi. Hỗn hợp dầu nền thực vật cùng tinh dầu sả chanh thẩm thấu êm ái, giúp lưu thông khí huyết, giảm căng cơ và làm mềm mịn da. Hương sả chanh tươi mát sảng khoái, lý tưởng cho các liệu trình massage thư giãn tại spa hoặc tại nhà.",
+    "ingredients": "Tinh dầu sả chanh - bừng tỉnh, thư giãn, đuổi côn trùng\nDầu nền Jojoba/hạnh nhân - trơn mượt, dưỡng da\nVitamin E - chống oxy hóa\nTinh dầu bạc hà - the mát nhẹ",
+    "guidelines": "Bước 1: Làm ấm một lượng dầu vừa đủ trong lòng bàn tay.\nBước 2: Thoa và massage nhẹ nhàng theo chuyển động tròn lên vùng cơ cần thư giãn.\nBước 3: Massage 10-15 phút, lau sạch hoặc để dầu thấm.\nDùng khi cần thư giãn."
   },
   {
     "id": "exosome-serum",
@@ -1544,9 +1544,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 198,
     "hotPercent": 95,
     "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
-    "description": "Ứng dụng đột phá công nghệ Exosome - chất truyền tin tế bào siêu nhỏ có kích thước nano chỉ bằng 1/1000 tế bào thông thường. Mang lại khả năng tái tạo các tế bào da hư tổn cấp tốc gấp 20 lần hoạt chất thông thường, củng cố màng bảo vệ da mỏng yếu.",
-    "ingredients": "Exosome chiết xuất từ rau má hữu cơ, EGF/FGF peptide tinh khiết, Panthenol 10%, Hyaluronic Acid đa trọng lượng phân tử.",
-    "guidelines": "Thoa 3-4 giọt lên da mặt sạch sau bước cân bằng ẩm. Vỗ nhẹ nhàng để hạt exosome siêu nhỏ len lỏi sâu vào tế bào da. Cực kỳ thích hợp dưỡng phục hồi sau liệu trình thẩm mỹ xâm lấn."
+    "description": "Serum tế bào gốc Exosome thế hệ mới - đỉnh cao công nghệ sinh học phục hồi và tái tạo da tầng sâu. Các túi Exosome siêu nhỏ mang tín hiệu tái sinh 'ra lệnh' cho tế bào da tăng sinh collagen và elastin tự thân, làm mờ nếp nhăn, se khít lỗ chân lông và cải thiện sẹo rỗ rõ rệt. Kết cấu tinh chất mỏng nhẹ, thẩm thấu tức thì, phù hợp mọi loại da cần trẻ hóa chuyên sâu.",
+    "ingredients": "Exosome tế bào gốc thực vật - tái sinh tế bào tầng sâu\nPeptide đồng (Copper Peptide) - kích hoạt collagen\nHyaluronic Acid đa tầng - cấp ẩm căng mọng\nEGF/FGF - yếu tố tăng trưởng phục hồi da",
+    "guidelines": "Bước 1: Sau khi làm sạch và toner, lấy 3-4 giọt serum.\nBước 2: Vỗ nhẹ đều khắp mặt và cổ.\nBước 3: Khóa ẩm bằng kem dưỡng.\nDùng tối (và sáng nếu cần); lý tưởng sau liệu trình lăn kim, laser."
   },
   {
     "id": "retinol-liposome",
@@ -1567,9 +1567,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 132,
     "hotPercent": 88,
     "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
-    "description": "Retinol tinh khiết được bao bọc trong cấu trúc màng Liposome sinh học hai lớp siêu bền vững. Công nghệ này giúp hoạt chất không bị oxy hóa phân hủy bởi ánh sáng và nhiệt độ, đồng thời giải phóng chậm Retinol trên bề mặt da suốt 8h để triệt tiêu hoàn toàn kích ứng, mẩn đỏ đặc trưng của retinol truyền thống.",
-    "ingredients": "Retinol 1% tinh khiết bọc Liposome, Ceramide NP 1%, Squalane thực vật, chiết xuất sâm đỏ Thụy Sĩ.",
-    "guidelines": "Sử dụng vào buổi tối sau bước serum dưỡng ẩm. Lấy lượng kem nhỏ bằng hạt đậu thoa mỏng và mát xa đều vùng mặt. Khuyến nghị bắt đầu sử dụng 2-3 lần/tuần để da thích nghi."
+    "description": "Kem trẻ hóa da Retinol bọc Liposome giải phóng chậm - giải pháp chống lão hóa mạnh mẽ nhưng dịu nhẹ vượt trội. Công nghệ bao bọc Liposome bảo vệ Retinol khỏi oxy hóa và giải phóng từ từ vào tầng sâu, tối ưu hiệu quả làm mờ nếp nhăn, tái tạo bề mặt da mà giảm tối đa kích ứng, bong tróc thường gặp. Da mịn màng, săn chắc và tươi trẻ hơn theo thời gian.",
+    "ingredients": "Retinol bọc Liposome - chống lão hóa, giải phóng chậm\nNiacinamide - làm dịu, dưỡng sáng\nCeramide & Squalane - phục hồi hàng rào da\nBisabolol - giảm kích ứng",
+    "guidelines": "Bước 1: Dùng vào buổi tối, sau bước serum.\nBước 2: Lấy một lượng nhỏ, thoa đều toàn mặt (tránh vùng mắt, khóe miệng).\nBước 3: Người mới nên dùng 2-3 tối/tuần rồi tăng dần.\nBuổi sáng bắt buộc dùng kem chống nắng."
   },
   {
     "id": "microneedle-cream",
@@ -1590,9 +1590,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 54,
     "hotPercent": 60,
     "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
-    "description": "Ứng dụng các gai vi kim sinh học silic tự nhiên siêu nhỏ chiết xuất từ tảo biển Brittany. Khơi gợi cơ chế tự sửa chữa vết thương tổn tế bào da, làm thông thoáng phễu lỗ chân lông và đẩy nhanh chu kỳ sừng hóa da giúp căng bóng mịn màng.",
-    "ingredients": "Spicules tảo biển tinh khiết 100%, chiết xuất tế bào gốc nhân sâm, peptide sinh học dồi dào, vitamin B5 làm dịu.",
-    "guidelines": "Dùng lượng nhỏ thoa lên vùng da sẹo thâm hoặc toàn mặt vào buổi tối. Nhấn nhẹ tay vào da để cảm nhận cảm giác kim châm li ti (hiện tượng sinh học bình thường). Sử dụng 1-2 lần một tuần."
+    "description": "Kem vi kim sinh học tảo biển - công nghệ đột phá với hàng triệu vi kim tự tiêu từ tảo biển (spicule) giúp mở kênh dẫn truyền, đưa dưỡng chất thẩm thấu sâu gấp nhiều lần. Kích thích tái tạo tế bào, làm da căng bóng, mờ thâm sẹo và se khít lỗ chân lông ngay tại nhà mà không cần xâm lấn. Da mịn màng, tươi sáng và tràn đầy sức sống.",
+    "ingredients": "Vi kim tảo biển (Spicule) - dẫn truyền, kích thích tái tạo\nPeptide - tăng sinh collagen\nHyaluronic Acid - cấp ẩm phục hồi\nChiết xuất rau má - làm dịu sau vi kim",
+    "guidelines": "Bước 1: Dùng 1-2 lần/tuần vào buổi tối, trên da sạch khô.\nBước 2: Thoa một lớp vừa đủ, massage nhẹ 1-2 phút (có thể cảm thấy châm nhẹ).\nBước 3: Để 20 phút rồi dưỡng ẩm phục hồi.\nNgày hôm sau chống nắng kỹ."
   },
   {
     "id": "peptide-ampoule",
@@ -1612,9 +1612,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 68,
     "hotPercent": 70,
     "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
-    "description": "Tinh chất Ampoule cô đặc đậm đặc chứa phức hợp 5 loại peptide sinh học thế hệ mới. Kích hoạt trực tiếp chuỗi sản sinh collagen và elastin nằm sâu trong biểu bì, làm đầy các rãnh cười và nâng đỡ cơ mặt săn chắc.",
-    "ingredients": "Complex 5-Peptide sinh học nồng độ cao, Adenosine chiết xuất lên men, Axit amin thiết yếu tinh khiết.",
-    "guidelines": "Thoa nửa ống Ampoule đều lên toàn bộ khuôn mặt vào ban đêm sau khi rửa mặt sạch. Thoa đều hướng lên để nâng cơ."
+    "description": "Ampoule Peptide sinh học kích hoạt collagen - tinh chất cô đặc dành cho làn da cần trẻ hóa và làm săn chắc chuyên sâu. Phức hợp đa Peptide gửi tín hiệu thúc đẩy da tự sản sinh collagen và elastin, làm đầy nếp nhăn, tăng độ đàn hồi và nâng cơ rõ rệt. Kết cấu ampoule đậm đặc nhưng thẩm thấu nhanh, mang lại làn da căng mượt, tươi trẻ.",
+    "ingredients": "Phức hợp đa Peptide - kích hoạt collagen, nâng cơ\nAdenosine - làm mờ nếp nhăn\nHyaluronic Acid - cấp ẩm căng mọng\nNiacinamide - dưỡng sáng, đều màu",
+    "guidelines": "Bước 1: Sau toner, nhỏ 2-3 giọt ampoule.\nBước 2: Vỗ nhẹ khắp mặt, tập trung vùng nếp nhăn và chảy xệ.\nBước 3: Khóa ẩm bằng kem dưỡng.\nDùng sáng và tối để đạt hiệu quả trẻ hóa tối ưu."
   },
   {
     "id": "exosome-mask",
@@ -1635,9 +1635,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 110,
     "hotPercent": 88,
     "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
-    "description": "Mặt nạ sinh học ứng dụng công nghệ truyền dẫn tế bào Exosome đỉnh cao. Cấp cứu tức thì cho làn da xỉn màu mệt mỏi, thiếu sức sống sau những ngày làm việc căng thẳng, mang lại độ ẩm vượt trội và căng mọng như ngậm nước.",
-    "ingredients": "Exosome chiết xuất thực vật, Niacinamide 3%, dịch nhầy ốc sên đen lên men, peptide đồng kháng viêm.",
-    "guidelines": "Đắp mặt nạ ôm khít lên khuôn mặt trong 15-20 phút. Gỡ bỏ mặt nạ và massage vỗ nhẹ tinh chất còn dư cho thẩm thấu sâu."
+    "description": "Mặt nạ tế bào gốc Exosome căng bóng cấp tốc - giải pháp phục hồi và trẻ hóa da tức thì cho những dịp cần làn da rạng rỡ. Exosome cùng phức hợp dưỡng chất thẩm thấu nhanh, làm dịu, cấp ẩm sâu và kích hoạt tái tạo, trả lại làn da căng mọng, mịn màng và tươi sáng chỉ sau một lần đắp. Lý tưởng dùng phục hồi sau liệu trình hoặc trước sự kiện quan trọng.",
+    "ingredients": "Exosome tế bào gốc - tái tạo, phục hồi\nHyaluronic Acid đa tầng - cấp ẩm căng bóng\nPanthenol & Beta-glucan - làm dịu\nNiacinamide - dưỡng sáng tức thì",
+    "guidelines": "Bước 1: Rửa mặt sạch, dùng toner.\nBước 2: Đắp mặt nạ ôm khít khuôn mặt 15-20 phút.\nBước 3: Gỡ ra, vỗ nhẹ cho tinh chất thấm hết, không cần rửa lại.\nDùng 2-3 lần/tuần hoặc khi cần phục hồi cấp tốc."
   },
   {
     "id": "sunscreen-fluid",
@@ -1658,9 +1658,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 90,
     "hotPercent": 80,
     "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
-    "description": "Sữa chống nắng vật lý ứng dụng màng lọc bảo vệ dạng phân tử nano siêu ổn định SPF50+ PA++++. Chống tia UVA, UVB cực đỉnh đồng thời bảo vệ da toàn vẹn khỏi ánh sáng xanh thiết bị điện tử, kết cấu lỏng nhẹ thấm tức thì không nâng tone lố.",
-    "ingredients": "Nano Zinc Oxide, Titanium Dioxide, màng bọc phân tử thế hệ mới, chiết xuất vi tảo đỏ bảo vệ da.",
-    "guidelines": "Lắc đều chai trước khi dùng. Thoa đều một lượng kem vừa đủ lên da mặt và cổ trước khi tiếp xúc ánh nắng 20 phút."
+    "description": "Sữa chống nắng vật lý với màng lọc phân tử thế hệ mới, bảo vệ da phổ rộng trước UVA/UVB và cả ánh sáng xanh mà vẫn mỏng nhẹ, không vệt trắng bệt. Kết cấu fluid dạng sữa lỏng thấm nhanh, phù hợp cả da nhạy cảm, da mụn và trẻ em. Bổ sung chất chống oxy hóa và dưỡng chất làm dịu, vừa bảo vệ vừa chăm sóc da khỏe mạnh mỗi ngày.",
+    "ingredients": "Màng lọc vật lý (Zinc Oxide, Titanium Dioxide) thế hệ mới - phổ rộng\nChống ánh sáng xanh (Blue Light) - bảo vệ da thời đại số\nVitamin E - chống oxy hóa\nChiết xuất rau má - làm dịu",
+    "guidelines": "Bước 1: Là bước cuối chu trình dưỡng buổi sáng.\nBước 2: Lắc đều, thoa lượng đủ (2 đốt ngón tay) khắp mặt và cổ.\nBước 3: Đợi 15 phút trước khi ra nắng.\nThoa lại sau mỗi 2-3 giờ khi hoạt động ngoài trời."
   },
   {
     "id": "gold-peptide",
@@ -1681,9 +1681,9 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 55,
     "hotPercent": 70,
     "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
-    "description": "Công thức trẻ hóa vượt trội chứa tinh thể vàng 24k siêu phân tán kết hợp cùng chuỗi peptide sinh học trẻ hóa, cải thiện tức thì các nếp nhăn đuôi mắt và nâng đỡ màng liên kết collagen chảy xệ.",
-    "ingredients": "Hạt vàng 24k tinh khiết, Phức hợp Oligopeptide, chiết xuất rễ nhân sâm Hoàng gia.",
-    "guidelines": "Thoa đều vài giọt vàng 24k lên các vùng nếp nhăn đuôi mắt, khóe cười mỗi tối và massage nâng cơ hướng lên."
+    "description": "Tinh chất vàng 24k Peptide nâng cơ đa tầng - dòng sản phẩm xa xỉ kết hợp vi hạt vàng 24k và phức hợp Peptide cao cấp cho hiệu quả trẻ hóa vượt trội. Vàng 24k kích thích tuần hoàn, làm sáng và săn chắc da, trong khi Peptide thúc đẩy tái tạo collagen đa tầng, nâng cơ và làm đầy nếp nhăn. Kết cấu tinh chất sang trọng, thẩm thấu nhanh, mang lại làn da căng bóng rạng rỡ như liệu trình spa cao cấp.",
+    "ingredients": "Vi hạt vàng 24k - làm sáng, săn chắc, kích thích tuần hoàn\nPhức hợp đa Peptide - nâng cơ, tái tạo collagen\nExosome - trẻ hóa tầng sâu\nHyaluronic Acid - cấp ẩm căng mọng",
+    "guidelines": "Bước 1: Sau toner, nhỏ 3-4 giọt tinh chất.\nBước 2: Vỗ và massage nhẹ theo chiều nâng cơ từ dưới lên.\nBước 3: Khóa ẩm bằng kem dưỡng.\nDùng sáng và tối cho hiệu quả nâng cơ, trẻ hóa tối ưu."
   },
   {
     "id": "peel-mask",
@@ -1704,8 +1704,8 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "testedCount": 78,
     "hotPercent": 65,
     "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
-    "description": "Mặt nạ dạng lột chứa than tre hoạt tính hoạt hóa Liposome, thẩm thấu nhanh hút sạch bã nhờn cứng đầu sâu phễu nang lông, mụn cám, mụn đầu đen vùng mũi hiệu quả tức thì.",
-    "ingredients": "Than tre hoạt tính bọc Liposome, Tinh chất trà xanh, chiết xuất tràm trà làm dịu lỗ chân lông.",
-    "guidelines": "Thoa lớp mặt nạ vừa đủ lên vùng da mũi hoặc toàn mặt, giữ nguyên 15 phút cho khô hoàn toàn rồi lột nhẹ từ dưới lên."
+    "description": "Mặt nạ lột mụn than hoạt tính bọc Liposome, làm sạch sâu bã nhờn, mụn đầu đen và bụi bẩn tích tụ trong lỗ chân lông chỉ với một lần lột. Than hoạt tính hút bám mạnh mẽ kết hợp công nghệ Liposome đưa dưỡng chất làm dịu vào sâu, giúp se khít lỗ chân lông mà không gây khô căng. Da sạch thoáng, mịn màng và giảm mụn đầu đen rõ rệt.",
+    "ingredients": "Than hoạt tính - hút bám, làm sạch sâu\nCông nghệ Liposome - dẫn truyền dưỡng chất\nChiết xuất tràm trà - kháng khuẩn, ngừa mụn\nNiacinamide - se khít lỗ chân lông",
+    "guidelines": "Bước 1: Rửa mặt sạch, xông hơi nhẹ để lỗ chân lông giãn nở.\nBước 2: Thoa lớp mặt nạ dày vùng mũi, cằm (tránh chân tóc, lông mày).\nBước 3: Đợi khô hoàn toàn 20-25 phút rồi lột nhẹ từ dưới lên.\nDùng 1 lần/tuần; sau đó se khít bằng toner."
   }
 ];
