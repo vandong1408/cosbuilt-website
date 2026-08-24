@@ -304,6 +304,7 @@ interface ParsedLocation {
   category?: string; // categories tab: which manufacturing category is filtered
   productSlug?: string; // categories tab: a specific product detail is open
   blogSlug?: string; // news tab: a specific article is open
+  subTab?: string; // about / services tab: which sub-section is selected
 }
 
 // Resolve a URL pathname to the view it represents. Tolerates a trailing slash;
@@ -321,6 +322,9 @@ const parseLocation = (pathname: string): ParsedLocation => {
   const tab = PATH_TO_TAB[root] || "home";
   if (tab === "categories" && parts[1]) return { tab, category: parts[1] };
   if (tab === "news" && parts[1]) return { tab, blogSlug: parts[1] };
+  // About / Services sub-sections are their own addressable tabs
+  // (e.g. /dich-vu/oem-odm, /gioi-thieu/factory-capacity).
+  if ((tab === "about" || tab === "services") && parts[1]) return { tab, subTab: parts[1] };
   return { tab };
 };
 
@@ -1316,13 +1320,16 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       setSelectedBlog(null);
     }
 
+    // About / Services sub-section comes from the URL too, so it survives a
+    // refresh or a shared deep link (e.g. /dich-vu/oem-odm).
+    if (parsed.tab === "about") setActiveAboutTab(parsed.subTab || "about-us");
+    if (parsed.tab === "services") setActiveServiceTab(parsed.subTab || "oem-odm");
+
     // Only reset transient in-page state and scroll on a genuine navigation,
     // never on a background data refresh that leaves the path unchanged.
     if (pathChanged) {
       setActiveSubTab(undefined);
       setSearchQuery("");
-      if (parsed.tab === "about") setActiveAboutTab("about-us");
-      if (parsed.tab === "services") setActiveServiceTab("oem-odm");
       window.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [location.pathname, customProducts, customBlogPosts]);
@@ -1397,11 +1404,13 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   };
 
   const handleTabChange = (tabId: string, subId?: string) => {
-    // A manufacturing category gets its own URL (e.g. /danh-muc-gia-cong/hair-care);
-    // about/services sub-tabs are in-page anchors and stay off the URL.
+    // Sub-menu items get their own URL: a category (/danh-muc-gia-cong/hair-care)
+    // and About/Services sub-sections (/gioi-thieu/factory-capacity, /dich-vu/oem-odm).
     let targetPath = TAB_TO_PATH[tabId] || "/";
     if (tabId === "categories" && subId && subId !== "all") {
       targetPath = `${TAB_TO_PATH.categories}/${subId}`;
+    } else if ((tabId === "about" || tabId === "services") && subId) {
+      targetPath = `${TAB_TO_PATH[tabId]}/${subId}`;
     }
     if (tabId !== "crm" && location.pathname === "/admin") {
       // Full reload when leaving /admin - a client-side transition away from
