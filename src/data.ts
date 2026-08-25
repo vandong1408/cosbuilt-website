@@ -699,7 +699,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "CẤP ẨM CHUYÊN SÂU",
     "testedCount": 210,
     "hotPercent": 92,
-    "image": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1748385367968-6fd2af37aafb?q=80&w=600",
     "description": "Mặt nạ giấy sinh học dệt từ nước dừa tươi lên men tự nhiên (bio-cellulose), ôm khít từng đường nét khuôn mặt như làn da thứ hai để truyền dẫn tối đa dưỡng chất. Khả năng giữ và cấp ẩm vượt trội giúp làn da căng mọng, mềm mại tức thì chỉ sau một lần đắp. Bảng thành phần lành tính, dịu nhẹ, thích hợp phục hồi da khô, thiếu nước và làm dịu da sau khi đi nắng.",
     "ingredients": "Nước dừa tươi lên men sinh học - cấp ẩm, nuôi dưỡng\nHyaluronic Acid đa tầng - giữ nước căng mọng\nNiacinamide 2% - dưỡng sáng nhẹ\nChiết xuất nha đam - làm dịu, phục hồi",
     "guidelines": "Bước 1: Rửa mặt sạch, thấm khô nhẹ.\nBước 2: Trải mặt nạ ôm khít khuôn mặt, để yên 15-20 phút.\nBước 3: Gỡ mặt nạ, vỗ nhẹ cho tinh chất còn lại thẩm thấu hết.\nKhông cần rửa lại. Dùng 2-3 lần/tuần."
@@ -722,7 +722,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "GIẢM MỤN SƯNG ĐỎ",
     "testedCount": 140,
     "hotPercent": 78,
-    "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1743933282038-e9c576d97076?q=80&w=600",
     "description": "Mặt nạ sợi cotton tự nhiên thấm đẫm tinh chất tràm trà Úc và rau má, mang lại khả năng kháng khuẩn - kháng viêm mạnh mẽ cho làn da đang gặp vấn đề mụn. Sản phẩm giúp làm xẹp nhanh các nốt mụn sưng đỏ, đồng thời điều tiết lượng dầu thừa và se khít lỗ chân lông. Kết cấu tinh chất mát dịu, phù hợp dùng định kỳ để duy trì làn da sạch thoáng, giảm mụn tái phát.",
     "ingredients": "Tinh dầu tràm trà (Melaleuca Alternifolia) - kháng khuẩn\nSalicylic Acid (BHA) 0.5% - làm sạch lỗ chân lông\nChiết xuất trà xanh - chống oxy hóa, làm dịu\nChiết xuất rau má - phục hồi da",
     "guidelines": "Bước 1: Rửa mặt sạch, thấm khô.\nBước 2: Đắp mặt nạ đều khắp khuôn mặt, giữ 10-15 phút.\nBước 3: Gỡ ra, vỗ nhẹ cho tinh chất thấm.\nDùng 2-3 lần/tuần. Có thể đắp điểm lên nốt mụn sưng."
@@ -745,7 +745,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "TRẺ HÓA CĂNG BÓNG",
     "testedCount": 88,
     "hotPercent": 65,
-    "image": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1743928217924-77ec5f39c4fb?q=80&w=600",
     "description": "Dòng mặt nạ cao cấp chứa collagen thủy phân kích thước nano và phức hợp tế bào gốc thực vật, giúp kích thích tái tạo collagen tự nhiên dưới da, tăng cường độ đàn hồi và làm mờ nếp nhăn li ti rõ rệt. Adenosine hỗ trợ chống lão hóa trong khi Beta-glucan làm dịu và cấp ẩm sâu. Thích hợp cho làn da cần nâng cơ, săn chắc và phục hồi dấu hiệu lão hóa sớm.",
     "ingredients": "Collagen thủy phân từ cá biển sâu - nâng cơ, săn chắc\nTế bào gốc nho đỏ hữu cơ - tái tạo, chống oxy hóa\nAdenosine - làm mờ nếp nhăn\nBeta-glucan - làm dịu, cấp ẩm",
     "guidelines": "Bước 1: Rửa mặt sạch, dùng toner.\nBước 2: Đắp mặt nạ 15-20 phút.\nBước 3: Gỡ ra và massage nhẹ theo chiều nâng cơ từ dưới lên.\nDùng 2-3 lần/tuần để cảm nhận hiệu quả săn chắc."
@@ -1634,7 +1634,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "CĂNG BÓNG CẤP TỐC",
     "testedCount": 110,
     "hotPercent": 88,
-    "image": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1743929812282-3e9a2c149982?q=80&w=600",
     "description": "Mặt nạ tế bào gốc Exosome căng bóng cấp tốc - giải pháp phục hồi và trẻ hóa da tức thì cho những dịp cần làn da rạng rỡ. Exosome cùng phức hợp dưỡng chất thẩm thấu nhanh, làm dịu, cấp ẩm sâu và kích hoạt tái tạo, trả lại làn da căng mọng, mịn màng và tươi sáng chỉ sau một lần đắp. Lý tưởng dùng phục hồi sau liệu trình hoặc trước sự kiện quan trọng.",
     "ingredients": "Exosome tế bào gốc - tái tạo, phục hồi\nHyaluronic Acid đa tầng - cấp ẩm căng bóng\nPanthenol & Beta-glucan - làm dịu\nNiacinamide - dưỡng sáng tức thì",
     "guidelines": "Bước 1: Rửa mặt sạch, dùng toner.\nBước 2: Đắp mặt nạ ôm khít khuôn mặt 15-20 phút.\nBước 3: Gỡ ra, vỗ nhẹ cho tinh chất thấm hết, không cần rửa lại.\nDùng 2-3 lần/tuần hoặc khi cần phục hồi cấp tốc."

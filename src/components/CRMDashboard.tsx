@@ -145,12 +145,14 @@ const getDefaultPackagings = (prod: any) => {
     "photo-1570172619644-dfd03ed5d881"
   ];
 
-  const maskPool = [
-    "photo-1512290923902-8a9f81dc236c",
-    "photo-1570172619644-dfd03ed5d881",
-    "photo-1460925895917-afdab827c52f",
-    "photo-1598440947619-2c35fc9aa908",
-    "photo-1608248597279-f99d160bfcbc"
+  // Facial sheet-mask foil sachets — a "túi sachet" thumbnail must look like an
+  // actual sheet-mask packet, never a branded flat-lay of competitor products.
+  const sheetMaskPool = [
+    "photo-1748385367968-6fd2af37aafb",
+    "photo-1743928217924-77ec5f39c4fb",
+    "photo-1743933282038-e9c576d97076",
+    "photo-1743929812282-3e9a2c149982",
+    "photo-1748390359572-8e7a47bf5cb5"
   ];
 
   const makeupPool = [
@@ -171,25 +173,25 @@ const getDefaultPackagings = (prod: any) => {
       {
         type: "sachet" as const,
         name: "Túi Sachet Màng Nhôm Mờ",
-        image: selectImg(maskPool, 0),
+        image: selectImg(sheetMaskPool, 0),
         description: "Túi nhôm phức hợp 3 lớp giúp lưu giữ trọn vẹn hoạt chất, chống thấm khí tuyệt đối và bảo quản tối ưu."
       },
       {
         type: "jar" as const,
         name: "Hũ Thủy Tinh Cao Cấp",
-        image: selectImg(maskPool, 1),
+        image: selectImg(["photo-1634449277780-81ab99e85416"], 0),
         description: "Thiết kế hũ thủy tinh mờ sang trọng, nắp vân giả gỗ tinh tế, thích hợp cho mặt nạ đất sét/kem dẻo."
       },
       {
         type: "tube" as const,
         name: "Tuýp Nhựa PE Cấp Thực Phẩm",
-        image: selectImg(maskPool, 2),
+        image: selectImg(["photo-1608248597279-f99d160bfcbc"], 0),
         description: "Tuýp nhựa dẻo phủ lì (matte surface) tinh tế, nắp bật kín khít bảo quản vệ sinh cho mặt nạ dạng gel."
       },
       {
         type: "bottle" as const,
         name: "Chai Nhấn Vòi Chân Không",
-        image: selectImg(maskPool, 3),
+        image: selectImg(["photo-1540555700478-4be289fbecef"], 0),
         description: "Vòi nhấn hút chân không tiện lợi, kiểm soát liều lượng và ngăn chặn tối đa quá trình oxy hóa tinh chất mặt nạ."
       }
     ];

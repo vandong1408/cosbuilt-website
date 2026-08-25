@@ -83,10 +83,15 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   // suggested "vỏ chai / lọ / tuýp" actually looks like that form.
   const DROPPER = ["photo-1611930022073-b7a4ba5fcccd", "photo-1617897903246-719242758050", "photo-1515377905703-c4788e51af15", "photo-1608571423902-eed4a5ad8108"];
   const TUBE = ["photo-1620916566398-39f1143ab7be", "photo-1608248597279-f99d160bfcbc", "photo-1556228720-195a672e8a03"];
-  const JAR = ["photo-1601049541289-9b1b7bbbfe19", "photo-1598440947619-2c35fc9aa908"];
+  // Real cosmetic cream jars only (removed a branded flat-lay that showed
+  // competitor products instead of an actual jar).
+  const JAR = ["photo-1601049541289-9b1b7bbbfe19", "photo-1634449277780-81ab99e85416", "photo-1631438406588-3a079c32b864"];
   const PUMP = ["photo-1540555700478-4be289fbecef", "photo-1526947425960-945c6e72858f"];
   const BOTTLE = ["photo-1612817288484-6f916006741a", "photo-1535585209827-a15fcdbc4c2d", "photo-1526947425960-945c6e72858f"];
   const MAKEUP = ["photo-1586495777744-4413f21062fa", "photo-1596462502278-27bfdc403348", "photo-1512496015851-a90fb38ba796", "photo-1522335789203-aabd1fc54bc9"];
+  // Foil sachet / pouch photos of actual facial sheet masks, so a "túi sachet"
+  // suggestion really looks like a sheet-mask packet (not a jar or flat-lay).
+  const SHEETMASK = ["photo-1748385367968-6fd2af37aafb", "photo-1743928217924-77ec5f39c4fb", "photo-1743933282038-e9c576d97076", "photo-1743929812282-3e9a2c149982", "photo-1748390359572-8e7a47bf5cb5"];
 
   const img = (pool: string[], off: number) => `https://images.unsplash.com/${pool[(seed + off) % pool.length]}?q=80&w=600`;
   const P = (type: string, name: string, pool: string[], off: number, description: string): ProductPackaging =>
@@ -126,7 +131,7 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   // Mask -> sachet / jar
   if (has("mặt nạ") || cat === "mask") {
     return [
-      P("sachet", "Túi Sachet Màng Nhôm 3 Lớp", JAR, 0, "Túi nhôm phức hợp chống thấm khí tuyệt đối, lưu giữ trọn vẹn tinh chất cho từng lần dùng."),
+      P("sachet", "Túi Sachet Màng Nhôm 3 Lớp", SHEETMASK, 0, "Túi nhôm phức hợp chống thấm khí tuyệt đối, lưu giữ trọn vẹn tinh chất cho từng lần dùng."),
       P("jar", "Hũ Thủy Tinh Cao Cấp", JAR, 1, "Hũ thủy tinh mờ sang trọng, nắp kín khít, lý tưởng cho mặt nạ đất sét/kem dẻo."),
       P("tube", "Tuýp Mặt Nạ Dạng Gel", TUBE, 0, "Tuýp mềm phủ lì, nắp bật kín, lấy lượng gel/kem sạch sẽ, tiện lợi."),
       P("bottle", "Chai Bơm Chân Không", PUMP, 0, "Vòi nhấn chân không kiểm soát liều lượng, ngăn oxy hóa cho mặt nạ dạng lỏng."),
