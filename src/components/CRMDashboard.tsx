@@ -3770,6 +3770,60 @@ export default function CRMDashboard({
                   </div>
                 </div>
 
+                {/* Packaging suggestions (same data shown on the website) */}
+                <div className="space-y-2 border border-stone-200 rounded-2xl p-4 bg-stone-50/60">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+                    Bao bì đề xuất (hiển thị trên web) — {(editingProduct.data.packagings || []).length} mẫu
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(editingProduct.data.packagings || []).map((pkg: any, idx: number) => (
+                      <div key={idx} className="flex gap-2 items-center bg-white border border-stone-200 rounded-xl p-2">
+                        <img src={pkg.image} alt={pkg.name} className="w-12 h-12 rounded-lg object-cover bg-stone-100 shrink-0" referrerPolicy="no-referrer" />
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="text-[10px] font-bold text-stone-700 truncate">{pkg.name}</div>
+                          <div className="flex gap-1">
+                            <input
+                              type="text"
+                              value={pkg.image}
+                              onChange={(e) => setEditingProduct(prev => {
+                                if (!prev) return prev;
+                                const pkgs = [...(prev.data.packagings || [])];
+                                pkgs[idx] = { ...pkgs[idx], image: e.target.value };
+                                return { ...prev, data: { ...prev.data, packagings: pkgs } };
+                              })}
+                              className="flex-1 min-w-0 bg-white border border-stone-300 rounded-lg px-2 py-1 text-[10px] font-mono focus:border-emerald-green focus:outline-none"
+                            />
+                            <label className="bg-stone-100 hover:bg-stone-200 border border-stone-300 px-2 py-1 rounded-lg text-[10px] font-bold flex items-center cursor-pointer shrink-0 select-none">
+                              <Upload className="w-3 h-3" />
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                disabled={isUploading}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  try {
+                                    const url = await handleImageUpload(file);
+                                    setEditingProduct(prev => {
+                                      if (!prev) return prev;
+                                      const pkgs = [...(prev.data.packagings || [])];
+                                      pkgs[idx] = { ...pkgs[idx], image: url };
+                                      return { ...prev, data: { ...prev.data, packagings: pkgs } };
+                                    });
+                                  } catch (err: any) {
+                                    alert("Lỗi tải ảnh lên: " + err.message);
+                                  }
+                                }}
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Mô tả ngắn sản phẩm</label>
                   <textarea
