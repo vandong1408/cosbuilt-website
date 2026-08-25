@@ -2414,10 +2414,18 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         // the detail page matches the card the user clicked. Packaging
                         // suggestions follow as additional, switchable thumbnails.
                         const packagings = getPackagingsForProduct(selectedProductDetails);
+                        // Product image first, then packaging suggestions - de-duplicated
+                        // so the same photo never appears twice (e.g. when a suggestion
+                        // happens to reuse the product's own image).
+                        const seenImages = new Set<string>();
                         const displayImages = [
                           { type: "product", name: "Ảnh sản phẩm", image: selectedProductDetails.image, description: "" },
                           ...packagings,
-                        ];
+                        ].filter((it) => {
+                          if (!it.image || seenImages.has(it.image)) return false;
+                          seenImages.add(it.image);
+                          return true;
+                        });
                         const activePackaging = displayImages[selectedPackagingIndex] || displayImages[0];
                         const currentImage = activePackaging ? activePackaging.image : selectedProductDetails.image;
 
