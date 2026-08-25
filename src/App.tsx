@@ -70,8 +70,8 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   if (prod.packagings && prod.packagings.length > 0) {
     return prod.packagings;
   }
-  
-  // Deterministic seed for this product
+
+  // Deterministic seed so each product keeps the same suggestions.
   const combined = (prod.id || "") + (prod.title || "");
   let seed = 0;
   for (let i = 0; i < combined.length; i++) {
@@ -79,155 +79,84 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   }
   seed = Math.abs(seed);
 
-  const isMask = prod.title?.toLowerCase().includes("mặt nạ") || prod.id?.toLowerCase().includes("mask") || prod.category === "mask";
-  const isSerumOrLiquid = prod.title?.toLowerCase().includes("serum") || prod.title?.toLowerCase().includes("tinh chất") || prod.title?.toLowerCase().includes("ampoule") || prod.title?.toLowerCase().includes("xịt") || prod.title?.toLowerCase().includes("nước") || prod.title?.toLowerCase().includes("toner");
-  const isMakeup = prod.category === "makeup" || prod.title?.toLowerCase().includes("son") || prod.title?.toLowerCase().includes("phấn") || prod.title?.toLowerCase().includes("kem nền") || prod.title?.toLowerCase().includes("cushion") || prod.title?.toLowerCase().includes("eyeliner");
+  // Verified cosmetic-packaging photos grouped by physical form, so each
+  // suggested "vỏ chai / lọ / tuýp" actually looks like that form.
+  const DROPPER = ["photo-1611930022073-b7a4ba5fcccd", "photo-1617897903246-719242758050", "photo-1515377905703-c4788e51af15", "photo-1608571423902-eed4a5ad8108"];
+  const TUBE = ["photo-1620916566398-39f1143ab7be", "photo-1608248597279-f99d160bfcbc", "photo-1556228720-195a672e8a03"];
+  const JAR = ["photo-1601049541289-9b1b7bbbfe19", "photo-1598440947619-2c35fc9aa908"];
+  const PUMP = ["photo-1540555700478-4be289fbecef", "photo-1526947425960-945c6e72858f"];
+  const BOTTLE = ["photo-1612817288484-6f916006741a", "photo-1535585209827-a15fcdbc4c2d", "photo-1526947425960-945c6e72858f"];
+  const MAKEUP = ["photo-1586495777744-4413f21062fa", "photo-1596462502278-27bfdc403348", "photo-1512496015851-a90fb38ba796", "photo-1522335789203-aabd1fc54bc9"];
 
-  // Curated, verified cosmetic-packaging photos only (bottles, jars, tubes,
-  // droppers, pumps). All product types share this pool so the "proposed
-  // packaging" thumbnails are always relevant and consistent.
-  const skincarePool = [
-    "photo-1620916566398-39f1143ab7be",
-    "photo-1601049541289-9b1b7bbbfe19",
-    "photo-1611930022073-b7a4ba5fcccd",
-    "photo-1612817288484-6f916006741a",
-    "photo-1608248597279-f99d160bfcbc",
-    "photo-1556228720-195a672e8a03",
-    "photo-1617897903246-719242758050",
-    "photo-1515377905703-c4788e51af15",
-    "photo-1608571423902-eed4a5ad8108",
-    "photo-1535585209827-a15fcdbc4c2d",
-    "photo-1526947425960-945c6e72858f",
-    "photo-1540555700478-4be289fbecef"
-  ];
+  const img = (pool: string[], off: number) => `https://images.unsplash.com/${pool[(seed + off) % pool.length]}?q=80&w=600`;
+  const P = (type: string, name: string, pool: string[], off: number, description: string): ProductPackaging =>
+    ({ type: type as any, name, image: img(pool, off), description });
 
-  const serumPool = skincarePool;
-  const creamPool = skincarePool;
-  const cleanserPool = skincarePool;
-  const maskPool = skincarePool;
+  const t = (prod.title || "").toLowerCase();
+  const cat = prod.category;
+  const has = (...keys: string[]) => keys.some((k) => t.includes(k));
 
-  const makeupPool = [
-    "photo-1586495777744-4413f21062fa",
-    "photo-1596462502278-27bfdc403348",
-    "photo-1512496015851-a90fb38ba796",
-    "photo-1522335789203-aabd1fc54bc9"
-  ];
-
-  const selectImg = (pool: string[], indexOffset: number) => {
-    const imgId = pool[(seed + indexOffset) % pool.length];
-    return `https://images.unsplash.com/${imgId}?q=80&w=600`;
-  };
-
-  if (isMask) {
+  // Makeup
+  if (cat === "makeup" || has("son", "phấn", "kem nền", "cushion", "eyeliner", "kẻ mắt", "má hồng")) {
     return [
-      {
-        type: "sachet",
-        name: "Túi Sachet Màng Nhôm Mờ",
-        image: selectImg(maskPool, 0),
-        description: "Túi nhôm phức hợp 3 lớp giúp lưu giữ trọn vẹn hoạt chất, chống thấm khí tuyệt đối và bảo quản tối ưu."
-      },
-      {
-        type: "jar",
-        name: "Hũ Thủy Tinh Cao Cấp",
-        image: selectImg(maskPool, 1),
-        description: "Thiết kế hũ thủy tinh mờ sang trọng, nắp vân giả gỗ tinh tế, thích hợp cho mặt nạ đất sét/kem dẻo."
-      },
-      {
-        type: "tube",
-        name: "Tuýp Nhựa PE Cấp Thực Phẩm",
-        image: selectImg(maskPool, 2),
-        description: "Tuýp nhựa dẻo phủ lì (matte surface) tinh tế, nắp bật kín khít bảo quản vệ sinh cho mặt nạ dạng gel."
-      },
-      {
-        type: "bottle",
-        name: "Chai Nhấn Vòi Chân Không",
-        image: selectImg(maskPool, 3),
-        description: "Vòi nhấn hút chân không tiện lợi, kiểm soát liều lượng và ngăn chặn tối đa quá trình oxy hóa tinh chất mặt nạ."
-      }
-    ];
-  } else if (isSerumOrLiquid) {
-    return [
-      {
-        type: "dropper",
-        name: "Lọ Dropper Thủy Tinh Nâu",
-        image: selectImg(serumPool, 0),
-        description: "Lọ nhỏ giọt thủy tinh cao cấp bảo vệ tối đa các tinh chất đặc trị nhạy cảm trước bức xạ tia cực tím."
-      },
-      {
-        type: "bottle",
-        name: "Chai Nhấn Vòi Chân Không",
-        image: selectImg(serumPool, 1),
-        description: "Chai vòi nhấn hút chân không acrylic cao cấp chống tiếp xúc không khí oxy hóa, kiểm soát lượng nhấn cực chuẩn."
-      },
-      {
-        type: "tube",
-        name: "Tuýp Nhỏ Đầu Nhọn Định Lượng",
-        image: selectImg(serumPool, 2),
-        description: "Thiết kế tuýp thon gọn với đầu phun định lượng siêu nhỏ thích hợp cho các tinh chất cô đặc cao."
-      },
-      {
-        type: "dropper",
-        name: "Lọ Dropper Thủy Tinh Trong",
-        image: selectImg(serumPool, 3),
-        description: "Thủy tinh borosilicate siêu trong suốt khoe trọn vẹn màu sắc tự nhiên và cấu trúc hạt của tinh chất cao cấp."
-      }
-    ];
-  } else if (isMakeup) {
-    return [
-      {
-        type: "bottle",
-        name: "Vỏ Son / Hộp Acrylic Cao Cấp",
-        image: selectImg(makeupPool, 0),
-        description: "Thiết kế vỏ tinh xảo, chất liệu acrylic dày dặn, sang trọng khẳng định giá trị thương hiệu dẫn đầu."
-      },
-      {
-        type: "jar",
-        name: "Hộp Compact Phấn Nước Tiện Dụng",
-        image: selectImg(makeupPool, 1),
-        description: "Hộp phấn nước tích hợp gương soi sắc nét và bông mút rubycell kháng khuẩn kháng nước tuyệt đối."
-      },
-      {
-        type: "bottle",
-        name: "Chai Thủy Tinh Vòi Nhấn Tinh Tế",
-        image: selectImg(makeupPool, 2),
-        description: "Chai kem nền thủy tinh mờ dầy dặn cầm đầm tay, vòi nhấn mạ kim loại sang trọng nâng tầm đẳng cấp mỹ phẩm."
-      },
-      {
-        type: "tube",
-        name: "Bút Kẻ / Thỏi Satin Độc Quyền",
-        image: selectImg(makeupPool, 3),
-        description: "Bao bì dạng bút hoặc thỏi bấm thông minh, tối ưu hóa thao tác trang điểm chuyên nghiệp hằng ngày."
-      }
-    ];
-  } else {
-    const pool = prod.category === "facial-care" ? creamPool : cleanserPool;
-    return [
-      {
-        type: "jar",
-        name: "Hũ Thủy Tinh Ép Kim Sang Trọng",
-        image: selectImg(pool, 0),
-        description: "Hũ thủy tinh đúc đầm tay, nắp mạ vàng/bạc ép kim cực kỳ đẳng cấp nâng cao giá trị định vị thương hiệu."
-      },
-      {
-        type: "bottle",
-        name: "Chai Nhấn Vòi Pump Cao Cấp",
-        image: selectImg(pool, 1),
-        description: "Vòi pump tiện dụng dễ kiểm soát dung lượng, lý tưởng cho các dòng lotion dưỡng da, sữa rửa mặt."
-      },
-      {
-        type: "tube",
-        name: "Tuýp Nhôm Matte Thân Thiện",
-        image: selectImg(pool, 2),
-        description: "Chất liệu nhôm dẻo dễ tái chế thân thiện môi trường, bề mặt phủ mờ phong cách tối giản Bắc Âu."
-      },
-      {
-        type: "jar",
-        name: "Hộp Kim Loại Nhôm Minimalist",
-        image: selectImg(pool, 3),
-        description: "Hộp nhôm phủ sơn tĩnh điện lì thời thượng, nắp vặn ren kín khí, hoàn hảo cho định dạng sáp hoặc hạt scrub tự nhiên."
-      }
+      P("bottle", "Vỏ Son / Thỏi Acrylic Cao Cấp", MAKEUP, 0, "Vỏ thỏi/hộp acrylic dày dặn, khắc logo tinh xảo, khẳng định đẳng cấp thương hiệu trên kệ trưng bày."),
+      P("jar", "Hộp Compact Tích Hợp Gương", MAKEUP, 1, "Hộp phấn compact gương soi sắc nét kèm bông mút rubycell kháng khuẩn, tiện mang theo."),
+      P("dropper", "Chai Kem Nền Vòi Nhấn", MAKEUP, 2, "Chai thủy tinh mờ vòi nhấn định lượng chuẩn, giữ chất nền ổn định, sang trọng."),
+      P("tube", "Tuýp / Bút Bấm Thông Minh", MAKEUP, 3, "Dạng bút bấm/tuýp tiện thao tác, đầu cọ mềm mại, tối ưu cho trang điểm hằng ngày."),
     ];
   }
+  // Toothpaste -> tube
+  if (has("kem đánh răng")) {
+    return [
+      P("tube", "Tuýp Nhựa Nắp Vặn Tiêu Chuẩn", TUBE, 0, "Tuýp nhựa cấp thực phẩm, nắp vặn kín khít, in ấn sắc nét cho kem đánh răng."),
+      P("tube", "Tuýp Nhôm Ép Kim Cao Cấp", TUBE, 2, "Tuýp nhôm phủ mờ ép kim sang trọng, dễ bóp hết sản phẩm, thân thiện tái chế."),
+      P("tube", "Tuýp Bụng Lớn Dạng Đứng", TUBE, 1, "Thiết kế tuýp đứng nắp lật tiện dụng, đặt vững trên kệ, lấy sản phẩm nhanh."),
+      P("bottle", "Chai Bơm Nước Súc Miệng Kèm Bộ", PUMP, 0, "Đồng bộ bộ chăm sóc răng miệng với chai bơm/định lượng tiện lợi."),
+    ];
+  }
+  // Serum / ampoule / essence / oil -> dropper
+  if (has("serum", "tinh chất", "ampoule", "essence", "tinh dầu", "dầu dưỡng", "dầu massage")) {
+    return [
+      P("dropper", "Chai Dropper Thủy Tinh Hổ Phách", DROPPER, 0, "Lọ nhỏ giọt thủy tinh nâu hổ phách chống tia UV, bảo vệ tối đa hoạt chất đặc trị nhạy cảm."),
+      P("dropper", "Chai Nhỏ Giọt Thủy Tinh Trong", DROPPER, 1, "Thủy tinh borosilicate siêu trong khoe trọn màu sắc và kết cấu tinh chất cao cấp."),
+      P("bottle", "Chai Airless Chân Không", DROPPER, 3, "Công nghệ airless hút chân không ngăn oxy hóa, giữ hoạt chất tươi mới đến giọt cuối."),
+      P("bottle", "Chai Bơm Định Lượng", PUMP, 0, "Vòi bơm định lượng chính xác, vệ sinh, phù hợp tinh chất/dầu dưỡng dùng hằng ngày."),
+    ];
+  }
+  // Mask -> sachet / jar
+  if (has("mặt nạ") || cat === "mask") {
+    return [
+      P("sachet", "Túi Sachet Màng Nhôm 3 Lớp", JAR, 0, "Túi nhôm phức hợp chống thấm khí tuyệt đối, lưu giữ trọn vẹn tinh chất cho từng lần dùng."),
+      P("jar", "Hũ Thủy Tinh Cao Cấp", JAR, 1, "Hũ thủy tinh mờ sang trọng, nắp kín khít, lý tưởng cho mặt nạ đất sét/kem dẻo."),
+      P("tube", "Tuýp Mặt Nạ Dạng Gel", TUBE, 0, "Tuýp mềm phủ lì, nắp bật kín, lấy lượng gel/kem sạch sẽ, tiện lợi."),
+      P("bottle", "Chai Bơm Chân Không", PUMP, 0, "Vòi nhấn chân không kiểm soát liều lượng, ngăn oxy hóa cho mặt nạ dạng lỏng."),
+    ];
+  }
+  // Wash / shampoo / cleanser / scrub -> pump & bottle
+  if (has("sữa rửa", "sữa tắm", "dầu gội", "rửa tay", "dung dịch vệ sinh", "nước súc miệng", "kem xả", "dầu xả", "gel tẩy", "tẩy tế bào", "kem ủ tóc")) {
+    return [
+      P("bottle", "Chai Bơm Định Lượng", PUMP, 0, "Vòi bơm tiện lợi, kiểm soát lượng dùng, lý tưởng cho sữa rửa/sữa tắm/dầu gội."),
+      P("bottle", "Chai Nắp Bật Tiện Lợi", BOTTLE, 2, "Nắp bật (flip-top) thao tác nhanh một tay, kín khít, phù hợp phòng tắm."),
+      P("bottle", "Chai PET Dung Tích Lớn", BOTTLE, 1, "Chai PET bền nhẹ dung tích lớn, tối ưu chi phí cho dòng dùng thường xuyên."),
+      P("tube", "Tuýp Mềm Nắp Bật", TUBE, 0, "Tuýp mềm dễ bóp cho tẩy tế bào chết/kem ủ, hợp vệ sinh, gọn gàng."),
+    ];
+  }
+  // Lotion / body / mist / spray / toner / deodorant -> bottle & pump
+  if (has("sữa dưỡng", "lotion", "kem ủ", "body", "xịt", "toner", "nước tẩy trang", "lăn", "dưỡng da tay", "nước hoa")) {
+    return [
+      P("bottle", "Chai Xịt Sương / Bơm", PUMP, 0, "Đầu xịt sương mịn hoặc vòi bơm định lượng, phủ đều, sang trọng cho lotion/xịt dưỡng."),
+      P("bottle", "Chai Thủy Tinh Nắp Vặn", BOTTLE, 2, "Chai thủy tinh cao cấp nắp vặn kín, tôn chất lượng dòng dưỡng thể/toner."),
+      P("jar", "Hũ Kem Dưỡng Thể", JAR, 0, "Hũ đầm tay nắp vặn ren kín, phù hợp kem ủ/kem dưỡng thể kết cấu đặc."),
+      P("bottle", "Chai Nhỏ Gọn Bỏ Túi", BOTTLE, 0, "Dung tích travel-size tiện mang theo, phù hợp xịt khoáng/lăn khử mùi."),
+    ];
+  }
+  // Default: face cream / others -> jar & tube
+  return [
+    P("jar", "Hũ Thủy Tinh Ép Kim Sang Trọng", JAR, 0, "Hũ thủy tinh đúc đầm tay, nắp mạ vàng/bạc ép kim đẳng cấp, nâng tầm thương hiệu."),
+    P("tube", "Tuýp Nhôm Matte Tối Giản", TUBE, 0, "Tuýp nhôm dẻo phủ mờ phong cách Bắc Âu, dễ tái chế, thân thiện môi trường."),
+    P("bottle", "Chai Bơm Vòi Nhấn Cao Cấp", PUMP, 0, "Vòi pump kiểm soát dung lượng, lý tưởng cho kem dưỡng/lotion dạng lỏng."),
+    P("jar", "Hộp Kim Loại Nhôm Minimalist", JAR, 1, "Hộp nhôm sơn tĩnh điện lì, nắp vặn kín khí, hoàn hảo cho sáp/scrub tự nhiên."),
+  ];
 };
 
 export const getProductPriceRange = (prod: any, quantity = 1) => {
@@ -2481,8 +2410,15 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white border border-stone-200 rounded-3xl p-6 sm:p-10 shadow-sm">
                       {/* Left side: Image and specs info */}
                       {(() => {
+                        // The product's own image is always first, so the main image on
+                        // the detail page matches the card the user clicked. Packaging
+                        // suggestions follow as additional, switchable thumbnails.
                         const packagings = getPackagingsForProduct(selectedProductDetails);
-                        const activePackaging = packagings[selectedPackagingIndex] || packagings[0];
+                        const displayImages = [
+                          { type: "product", name: "Ảnh sản phẩm", image: selectedProductDetails.image, description: "" },
+                          ...packagings,
+                        ];
+                        const activePackaging = displayImages[selectedPackagingIndex] || displayImages[0];
                         const currentImage = activePackaging ? activePackaging.image : selectedProductDetails.image;
 
                         return (
@@ -2511,7 +2447,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               </div>
                               
                               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                                {packagings.map((pkg, idx) => {
+                                {displayImages.map((pkg, idx) => {
                                   const isActive = selectedPackagingIndex === idx;
                                   return (
                                     <button
