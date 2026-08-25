@@ -699,7 +699,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "CẤP ẨM CHUYÊN SÂU",
     "testedCount": 210,
     "hotPercent": 92,
-    "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600",
     "description": "Mặt nạ giấy sinh học dệt từ nước dừa tươi lên men tự nhiên (bio-cellulose), ôm khít từng đường nét khuôn mặt như làn da thứ hai để truyền dẫn tối đa dưỡng chất. Khả năng giữ và cấp ẩm vượt trội giúp làn da căng mọng, mềm mại tức thì chỉ sau một lần đắp. Bảng thành phần lành tính, dịu nhẹ, thích hợp phục hồi da khô, thiếu nước và làm dịu da sau khi đi nắng.",
     "ingredients": "Nước dừa tươi lên men sinh học - cấp ẩm, nuôi dưỡng\nHyaluronic Acid đa tầng - giữ nước căng mọng\nNiacinamide 2% - dưỡng sáng nhẹ\nChiết xuất nha đam - làm dịu, phục hồi",
     "guidelines": "Bước 1: Rửa mặt sạch, thấm khô nhẹ.\nBước 2: Trải mặt nạ ôm khít khuôn mặt, để yên 15-20 phút.\nBước 3: Gỡ mặt nạ, vỗ nhẹ cho tinh chất còn lại thẩm thấu hết.\nKhông cần rửa lại. Dùng 2-3 lần/tuần."
@@ -814,7 +814,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "HƯƠNG NƯỚC HOA SANG TRỌNG",
     "testedCount": 110,
     "hotPercent": 75,
-    "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600",
     "description": "Sữa tắm dưỡng trắng với hương nước hoa lưu hương lâu, mang lại trải nghiệm tắm sang trọng như spa tại nhà. Bọt kem mềm mịn làm sạch dịu nhẹ, không gây khô da nhờ bổ sung Glycerin và các dưỡng chất giữ ẩm. Hoạt chất làm sáng giúp cải thiện tông da toàn thân đều màu, mềm mượt sau thời gian sử dụng, đồng thời lưu lại làn hương quyến rũ suốt nhiều giờ.",
     "ingredients": "Niacinamide - dưỡng sáng đều màu body\nGlycerin - giữ ẩm, chống khô\nChất diện hoạt dịu nhẹ - làm sạch không rít\nHương nước hoa cao cấp - lưu hương lâu",
     "guidelines": "Bước 1: Làm ướt cơ thể, lấy lượng sữa tắm vừa đủ ra bông tắm.\nBước 2: Tạo bọt và massage nhẹ khắp cơ thể.\nBước 3: Xả sạch lại với nước.\nDùng hằng ngày để duy trì làn da sáng mịn và thơm mát."
@@ -928,7 +928,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "BẬT TÔNG SPA",
     "testedCount": 72,
     "hotPercent": 60,
-    "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600",
     "description": "Kem ủ trắng body chiết xuất tảo biển Pháp, mang lại hiệu quả dưỡng sáng và cấp ẩm chuyên sâu như liệu trình spa. Khoáng chất từ tảo biển nuôi dưỡng da mềm mịn, trong khi các hoạt chất làm sáng cải thiện tông da xỉn màu, không đều màu. Kết cấu kem đặc mịn, dễ tán, thẩm thấu tốt, thích hợp ủ định kỳ để da toàn thân sáng khỏe rạng rỡ.",
     "ingredients": "Chiết xuất tảo biển Pháp - khoáng hóa, nuôi dưỡng\nGlutathione & Niacinamide - dưỡng trắng\nCollagen - tăng đàn hồi\nBơ hạt mỡ - dưỡng ẩm sâu",
     "guidelines": "Bước 1: Tắm sạch, lau khô da.\nBước 2: Thoa lớp kem ủ dày lên vùng da cần dưỡng.\nBước 3: Ủ 15-20 phút cho dưỡng chất thấm rồi rửa lại (hoặc massage đến khi thấm).\nDùng 2-3 lần/tuần."
@@ -1087,7 +1087,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "LÀM SẠCH GÀU NGỨA",
     "testedCount": 42,
     "hotPercent": 45,
-    "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=600",
     "description": "Tẩy tế bào chết da đầu với muối biển và bạc hà, làm sạch sâu bã nhờn, gàu và bụi bẩn tích tụ ở chân tóc - nguyên nhân khiến tóc bết và yếu. Hạt muối biển massage nhẹ nhàng kích thích tuần hoàn da đầu, trong khi bạc hà mang lại cảm giác the mát sảng khoái. Da đầu sạch thoáng giúp nang tóc khỏe mạnh và tóc mọc tốt hơn.",
     "ingredients": "Muối biển khoáng - tẩy tế bào chết, làm sạch sâu\nTinh dầu bạc hà - the mát, kháng khuẩn\nChiết xuất tràm trà - giảm gàu, ngứa\nDầu dừa - dưỡng ẩm da đầu",
     "guidelines": "Bước 1: Làm ướt tóc và da đầu.\nBước 2: Lấy lượng vừa đủ, massage tròn nhẹ nhàng lên da đầu 2-3 phút.\nBước 3: Xả sạch rồi gội đầu như bình thường.\nDùng 1-2 lần/tuần."
@@ -1362,7 +1362,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "DỊU NHẸ LÀNH TÍNH",
     "testedCount": 85,
     "hotPercent": 55,
-    "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=600",
     "description": "Dung dịch vệ sinh phụ nữ chiết xuất trầu không dịu nhẹ, làm sạch và kháng khuẩn tự nhiên, giúp vùng kín luôn khô thoáng, sạch sẽ và tự tin. Công thức cân bằng độ pH sinh lý, không gây khô rát hay mất cân bằng hệ vi sinh tự nhiên. Hương thảo mộc thanh khiết mang lại cảm giác dễ chịu, phù hợp dùng hằng ngày cho da nhạy cảm.",
     "ingredients": "Chiết xuất trầu không - kháng khuẩn, khử mùi tự nhiên\nAcid Lactic - cân bằng pH sinh lý\nChiết xuất trà xanh - làm dịu, chống viêm\nBisabolol - làm dịu vùng nhạy cảm",
     "guidelines": "Bước 1: Làm ướt vùng vệ sinh với nước.\nBước 2: Lấy một lượng nhỏ, tạo bọt và rửa nhẹ nhàng bên ngoài.\nBước 3: Rửa sạch lại với nước.\nDùng 1-2 lần/ngày; không thụt rửa sâu."
@@ -1384,7 +1384,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "HƠI THỞ THƠM MÁT",
     "testedCount": 38,
     "hotPercent": 40,
-    "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=600",
     "description": "Nước súc miệng thảo mộc khử mùi và mang lại hơi thở thơm mát suốt nhiều giờ, đồng thời hỗ trợ kháng khuẩn, bảo vệ nướu và răng miệng khỏe mạnh. Công thức dịu nhẹ không cồn gắt, không gây rát miệng, phù hợp dùng hằng ngày. Chiết xuất thảo mộc tự nhiên giúp làm sạch khoang miệng và ngăn ngừa vi khuẩn gây mùi.",
     "ingredients": "Chiết xuất bạc hà - thơm mát, khử mùi\nTinh dầu tràm trà - kháng khuẩn\nChiết xuất lá trầu không - bảo vệ nướu\nXylitol - chống sâu răng, vị dịu ngọt",
     "guidelines": "Bước 1: Sau khi đánh răng, lấy khoảng 15-20ml dung dịch.\nBước 2: Súc miệng kỹ trong 30 giây, đảo đều khắp khoang miệng.\nBước 3: Nhổ ra, không cần súc lại với nước.\nDùng 2 lần/ngày sáng và tối."
@@ -1407,7 +1407,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "KHÔ THOÁNG 24H",
     "testedCount": 56,
     "hotPercent": 48,
-    "image": "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
     "description": "Lăn khử mùi sinh học tràm trà và bạc hà, kiểm soát mùi cơ thể hiệu quả suốt ngày dài nhờ cơ chế kháng khuẩn tự nhiên thay vì bịt kín tuyến mồ hôi. Kết cấu lăn khô thoáng, thấm nhanh, không để lại vệt trắng trên áo. Bổ sung dưỡng chất làm dịu vùng da dưới cánh tay nhạy cảm, an toàn cho làn da và sức khỏe.",
     "ingredients": "Tinh dầu tràm trà - kháng khuẩn khử mùi\nMenthol (bạc hà) - the mát, sảng khoái\nPhèn chua tự nhiên (Alum) - se khít, kiểm soát mồ hôi\nKhông chứa muối nhôm tổng hợp, không paraben",
     "guidelines": "Bước 1: Vệ sinh và lau khô vùng da dưới cánh tay.\nBước 2: Lăn đều 2-3 đường lên mỗi bên.\nBước 3: Đợi khô thoáng trước khi mặc áo.\nDùng buổi sáng và sau khi tắm."
@@ -1430,7 +1430,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "TRẮNG RĂNG TỰ NHIÊN",
     "testedCount": 78,
     "hotPercent": 65,
-    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600",
     "description": "Kem đánh răng than hoạt tính làm trắng răng tự nhiên, nhẹ nhàng loại bỏ mảng bám và vết ố xỉn màu từ trà, cà phê, thuốc lá mà không gây mài mòn men răng. Than hoạt tính hấp phụ vi khuẩn và độc tố, kết hợp thảo mộc bảo vệ nướu, mang lại hàm răng trắng sáng và hơi thở thơm mát. Vị bạc hà dịu nhẹ dễ chịu.",
     "ingredients": "Than hoạt tính (Activated Charcoal) - làm trắng, hút bám\nFluoride/Hydroxyapatite - chống sâu răng, chắc men\nChiết xuất bạc hà - thơm mát\nChiết xuất trà xanh - bảo vệ nướu",
     "guidelines": "Bước 1: Lấy một lượng kem bằng hạt đậu lên bàn chải.\nBước 2: Chải kỹ mọi mặt răng trong 2 phút.\nBước 3: Súc miệng sạch với nước.\nDùng 2 lần/ngày sáng và tối."
@@ -1452,7 +1452,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "KHÁNG KHUẨN DỊU NHẸ",
     "testedCount": 30,
     "hotPercent": 25,
-    "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600",
     "description": "Sữa rửa tay tạo bọt trà xanh kháng khuẩn, làm sạch nhẹ nhàng bụi bẩn và vi khuẩn mà vẫn giữ ẩm cho da tay không bị khô rát. Dạng bọt bông mịn tiện lợi, tiết kiệm, lan đều nhanh chóng. Chiết xuất trà xanh chống oxy hóa kết hợp dưỡng chất giữ ẩm giúp đôi tay sạch thơm, mềm mại sau mỗi lần rửa.",
     "ingredients": "Chiết xuất trà xanh - kháng khuẩn, chống oxy hóa\nChất diện hoạt dịu nhẹ - làm sạch không khô\nGlycerin - giữ ẩm da tay\nPanthenol - làm mềm, phục hồi",
     "guidelines": "Bước 1: Làm ướt tay, nhấn vòi lấy bọt.\nBước 2: Xoa đều bọt khắp bàn tay, kẽ ngón trong 20-30 giây.\nBước 3: Rửa sạch lại với nước.\nDùng nhiều lần trong ngày."
@@ -1497,7 +1497,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "MÁT LẠNH PHONG ĐỘ",
     "testedCount": 24,
     "hotPercent": 35,
-    "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=600",
     "description": "Dung dịch vệ sinh nam giới bạc hà và trầu không, làm sạch và khử mùi vùng nhạy cảm, mang lại cảm giác khô thoáng, sạch sẽ và the mát sảng khoái suốt ngày dài. Công thức cân bằng pH phù hợp sinh lý nam giới, kháng khuẩn tự nhiên, không gây khô rát. Hương thảo mộc nam tính, dùng hằng ngày để luôn tự tin.",
     "ingredients": "Chiết xuất trầu không - kháng khuẩn, khử mùi\nMenthol (bạc hà) - the mát, sảng khoái\nAcid Lactic - cân bằng pH\nChiết xuất trà xanh - làm dịu, chống viêm",
     "guidelines": "Bước 1: Làm ướt vùng vệ sinh.\nBước 2: Lấy một lượng vừa đủ, tạo bọt và rửa nhẹ bên ngoài.\nBước 3: Rửa sạch lại với nước.\nDùng 1-2 lần/ngày."
@@ -1519,7 +1519,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "BỪNG TỈNH NĂNG LƯỢNG",
     "testedCount": 36,
     "hotPercent": 50,
-    "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=600",
     "description": "Dầu massage sả chanh bừng tỉnh năng lượng, mang lại trải nghiệm thư giãn và trẻ hóa cho cơ thể mệt mỏi. Hỗn hợp dầu nền thực vật cùng tinh dầu sả chanh thẩm thấu êm ái, giúp lưu thông khí huyết, giảm căng cơ và làm mềm mịn da. Hương sả chanh tươi mát sảng khoái, lý tưởng cho các liệu trình massage thư giãn tại spa hoặc tại nhà.",
     "ingredients": "Tinh dầu sả chanh - bừng tỉnh, thư giãn, đuổi côn trùng\nDầu nền Jojoba/hạnh nhân - trơn mượt, dưỡng da\nVitamin E - chống oxy hóa\nTinh dầu bạc hà - the mát nhẹ",
     "guidelines": "Bước 1: Làm ấm một lượng dầu vừa đủ trong lòng bàn tay.\nBước 2: Thoa và massage nhẹ nhàng theo chuyển động tròn lên vùng cơ cần thư giãn.\nBước 3: Massage 10-15 phút, lau sạch hoặc để dầu thấm.\nDùng khi cần thư giãn."
@@ -1543,7 +1543,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "CÔNG NGHỆ TẾ BÀO",
     "testedCount": 198,
     "hotPercent": 95,
-    "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=600",
     "description": "Serum tế bào gốc Exosome thế hệ mới - đỉnh cao công nghệ sinh học phục hồi và tái tạo da tầng sâu. Các túi Exosome siêu nhỏ mang tín hiệu tái sinh 'ra lệnh' cho tế bào da tăng sinh collagen và elastin tự thân, làm mờ nếp nhăn, se khít lỗ chân lông và cải thiện sẹo rỗ rõ rệt. Kết cấu tinh chất mỏng nhẹ, thẩm thấu tức thì, phù hợp mọi loại da cần trẻ hóa chuyên sâu.",
     "ingredients": "Exosome tế bào gốc thực vật - tái sinh tế bào tầng sâu\nPeptide đồng (Copper Peptide) - kích hoạt collagen\nHyaluronic Acid đa tầng - cấp ẩm căng mọng\nEGF/FGF - yếu tố tăng trưởng phục hồi da",
     "guidelines": "Bước 1: Sau khi làm sạch và toner, lấy 3-4 giọt serum.\nBước 2: Vỗ nhẹ đều khắp mặt và cổ.\nBước 3: Khóa ẩm bằng kem dưỡng.\nDùng tối (và sáng nếu cần); lý tưởng sau liệu trình lăn kim, laser."
@@ -1634,7 +1634,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "CĂNG BÓNG CẤP TỐC",
     "testedCount": 110,
     "hotPercent": 88,
-    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600",
     "description": "Mặt nạ tế bào gốc Exosome căng bóng cấp tốc - giải pháp phục hồi và trẻ hóa da tức thì cho những dịp cần làn da rạng rỡ. Exosome cùng phức hợp dưỡng chất thẩm thấu nhanh, làm dịu, cấp ẩm sâu và kích hoạt tái tạo, trả lại làn da căng mọng, mịn màng và tươi sáng chỉ sau một lần đắp. Lý tưởng dùng phục hồi sau liệu trình hoặc trước sự kiện quan trọng.",
     "ingredients": "Exosome tế bào gốc - tái tạo, phục hồi\nHyaluronic Acid đa tầng - cấp ẩm căng bóng\nPanthenol & Beta-glucan - làm dịu\nNiacinamide - dưỡng sáng tức thì",
     "guidelines": "Bước 1: Rửa mặt sạch, dùng toner.\nBước 2: Đắp mặt nạ ôm khít khuôn mặt 15-20 phút.\nBước 3: Gỡ ra, vỗ nhẹ cho tinh chất thấm hết, không cần rửa lại.\nDùng 2-3 lần/tuần hoặc khi cần phục hồi cấp tốc."
@@ -1680,7 +1680,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "NÂNG CƠ VÀNG 24K",
     "testedCount": 55,
     "hotPercent": 70,
-    "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=600",
     "description": "Tinh chất vàng 24k Peptide nâng cơ đa tầng - dòng sản phẩm xa xỉ kết hợp vi hạt vàng 24k và phức hợp Peptide cao cấp cho hiệu quả trẻ hóa vượt trội. Vàng 24k kích thích tuần hoàn, làm sáng và săn chắc da, trong khi Peptide thúc đẩy tái tạo collagen đa tầng, nâng cơ và làm đầy nếp nhăn. Kết cấu tinh chất sang trọng, thẩm thấu nhanh, mang lại làn da căng bóng rạng rỡ như liệu trình spa cao cấp.",
     "ingredients": "Vi hạt vàng 24k - làm sáng, săn chắc, kích thích tuần hoàn\nPhức hợp đa Peptide - nâng cơ, tái tạo collagen\nExosome - trẻ hóa tầng sâu\nHyaluronic Acid - cấp ẩm căng mọng",
     "guidelines": "Bước 1: Sau toner, nhỏ 3-4 giọt tinh chất.\nBước 2: Vỗ và massage nhẹ theo chiều nâng cơ từ dưới lên.\nBước 3: Khóa ẩm bằng kem dưỡng.\nDùng sáng và tối cho hiệu quả nâng cơ, trẻ hóa tối ưu."
@@ -1703,7 +1703,7 @@ export const FORMULA_PRODUCTS: FormulaProduct[] = [
     "badge": "SẠCH MỤN ĐẦU ĐEN",
     "testedCount": 78,
     "hotPercent": 65,
-    "image": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600",
+    "image": "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600",
     "description": "Mặt nạ lột mụn than hoạt tính bọc Liposome, làm sạch sâu bã nhờn, mụn đầu đen và bụi bẩn tích tụ trong lỗ chân lông chỉ với một lần lột. Than hoạt tính hút bám mạnh mẽ kết hợp công nghệ Liposome đưa dưỡng chất làm dịu vào sâu, giúp se khít lỗ chân lông mà không gây khô căng. Da sạch thoáng, mịn màng và giảm mụn đầu đen rõ rệt.",
     "ingredients": "Than hoạt tính - hút bám, làm sạch sâu\nCông nghệ Liposome - dẫn truyền dưỡng chất\nChiết xuất tràm trà - kháng khuẩn, ngừa mụn\nNiacinamide - se khít lỗ chân lông",
     "guidelines": "Bước 1: Rửa mặt sạch, xông hơi nhẹ để lỗ chân lông giãn nở.\nBước 2: Thoa lớp mặt nạ dày vùng mũi, cằm (tránh chân tóc, lông mày).\nBước 3: Đợi khô hoàn toàn 20-25 phút rồi lột nhẹ từ dưới lên.\nDùng 1 lần/tuần; sau đó se khít bằng toner."
