@@ -789,41 +789,82 @@ export default function CRMDashboard({
   // Image Upload helper state & function
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleImageUpload = async (file: File): Promise<string> => {
-    setIsUploading(true);
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async () => {
+  // Downscale + compress an uploaded image so any source size becomes a
+  // standard, web-optimized file (keeps aspect ratio; object-cover then crops
+  // it to fit each placement). PNG stays PNG to preserve transparency (logos);
+  // everything else becomes WebP (fallback JPEG) at good quality.
+  const MAX_UPLOAD_DIMENSION = 1600;
+  const optimizeImage = (file: File): Promise<{ base64: string; filename: string }> =>
+    new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new window.Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
         try {
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            headers: authHeaders(true),
-            body: JSON.stringify({
-              filename: file.name,
-              base64: reader.result as string
-            })
-          });
-          if (!res.ok) {
-            throw new Error(`Server returned status ${res.status}`);
+          let { width, height } = img;
+          const longest = Math.max(width, height);
+          if (longest > MAX_UPLOAD_DIMENSION) {
+            const scale = MAX_UPLOAD_DIMENSION / longest;
+            width = Math.round(width * scale);
+            height = Math.round(height * scale);
           }
-          const data = await res.json();
-          if (data.success && data.url) {
-            resolve(data.url);
-          } else {
-            throw new Error(data.error || "Không thể lưu file ảnh.");
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) throw new Error("Không khởi tạo được canvas.");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const isPng = file.type === "image/png";
+          let mime = isPng ? "image/png" : "image/webp";
+          let base64 = canvas.toDataURL(mime, 0.85);
+          // Fallback to JPEG if the browser did not honor WebP.
+          if (!isPng && base64.indexOf("data:image/webp") !== 0) {
+            mime = "image/jpeg";
+            base64 = canvas.toDataURL("image/jpeg", 0.85);
           }
-        } catch (err: any) {
+          const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
+          const baseName = (file.name.replace(/\.[^.]+$/, "") || "image").slice(0, 40);
+          resolve({ base64, filename: `${baseName}.${ext}` });
+        } catch (err) {
           reject(err);
-        } finally {
-          setIsUploading(false);
         }
       };
-      reader.onerror = (error) => {
-        setIsUploading(false);
-        reject(error);
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Không đọc được file ảnh."));
       };
+      img.src = url;
     });
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    setIsUploading(true);
+    try {
+      // Standardize the image (resize/compress) before sending it to storage.
+      let payload: { base64: string; filename: string };
+      try {
+        payload = await optimizeImage(file);
+      } catch {
+        // If optimization fails for any reason, fall back to the raw file.
+        payload = await new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = () => res({ base64: r.result as string, filename: file.name });
+          r.onerror = () => rej(new Error("Không đọc được file ảnh."));
+          r.readAsDataURL(file);
+        });
+      }
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: authHeaders(true),
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Server returned status ${res.status}`);
+      const data = await res.json();
+      if (data.success && data.url) return data.url;
+      throw new Error(data.error || "Không thể lưu file ảnh.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Fetch leads
