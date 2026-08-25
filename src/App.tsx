@@ -83,54 +83,34 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   const isSerumOrLiquid = prod.title?.toLowerCase().includes("serum") || prod.title?.toLowerCase().includes("tinh chất") || prod.title?.toLowerCase().includes("ampoule") || prod.title?.toLowerCase().includes("xịt") || prod.title?.toLowerCase().includes("nước") || prod.title?.toLowerCase().includes("toner");
   const isMakeup = prod.category === "makeup" || prod.title?.toLowerCase().includes("son") || prod.title?.toLowerCase().includes("phấn") || prod.title?.toLowerCase().includes("kem nền") || prod.title?.toLowerCase().includes("cushion") || prod.title?.toLowerCase().includes("eyeliner");
 
-  const serumPool = [
+  // Curated, verified cosmetic-packaging photos only (bottles, jars, tubes,
+  // droppers, pumps). All product types share this pool so the "proposed
+  // packaging" thumbnails are always relevant and consistent.
+  const skincarePool = [
     "photo-1620916566398-39f1143ab7be",
     "photo-1601049541289-9b1b7bbbfe19",
     "photo-1611930022073-b7a4ba5fcccd",
-    "photo-1547887537-6158d64c35b3",
-    "photo-1616683693504-3ea7e9ad6fec",
-    "photo-1551288049-bebda4e38f71",
     "photo-1612817288484-6f916006741a",
-    "photo-1556228453-efd6c1ff04f6"
-  ];
-
-  const creamPool = [
     "photo-1608248597279-f99d160bfcbc",
     "photo-1556228720-195a672e8a03",
     "photo-1617897903246-719242758050",
-    "photo-1601924994987-69e26d50dc26",
-    "photo-1584622650111-993a426fbf0a",
-    "photo-1611080626919-7cf5a9dbab5b",
     "photo-1515377905703-c4788e51af15",
-    "photo-1608571423902-eed4a5ad8108"
-  ];
-
-  const cleanserPool = [
-    "photo-1450133064473-71024230f91b",
-    "photo-1556229174-5e42a09e45af",
+    "photo-1608571423902-eed4a5ad8108",
     "photo-1535585209827-a15fcdbc4c2d",
     "photo-1526947425960-945c6e72858f",
-    "photo-1434626881859-194d67b2b86f",
-    "photo-1544816155-12df9643f363",
-    "photo-1540555700478-4be289fbecef",
-    "photo-1626806787461-102c1bfaaea1",
-    "photo-1570172619644-dfd03ed5d881"
+    "photo-1540555700478-4be289fbecef"
   ];
 
-  const maskPool = [
-    "photo-1512290923902-8a9f81dc236c",
-    "photo-1570172619644-dfd03ed5d881",
-    "photo-1460925895917-afdab827c52f",
-    "photo-1598440947619-2c35fc9aa908",
-    "photo-1608248597279-f99d160bfcbc"
-  ];
+  const serumPool = skincarePool;
+  const creamPool = skincarePool;
+  const cleanserPool = skincarePool;
+  const maskPool = skincarePool;
 
   const makeupPool = [
     "photo-1586495777744-4413f21062fa",
     "photo-1596462502278-27bfdc403348",
     "photo-1512496015851-a90fb38ba796",
-    "photo-1522335789203-aabd1fc54bc9",
-    "photo-1607604276583-eef5d076aa5f"
+    "photo-1522335789203-aabd1fc54bc9"
   ];
 
   const selectImg = (pool: string[], indexOffset: number) => {
