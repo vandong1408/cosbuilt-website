@@ -415,7 +415,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Để một sản phẩm mỹ phẩm được phép lưu thông hợp pháp trên thị trường Việt Nam, doanh nghiệp bắt buộc phải hoàn tất thủ tục Công bố sản phẩm mỹ phẩm và được cơ quan quản lý (Cục Quản lý Dược - Bộ Y Tế đối với hàng nhập khẩu, hoặc Sở Y Tế địa phương đối với hàng sản xuất trong nước) cấp Số tiếp nhận phiếu công bố. Đây là điều kiện tiên quyết, thiếu bước này mọi hoạt động kinh doanh đều bị coi là hàng không rõ nguồn gốc và có thể bị xử phạt, thu hồi.\n\n1. CHUẨN BỊ HỒ SƠ PHÁP LÝ\nBộ hồ sơ công bố tiêu chuẩn bao gồm: Phiếu công bố sản phẩm mỹ phẩm theo mẫu; Giấy chứng nhận đăng ký kinh doanh có ngành nghề phù hợp; Giấy ủy quyền của nhà sản xuất/chủ sở hữu nhãn hàng cho tổ chức chịu trách nhiệm đưa sản phẩm ra thị trường; Giấy chứng nhận lưu hành tự do (CFS) đối với sản phẩm nhập khẩu; và bảng thành phần đầy đủ theo danh pháp quốc tế INCI kèm tỷ lệ phần trăm các hoạt chất có giới hạn.\n\n2. KIỂM NGHIỆM & HỒ SƠ THÔNG TIN SẢN PHẨM (PIF)\nSản phẩm cần được kiểm nghiệm các chỉ tiêu vi sinh, kim loại nặng (thủy ngân, chì, arsen) tại phòng Lab được công nhận ISO 17025. Song song đó, doanh nghiệp phải lưu giữ Hồ sơ thông tin sản phẩm (Product Information File) gồm dữ liệu an toàn, đánh giá độ ổn định (stability test), challenge test và bằng chứng công dụng để sẵn sàng khi cơ quan chức năng hậu kiểm.\n\n3. NHỮNG SAI LẦM THƯỜNG GẶP\nRất nhiều thương hiệu bị trả hồ sơ do ghi công dụng 'quá đà' (như trị bệnh, đặc trị, thay thế thuốc), đặt tên sản phẩm gây hiểu nhầm về tính năng, hoặc khai sai nồng độ hoạt chất bị kiểm soát. Thời gian xử lý hồ sơ hợp lệ thường từ 3-5 ngày làm việc, nhưng nếu sai sót có thể kéo dài hàng tháng.\n\nTại Cosbuilt, đội ngũ pháp chế đồng hành trọn gói cùng khách hàng từ khâu rà soát công thức, chuẩn hóa tên gọi - công dụng, thực hiện kiểm nghiệm cho tới khi nhận được số công bố, giúp thương hiệu của bạn ra mắt thị trường nhanh chóng, hợp pháp và an tâm tuyệt đối.",
     date: "12 Tháng 6, 2026",
     author: "ThS. Luật sư Nguyễn Khánh Ly",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600"
   },
   {
     title: "Xu hướng hoạt chất mỹ phẩm lên ngôi nửa cuối năm 2026: Exosome & Bakuchiol",
@@ -424,7 +424,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Năm 2026 chứng kiến bước chuyển mình mạnh mẽ của ngành mỹ phẩm cao cấp: từ các hoạt chất hóa học truyền thống sang kỷ nguyên công nghệ sinh học tế bào. Hai cái tên đang dẫn dắt xu hướng và định hình lại phân khúc chống lão hóa chính là Exosome và Bakuchiol.\n\nEXOSOME - CHẤT TRUYỀN TIN TÁI SINH TẾ BÀO\nExosome là những túi vận chuyển ngoại bào siêu nhỏ (kích thước 30-150 nanomet) mang theo protein, peptide tín hiệu, mRNA và các yếu tố tăng trưởng. Khi thẩm thấu vào da, Exosome 'ra lệnh' cho các nguyên bào sợi tăng cường tổng hợp collagen và elastin tự thân - theo nhiều nghiên cứu có thể nhanh gấp nhiều lần so với dịch chiết tế bào gốc thông thường. Kết quả là làn da phục hồi hàng rào bảo vệ, mờ nếp nhăn, se khít lỗ chân lông và cải thiện sẹo rỗ một cách rõ rệt. Exosome nguồn gốc thực vật (từ tế bào gốc hoa hồng, rau má, nhân sâm) đang được ưa chuộng vì tính an toàn cao và phù hợp xu hướng thuần chay.\n\nBAKUCHIOL - 'RETINOL THỰC VẬT' CHO DA NHẠY CẢM\nChiết xuất từ hạt cây Babchi, Bakuchiol mang lại hiệu quả chống lão hóa và điều tiết tái tạo tế bào tương đương Retinol, nhưng lại cực kỳ dịu nhẹ: không gây bong tróc, châm chích hay nhạy cảm ánh nắng. Đây là lời giải hoàn hảo cho nhóm khách hàng da nhạy cảm, phụ nữ mang thai và người mới bắt đầu chu trình chống lão hóa - một tệp khách hàng khổng lồ mà Retinol truyền thống khó chinh phục.\n\nCƠ HỘI CHO THƯƠNG HIỆU VIỆT\nViệc ứng dụng sớm Exosome và Bakuchiol giúp thương hiệu tạo ra lợi điểm bán hàng độc nhất (USP) và định vị ở phân khúc cao cấp. Phòng R&D của Cosbuilt đã làm chủ công nghệ bào chế, ổn định và bao bọc hai hoạt chất này trong nền serum, kem dưỡng và mặt nạ, sẵn sàng đồng hành để bạn ra mắt dòng sản phẩm đón đầu xu hướng 2026.",
     date: "05 Tháng 7, 2026",
     author: "Bum-Chul Hur (Viện trưởng R&D Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=600"
   },
   {
     title: "Kinh nghiệm tối ưu hóa chi phí sản xuất ban đầu cho startup mỹ phẩm",
@@ -433,7 +433,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Khởi nghiệp mỹ phẩm là hành trình hấp dẫn nhưng đầy cạm bẫy về dòng tiền. Rất nhiều thương hiệu 'chết yểu' không phải vì sản phẩm kém, mà vì tối ưu chi phí ban đầu sai cách dẫn đến đọng vốn. Dưới đây là những kinh nghiệm thực chiến từ hàng trăm dự án Cosbuilt đã đồng hành.\n\n1. BẮT ĐẦU TINH GỌN VỚI 1-2 SKU CỐT LÕI\nĐừng ra mắt cả bộ 5-7 sản phẩm ngay từ đầu. Hãy chọn 1-2 sản phẩm mũi nhọn (hero product) giải quyết đúng một vấn đề cụ thể của khách hàng mục tiêu. Việc này giúp bạn dồn lực marketing, kiểm soát tồn kho và nhanh chóng kiểm chứng nhu cầu thị trường thật trước khi mở rộng.\n\n2. THÔNG MINH VỚI BAO BÌ\nBao bì có thể chiếm 30-50% giá thành. Thay vì đặt khuôn chai riêng (chi phí khuôn rất lớn, MOQ cao), hãy chọn mẫu chai/hũ tiêu chuẩn có sẵn chất lượng cao và tạo dấu ấn thương hiệu bằng thiết kế nhãn dán, decal ép kim, vỏ hộp cứng tinh tế. Khác biệt nằm ở câu chuyện và thẩm mỹ, không nhất thiết ở khuôn đắt tiền.\n\n3. TẬN DỤNG MOQ LINH HOẠT\nMột trong những rào cản lớn nhất với startup là số lượng đặt tối thiểu (MOQ). Cosbuilt hỗ trợ MOQ linh hoạt ngay từ những lô nhỏ, cùng dịch vụ mẫu thử vật lý miễn phí, giúp bạn thử nghiệm thể chất - hương - màu và phản ứng thị trường mà không phải 'ôm' hàng nghìn sản phẩm.\n\n4. ĐỪNG BỎ QUÊN CHI PHÍ PHÁP LÝ & VẬN HÀNH\nHãy dự trù ngân sách cho công bố sản phẩm, kiểm nghiệm, mã vạch, thiết kế và cả chi phí marketing thử nghiệm. Một kế hoạch tài chính rõ ràng ngay từ đầu sẽ giúp bạn đi đường dài. Cosbuilt cung cấp giải pháp trọn gói OEM/ODM - từ công thức, sản xuất tới pháp lý - để bạn tối ưu vốn và tập trung nguồn lực cho việc quan trọng nhất: xây dựng thương hiệu và bán hàng.",
     date: "28 Tháng 5, 2026",
     author: "Kim Kyung-choon (CEO Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=600"
   },
   {
     title: "Thảo mộc & Hoạt chất sinh học: Tiềm năng khổng lồ từ mỹ phẩm hữu cơ thuần chay",
@@ -451,7 +451,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Tiêu chuẩn Thực hành tốt sản xuất mỹ phẩm (CGMP - Cosmetic Good Manufacturing Practice) theo hướng dẫn của ASEAN là thước đo bắt buộc để đánh giá năng lực và độ tin cậy của một nhà máy gia công mỹ phẩm. Đây không chỉ là tấm 'giấy thông hành' để xuất khẩu, mà còn là cam kết về sự an toàn và ổn định chất lượng cho từng lô sản phẩm đến tay người tiêu dùng.\n\nKIỂM SOÁT PHÒNG SẠCH & MÔI TRƯỜNG\nCGMP yêu cầu khu vực sản xuất phải là phòng sạch đạt cấp độ kiểm soát tiểu phân bụi và vi sinh trong không khí, với hệ thống lọc khí HEPA, kiểm soát chênh áp giữa các phòng, nhiệt độ và độ ẩm ổn định. Điều này ngăn ngừa triệt để nguy cơ nhiễm khuẩn chéo - nguyên nhân hàng đầu khiến mỹ phẩm bị hư hỏng, biến chất.\n\nNGUỒN NƯỚC & NGUYÊN LIỆU ĐẦU VÀO\nNước tinh khiết (đạt chuẩn qua hệ thống RO, khử ion, diệt khuẩn UV) là 'xương sống' của mọi công thức mỹ phẩm. CGMP đòi hỏi kiểm soát chặt chẽ chất lượng nước, đồng thời mọi nguyên liệu đầu vào đều phải có chứng nhận nguồn gốc (CoA), được kiểm định và biệt trữ trước khi đưa vào sản xuất.\n\nTRUY XUẤT NGUỒN GỐC & HỒ SƠ LÔ\nMỗi lô sản xuất đều có hồ sơ lô (batch record) ghi lại toàn bộ quá trình - từ nguyên liệu, thông số pha chế, kết quả kiểm nghiệm tới đóng gói. Nhờ đó, khi cần, có thể truy xuất ngược hoàn toàn nguồn gốc của bất kỳ sản phẩm nào trên thị trường.\n\nLỢI ÍCH CHO THƯƠNG HIỆU\nSản xuất tại nhà máy chuẩn CGMP giúp sản phẩm của bạn bảo toàn hoạt chất, ổn định qua thời gian, an toàn tuyệt đối cho người dùng và dễ dàng thông quan, xuất khẩu sang thị trường Đông Nam Á, Mỹ, EU, Nhật Bản. Cả hai nhà máy của Cosbuilt tại Incheon và Gimpo đều vận hành theo tiêu chuẩn ISO 22716 / CGMP, đảm bảo chất lượng đồng nhất cho mọi đơn hàng.",
     date: "15 Tháng 7, 2026",
     author: "KS. Hoàng Văn Thắng (Giám đốc Vận hành Nhà máy)",
-    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=600"
   },
   {
     title: "Bí quyết thiết kế bao bì mỹ phẩm thu hút khách hàng từ cái nhìn đầu tiên",
@@ -460,7 +460,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Trong ngành mỹ phẩm, 'yêu bằng mắt' là có thật. Một thiết kế bao bì ấn tượng có thể quyết định tới 70% hành vi mua thử lần đầu, trước cả khi khách hàng kịp trải nghiệm chất lượng bên trong. Bao bì chính là 'người bán hàng thầm lặng' trên kệ và trong khung hình quảng cáo.\n\nXU HƯỚNG QUIET LUXURY - SANG TRỌNG THẦM LẶNG\nNăm 2026 chứng kiến sự lên ngôi của phong cách tối giản cao cấp: bảng màu pastel dịu mát hoặc trung tính (be, trắng ngà, xanh rêu), font chữ không chân (sans-serif) thanh lịch, và bề mặt chai lọ nhám mờ (matte) mang lại cảm giác chạm sang trọng. Ít chi tiết nhưng tinh tế - đó là ngôn ngữ của các thương hiệu đẳng cấp.\n\nCÔNG NGHỆ HOÀN THIỆN TẠO ĐIỂM NHẤN\nNhững kỹ thuật in ấn cao cấp giúp bao bì 'nâng tầm' rõ rệt: ép kim (hot stamping) vàng/bạc, in nổi - in chìm (emboss/deboss) tạo hiệu ứng chạm, phủ UV định vị bóng trên nền mờ, hay decal trong suốt 'no-label look'. Đây là cách tạo khác biệt mà không cần đầu tư khuôn chai đắt đỏ.\n\nBAO BÌ BỀN VỮNG - GIÁ TRỊ CỦA TƯƠNG LAI\nNgười tiêu dùng hiện đại đánh giá cao trách nhiệm môi trường. Việc chuyển sang nhựa tái chế PCR, thủy tinh siêu nhẹ, chi tiết refill (đổ đầy lại) hay mực in gốc đậu nành không chỉ giảm dấu chân carbon mà còn ghi điểm mạnh mẽ về hình ảnh thương hiệu 'sống xanh'.\n\nTẠI COSBUILT\nChúng tôi cung cấp giải pháp bao bì trọn gói: tư vấn thể chất phù hợp chai lọ, thiết kế nhãn - vỏ hộp theo nhận diện thương hiệu, và kết nối chuỗi cung ứng vật liệu đa dạng để bạn có bộ sản phẩm hoàn thiện, bắt mắt ngay từ cái nhìn đầu tiên.",
     date: "08 Tháng 7, 2026",
     author: "Bà Vũ Thùy Linh (Trưởng bộ phận Thiết kế Bao bì)",
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?q=80&w=600"
   },
   {
     title: "Ứng dụng công nghệ bọc Liposome trong bào chế serum dưỡng da chuyên sâu",
@@ -469,7 +469,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Bạn đã bao giờ dùng một lọ serum Vitamin C đắt tiền nhưng không thấy hiệu quả? Vấn đề thường không nằm ở hoạt chất, mà ở khả năng vận chuyển hoạt chất đó vào đúng nơi cần đến. Đây chính là lúc công nghệ bào chế Liposome thể hiện sức mạnh vượt trội.\n\nVẤN ĐỀ CỦA HOẠT CHẤT 'TRẦN'\nCác hoạt chất mạnh như Vitamin C, Retinol, Hyaluronic Acid hay Niacinamide khi ở dạng tự do rất dễ bị oxy hóa khi tiếp xúc không khí và ánh sáng, hoặc phân tử quá lớn nên chỉ nằm lại trên bề mặt da mà không thẩm thấu sâu. Kết quả: hiệu quả thấp, lãng phí và đôi khi gây kích ứng.\n\nLIPOSOME HOẠT ĐỘNG NHƯ THẾ NÀO?\nLiposome là những túi hình cầu siêu nhỏ có cấu trúc màng phospholipid kép - tương tự cấu trúc màng tế bào da người. Nhờ đó, chúng 'đóng gói' và bảo vệ hoạt chất khỏi bị phân hủy, đồng thời dễ dàng hòa nhập với màng tế bào để giải phóng hoạt chất ở đúng lớp tế bào đích dưới da. Khả năng thẩm thấu có thể tăng gấp nhiều lần so với công thức thông thường.\n\nLỢI ÍCH KÉP: HIỆU QUẢ & DỊU NHẸ\nViệc giải phóng hoạt chất có kiểm soát (controlled release) không chỉ tối ưu hiệu quả trị mụn, mờ thâm nám và trẻ hóa da, mà còn giảm đáng kể nguy cơ kích ứng - vì hoạt chất được 'nhả' từ từ thay vì tấn công ồ ạt lên da.\n\nỨNG DỤNG TẠI COSBUILT\nPhòng R&D của Cosbuilt đã làm chủ công nghệ bao bọc Liposome và các hệ vận chuyển thông minh khác (niosome, nanoemulsion), ứng dụng vào các dòng serum và tinh chất đặc trị cao cấp - giúp thương hiệu của bạn sở hữu sản phẩm 'nói được bằng kết quả'.",
     date: "02 Tháng 7, 2026",
     author: "ThS. Dược sĩ Phạm Minh Khoa",
-    image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600"
   },
   {
     title: "Quy trình kiểm nghiệm kích ứng da (Dermatologically Tested) cho mỹ phẩm mới",
@@ -478,7 +478,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Trước khi một công thức mỹ phẩm được đưa vào dây chuyền sản xuất số lượng lớn, việc kiểm tra độ an toàn trên da người tình nguyện là bước cực kỳ quan trọng. Quy trình Dermatologically Tested tiêu chuẩn bao gồm thử nghiệm áp da (Patch Test) trong vòng 24 - 48 giờ để theo dõi các phản ứng mẩn đỏ, ngứa ngáy hay bong tróc. Đảm bảo công thức đạt chỉ số kích ứng thấp nhất chính là cam kết vững chắc nhất cho chất lượng thương hiệu của bạn.\n\nCÁC BÀI TEST AN TOÀN PHỔ BIẾN\nNgoài Patch Test, một bộ hồ sơ an toàn đầy đủ có thể bao gồm: HRIPT (thử nghiệm kích ứng lặp lại trên diện rộng), thử nghiệm không gây bít tắc lỗ chân lông (Non-comedogenic), thử nghiệm nhãn khoa (Ophthalmologist Tested) cho sản phẩm vùng mắt, và các bài test công dụng (cấp ẩm, làm sáng, chống lão hóa) có đo lường bằng thiết bị khoa học.\n\nGIÁ TRỊ TRUYỀN THÔNG CỦA CHỨNG NHẬN\nNhững nhãn dán 'Đã kiểm nghiệm da liễu', 'Non-comedogenic' hay 'Hypoallergenic' không chỉ là bằng chứng an toàn mà còn là công cụ marketing mạnh mẽ, tạo niềm tin tức thì với khách hàng khó tính. Cosbuilt hỗ trợ khách hàng kết nối với các đơn vị kiểm nghiệm uy tín và hoàn thiện hồ sơ chứng nhận trước khi sản phẩm ra mắt thị trường.",
     date: "25 Tháng 6, 2026",
     author: "Bác sĩ Da liễu Đỗ Minh Tuấn",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=600"
   },
   {
     title: "Clean Beauty & Waterless Beauty: Tương lai xanh bền vững của mỹ phẩm",
@@ -487,7 +487,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Waterless Beauty (Mỹ phẩm không nước) đang là cuộc cách mạng bảo vệ môi trường toàn cầu. Bằng cách loại bỏ nước khoáng thông thường và thay thế bằng hydrolat hoa hồng, nước lô hội hữu cơ, hoặc sản xuất dưới dạng thanh sáp/bột khô, sản phẩm không cần sử dụng nhiều chất bảo quản hóa học. Điều này không chỉ giảm thiểu tối đa kích ứng da mà còn giúp tiết kiệm tài nguyên nước quý giá và giảm đáng kể lượng khí thải carbon khi vận chuyển.\n\nCÔNG THỨC CÔ ĐẶC - HIỆU QUẢ HƠN\nKhi loại bỏ nước (thường chiếm 60-80% công thức thông thường), tỷ lệ hoạt chất trong sản phẩm được cô đặc cao hơn, mang lại hiệu quả trị liệu rõ rệt trên mỗi lần dùng. Các dạng bào chế mới như dầu gội thanh (shampoo bar), viên serum khô, bột rửa mặt enzyme hay mặt nạ bột hòa tan cũng giúp bao bì nhỏ gọn, nhẹ và bền hơn.\n\nCLEAN BEAUTY - MINH BẠCH LÀ VÀNG\nĐi cùng Waterless là triết lý Clean Beauty: công thức minh bạch, loại bỏ các thành phần gây tranh cãi (paraben, sulfate mạnh, hương liệu tổng hợp nồng độ cao) và ưu tiên nguồn gốc bền vững. Đây là tiêu chuẩn mà thế hệ khách hàng Gen Z đặc biệt coi trọng. Phòng R&D Cosbuilt sẵn sàng đồng hành phát triển các dòng sản phẩm không nước, thuần chay đón đầu xu hướng xanh toàn cầu.",
     date: "18 Tháng 6, 2026",
     author: "Bà Hoàng Thu Trang (Chuyên gia Xu hướng Tiêu dùng)",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600"
   },
   {
     title: "Chiến lược xây dựng phễu sản phẩm mỹ phẩm đột phá cho các thương hiệu mới",
@@ -496,7 +496,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Một thương hiệu mới không nên tung ra quá nhiều sản phẩm cùng lúc mà hãy tập trung thiết kế một phễu sản phẩm logic. Sản phẩm phễu (Sữa rửa mặt tạo bọt, Nước tẩy trang) nên có giá thành dễ tiếp cận, hiệu quả tức thì để lấy lòng tin khách hàng. Sau đó, dẫn dắt khách hàng nâng cấp lên sản phẩm chủ lực (Serum trị nám Exosome, Kem dưỡng trẻ hóa Bakuchiol) có giá trị cao để tăng biên độ lợi nhuận và khẳng định đẳng cấp thương hiệu.\n\nBA TẦNG CỦA PHỄU SẢN PHẨM\n1. Sản phẩm mồi (Entry): giá thấp, giải quyết nhu cầu cơ bản, dễ mua thử - dùng để thu hút khách hàng mới. 2. Sản phẩm chủ lực (Hero): biên lợi nhuận cao, chứa hoạt chất độc quyền, là 'ngôi sao' định vị thương hiệu. 3. Sản phẩm combo/cao cấp (Premium): bộ liệu trình hoàn chỉnh, quà tặng, phiên bản giới hạn - tối đa hóa giá trị đơn hàng.\n\nTĂNG GIÁ TRỊ VÒNG ĐỜI KHÁCH HÀNG\nMục tiêu của phễu là tăng Customer Lifetime Value: biến người mua thử thành khách hàng trung thành mua trọn bộ. Việc thiết kế các sản phẩm 'ăn khớp' nhau về công dụng (làm sạch → đặc trị → khóa ẩm) giúp khách hàng tự nhiên mua thêm. Cosbuilt tư vấn xây dựng danh mục sản phẩm chiến lược ngay từ khâu lên công thức, giúp bạn tối ưu lợi nhuận dài hạn." ,
     date: "10 Tháng 6, 2026",
     author: "Ông Nguyễn Lâm Sơn (Chuyên gia MKT Mỹ phẩm)",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=600"
   },
   {
     title: "Công nghệ nhũ hóa nguội (Cold Emulsification): Bước đột phá tiết kiệm năng lượng trong sản xuất mỹ phẩm",
@@ -505,7 +505,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Thông thường, quá trình tạo kem dưỡng (nhũ hóa) đòi hỏi phải đun nóng pha dầu và pha nước lên 70 - 80 độ C. Tuy nhiên, công nghệ nhũ hóa nguội thế hệ mới sử dụng các chất hoạt động bề mặt chuyên biệt, cho phép liên kết dầu và nước ở nhiệt độ phòng. Phương pháp này không chỉ giữ nguyên đặc tính sinh học của các chiết xuất thực vật nhạy cảm với nhiệt (như Vitamin C, peptide, retinol) mà còn giúp nhà máy tiết kiệm năng lượng đáng kể, thúc đẩy xu hướng mỹ phẩm bền vững.\n\nVÌ SAO HOẠT CHẤT 'SỢ NHIỆT'?\nNhiều hoạt chất vàng trong ngành làm đẹp rất mong manh: Vitamin C dễ oxy hóa, Retinol mất hoạt tính, các enzyme và probiotics bị bất hoạt, hương liệu tự nhiên bay hơi khi gặp nhiệt độ cao. Nhũ hóa nguội bảo toàn tối đa 'sinh lực' của những thành phần này, cho ra sản phẩm hiệu quả và tươi mới hơn.\n\nLỢI ÍCH BỀN VỮNG\nSản xuất ở nhiệt độ phòng giúp cắt giảm điện năng đun nóng và làm nguội, rút ngắn thời gian sản xuất và giảm phát thải carbon. Đây là minh chứng cho cam kết sản xuất xanh của Cosbuilt - nơi công nghệ hiện đại và trách nhiệm môi trường song hành để tạo ra những công thức đẳng cấp cho thương hiệu của bạn.",
     date: "20 Tháng 7, 2026",
     author: "ThS. Nguyễn Minh Hoàng (Chuyên gia Bào chế tại Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=600"
   },
   {
     title: "Hạn chế chất bảo quản hóa học bằng giải pháp Hệ bảo quản tự nhiên (Natural Preservative Systems)",
@@ -514,7 +514,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Xu hướng mỹ phẩm sạch đòi hỏi loại bỏ các chất bảo quản truyền thống bị nghi ngờ có hại cho sức khỏe. Tại phòng thí nghiệm Cosbuilt, chúng tôi ứng dụng các hệ tự bảo quản thông minh (self-preserving systems) kết hợp từ chiết xuất vỏ cây liễu, rễ cây hẹ, lên men tỏi và các acid hữu cơ nhẹ. Sự kết hợp hiệp đồng này vừa ức chế tối đa vi khuẩn, nấm mốc vừa nuôi dưỡng làn da nhẹ nhàng, nâng cao giá trị xanh cho thương hiệu.\n\nVAI TRÒ SỐNG CÒN CỦA HỆ BẢO QUẢN\nCần hiểu rằng chất bảo quản là bắt buộc để mỹ phẩm chứa nước an toàn - nếu không, vi khuẩn và nấm mốc sẽ phát triển gây hại nghiêm trọng cho da. Vấn đề không phải là 'không bảo quản', mà là chọn hệ bảo quản an toàn, hiệu quả và được người tiêu dùng chấp nhận.\n\nCÔNG NGHỆ CHALLENGE TEST\nMọi công thức tại Cosbuilt đều trải qua Challenge Test (thử nghiệm thách thức vi sinh) - chủ động cấy vi sinh vật vào sản phẩm để kiểm chứng hệ bảo quản đủ mạnh trong suốt vòng đời sử dụng. Sự kết hợp giữa hệ bảo quản tự nhiên và bao bì airless (chân không) giúp thương hiệu vừa 'sạch' vừa an toàn tuyệt đối.",
     date: "18 Tháng 7, 2026",
     author: "TS. Phạm Hải Yến (Bộ phận Nghiên cứu Vi sinh Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=600"
   },
   {
     title: "Quy trình thiết kế nhãn mỹ phẩm hợp chuẩn nghị định quản lý mỹ phẩm ASEAN",
@@ -523,7 +523,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Thiết kế nhãn mỹ phẩm không chỉ cần bắt mắt mà phải tuân thủ nghiêm ngặt Hiệp định mỹ phẩm ASEAN. Tên thành phần bắt buộc phải ghi bằng danh pháp quốc tế INCI, sắp xếp theo tỷ lệ giảm dần về nồng độ. Các lỗi thường gặp như tự ý công bố tính năng điều trị y học (như trị mụn hoàn toàn, xóa sẹo vĩnh viễn) hay thiếu số lô sản xuất, hạn sử dụng sẽ khiến doanh nghiệp bị phạt nặng hoặc thu hồi sản phẩm. Đội ngũ pháp lý của Cosbuilt luôn hỗ trợ duyệt nhãn miễn phí trước khi in ấn cho khách hàng gia công.\n\nNHỮNG THÔNG TIN BẮT BUỘC TRÊN NHÃN\nMột nhãn hợp chuẩn phải có đầy đủ: tên sản phẩm và chức năng; thành phần (Ingredients/INCI); định lượng (khối lượng/thể tích); số lô sản xuất; ngày sản xuất và hạn sử dụng (hoặc ký hiệu PAO - thời hạn dùng sau khi mở nắp); tên và địa chỉ tổ chức chịu trách nhiệm; xuất xứ; và các lưu ý an toàn khi sử dụng.\n\nRANH GIỚI GIỮA 'MỸ PHẨM' VÀ 'THUỐC'\nSai lầm pháp lý nghiêm trọng nhất là dùng từ ngữ mang tính điều trị y khoa. Mỹ phẩm chỉ được phép công bố công dụng làm sạch, làm thơm, làm đẹp, bảo vệ - không được tuyên bố 'chữa', 'trị dứt điểm', 'đặc trị'. Cosbuilt giúp khách hàng chuẩn hóa toàn bộ câu chữ trên nhãn và bao bì để vừa hấp dẫn, vừa an toàn tuyệt đối về pháp lý.",
     date: "14 Tháng 7, 2026",
     author: "Bà Lê Thu Thủy (Giám đốc Pháp lý Thương hiệu)",
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=600"
   },
   {
     title: "Ứng dụng lợi khuẩn Probiotics và Prebiotics trong mỹ phẩm cân bằng hệ vi sinh da",
@@ -532,7 +532,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Hệ vi sinh vật trên da (skin microbiome) đóng vai trò quyết định đến sức đề kháng và độ mịn màng của làn da. Việc lạm dụng chất tẩy rửa mạnh làm mất cân bằng màng acid bảo vệ. Mỹ phẩm chứa dịch lọc lên men từ vi khuẩn có lợi như Bifida Ferment Lysate hay Lactobacillus giúp tăng cường sức đề kháng, giảm viêm nhiễm cục bộ và khôi phục hàng rào da tổn thương nhanh chóng. Đây đang là dòng sản phẩm có tỷ lệ quay lại mua hàng cao nhất năm nay.\n\nPROBIOTICS - PREBIOTICS - POSTBIOTICS\nHiểu đơn giản: Prebiotics là 'thức ăn' nuôi dưỡng lợi khuẩn; Probiotics là bản thân các lợi khuẩn (thường ở dạng bất hoạt/dịch lọc trong mỹ phẩm); Postbiotics là các sản phẩm chuyển hóa có lợi từ quá trình lên men. Bộ ba này phối hợp giúp cân bằng hệ vi sinh, củng cố 'bức tường thành' bảo vệ tự nhiên của da.\n\nPHÙ HỢP VỚI DA NHẠY CẢM & KÍCH ỨNG\nDòng mỹ phẩm cân bằng hệ vi sinh đặc biệt hiệu quả với da nhạy cảm, da dễ ửng đỏ, da sau liệu trình xâm lấn. Phòng R&D Cosbuilt làm chủ công nghệ lên men bio-ferment, giúp thương hiệu phát triển các dòng phục hồi 'làm dịu từ gốc' - một phân khúc đang tăng trưởng mạnh và có độ trung thành cao.",
     date: "10 Tháng 7, 2026",
     author: "ThS. BS. Nguyễn Thị Lan Anh",
-    image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600"
   },
   {
     title: "Cách xây dựng bảng phân tích đối thủ cạnh tranh trước khi đặt công thức gia công",
@@ -541,7 +541,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Trước khi bắt đầu gia công mỹ phẩm, chủ thương hiệu cần làm khảo sát chi tiết về các sản phẩm đối thủ có cùng phân khúc giá và tệp khách hàng. Hãy lập danh sách về: kết cấu (texture), mùi hương, hoạt chất cốt lõi và phong cách truyền thông của họ. Từ đó, phòng Lab Cosbuilt sẽ giúp bạn tối ưu hóa công thức độc quyền bằng cách bổ sung một hoạt chất hiếm, thay đổi màu sắc thiên nhiên độc đáo hoặc nâng cấp kết cấu mỏng nhẹ hơn đối thủ, giúp sản phẩm dễ dàng nổi bật.\n\nPHÂN TÍCH THEO KHUNG 4P\nMột bảng phân tích đối thủ hiệu quả nên soi chiếu qua 4 yếu tố: Product (thành phần, kết cấu, công dụng, bao bì), Price (giá bán lẻ, chính sách chiết khấu), Place (kênh phân phối: sàn TMĐT, spa, nhà thuốc) và Promotion (thông điệp, KOL/KOC, chương trình khuyến mãi). Đọc kỹ review 1-3 sao của đối thủ để tìm ra 'nỗi đau' chưa được giải quyết.\n\nTÌM KHOẢNG TRỐNG THỊ TRƯỜNG\nMục tiêu cuối cùng không phải sao chép mà là tìm ra khoảng trống (market gap) để tạo khác biệt: một hoạt chất đối thủ chưa có, một kết cấu dễ chịu hơn, một câu chuyện chân thực hơn. Với dữ liệu từ hàng nghìn công thức, đội ngũ R&D Cosbuilt giúp bạn định vị sản phẩm thông minh và xây dựng lợi thế cạnh tranh bền vững.",
     date: "06 Tháng 7, 2026",
     author: "Ông Vũ Tiến Đạt (Chuyên gia Hoạch định Chiến lược Sản phẩm)",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
   },
   {
     title: "Nhu cầu gia công mỹ phẩm nam giới (Men's Grooming) bùng nổ mạnh mẽ năm 2026",
@@ -550,7 +550,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Thị trường mỹ phẩm nam giới (Men's Grooming) đang chứng kiến tốc độ tăng trưởng hai chữ số hằng năm. Khác với phái đẹp, nam giới ưu tiên tính tiện lợi, bao bì tối giản đậm tính nam tính và kết cấu sản phẩm thẩm thấu siêu nhanh, không bóng nhờn. Các dòng sản phẩm đa năng 3-trong-1 (sữa rửa mặt kiêm cạo râu, dưỡng ẩm kiêm chống nắng dạng nước gel mỏng nhẹ) đang là những mảnh đất màu mỡ cho các startup khai phá hiệu quả.\n\nTÂM LÝ MUA HÀNG CỦA NAM GIỚI\nNam giới thường trung thành với sản phẩm hơn, ít 'nhảy' nhãn hàng, nhưng lại ngại quy trình phức tạp nhiều bước. Vì vậy công thức thắng thế là 'tối giản mà hiệu quả': ít bước, đa công dụng, kết quả nhìn thấy nhanh. Hương thơm cũng cần được tính toán kỹ - nam tính, sạch sẽ, không quá nồng.\n\nCÁC DÒNG SẢN PHẨM TIỀM NĂNG\nBên cạnh chăm sóc da mặt, các mảng đang bùng nổ gồm: chăm sóc râu (dầu dưỡng râu, sáp), sản phẩm khử mùi cao cấp, chăm sóc tóc chống rụng, và dưỡng thể nam. Cosbuilt sở hữu kho công thức chuyên biệt cho da dầu, lỗ chân lông to đặc trưng của nam giới, sẵn sàng giúp bạn chinh phục thị trường đầy tiềm năng này.",
     date: "01 Tháng 7, 2026",
     author: "Ông Nguyễn Đăng Khoa (Giám đốc Phát triển Thị trường Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600"
   },
   {
     title: "Tối ưu hóa quy trình chiết rót tự động và kiểm soát dung sai thể tích mỹ phẩm",
@@ -559,7 +559,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Dây chuyền chiết rót tự động đa năng tại Cosbuilt được lập trình PLC hiện đại giúp kiểm soát dung sai thể tích cực kỳ nhỏ (dưới 0.5%). Quy trình này đòi hỏi sự đồng bộ giữa hệ thống piston nâng hạ, van hồi lưu chống nhỏ giọt và cảm biến laser kiểm tra mức dung dịch trong chai lọ. Việc tối ưu hóa tốc độ phun và lực hút chân không giúp sản phẩm dạng gel đặc hay lỏng nhẹ đều được đóng gói đều đặn, sạch sẽ, bảo đảm tính minh bạch về dung lượng cho thương hiệu.\n\nTẠI SAO DUNG SAI QUAN TRỌNG?\nChiết rót thiếu định lượng gây thiệt hại uy tín và có thể vi phạm quy định ghi nhãn; chiết rót thừa lại gây thất thoát chi phí nguyên liệu qua hàng nghìn sản phẩm. Kiểm soát dung sai chặt chẽ vừa bảo vệ quyền lợi người tiêu dùng, vừa tối ưu giá thành cho chủ thương hiệu.\n\nĐỒNG BỘ TOÀN DÂY CHUYỀN\nMột dây chuyền hiệu quả không chỉ có chiết rót mà còn tích hợp: cấp chai tự động, đóng nắp - siết ren đúng lực, dán nhãn định vị chính xác, in date và đóng hộp. Toàn bộ vận hành trong môi trường phòng sạch, giảm thiểu tiếp xúc tay người, đảm bảo mỗi sản phẩm đến tay khách hàng đều đạt chất lượng đồng nhất và vệ sinh tuyệt đối.",
     date: "22 Tháng 7, 2026",
     author: "KS. Đặng Minh Hải (Kỹ sư trưởng chiết rót Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600"
   },
   {
     title: "Xu hướng sử dụng Peptide đồng (Copper Peptide) trong các liệu trình phục hồi da xâm lấn",
@@ -568,7 +568,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Copper Peptide (GHK-Cu) đang trở thành xu hướng tìm kiếm hàng đầu trong phân khúc mỹ phẩm phục hồi da y khoa. Nhờ khả năng mô phỏng cơ chế tự phục hồi tự nhiên của cơ thể, peptide đồng thúc đẩy quá trình tăng sinh nguyên bào sợi và kích hoạt tái cấu trúc ma trận ngoại bào. Việc kết hợp Copper Peptide trong các dòng kem dưỡng, serum giúp giảm thiểu tối đa thời gian sưng đỏ, tái tạo biểu bì khỏe mạnh và cải thiện rõ rệt bề mặt da sau tổn thương.\n\nBỘ ĐÔI CÔNG DỤNG: PHỤC HỒI & CHỐNG LÃO HÓA\nCopper Peptide không chỉ đẩy nhanh phục hồi da sau các liệu trình xâm lấn (lăn kim, laser, peel da) mà còn là 'chiến binh' chống lão hóa: kích thích collagen - elastin, làm dày da, mờ nếp nhăn và tăng độ đàn hồi. Đây là lý do dòng sản phẩm phục hồi tích hợp peptide đồng luôn nằm trong nhóm bán chạy tại các phòng khám da liễu, spa cao cấp.\n\nLƯU Ý KHI PHỐI HỢP CÔNG THỨC\nCopper Peptide cần được bào chế cẩn thận vì có thể tương kỵ với một số hoạt chất như Vitamin C nồng độ cao hay các acid mạnh nếu dùng chung một lúc. Phòng R&D Cosbuilt am hiểu sâu về tương thích hoạt chất, giúp thiết kế công thức và chu trình sử dụng tối ưu, phát huy trọn vẹn hiệu quả của peptide đồng.",
     date: "21 Tháng 7, 2026",
     author: "TS. Nguyễn Hoài Thương (Viện nghiên cứu Da liễu)",
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=600"
   },
   {
     title: "Kỹ thuật xây dựng câu chuyện thương hiệu (Brand Storytelling) truyền cảm hứng cho mỹ phẩm Việt",
@@ -577,7 +577,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Một thương hiệu thành công không chỉ bán tính năng của sản phẩm mà bán câu chuyện đằng sau nó. Brand Storytelling chính là sợi dây liên kết vô hình gắn kết trái tim người dùng với nhãn hàng. Các startup nên khai thác những chất liệu chân thực như: nguồn gốc nguyên liệu nông sản sạch hợp tác cùng nông dân, nỗ lực nghiên cứu không ngừng nghỉ của đội ngũ R&D, hay thông điệp bảo vệ môi trường, tôn vinh nét đẹp mộc mạc bản xứ để tạo niềm tự hào lớn.\n\nCÔNG THỨC CỦA MỘT CÂU CHUYỆN HAY\nMọi câu chuyện thương hiệu mạnh đều có: một 'lý do tồn tại' (Why) rõ ràng; một nhân vật khách hàng cụ thể với nỗi trăn trở thật; một hành trình vượt khó để tạo ra giải pháp; và một giá trị cốt lõi kiên định. Sự chân thực là chìa khóa - khách hàng hiện đại rất nhạy với những câu chuyện 'diễn'.\n\nNHẤT QUÁN TRÊN MỌI ĐIỂM CHẠM\nCâu chuyện phải được kể nhất quán từ tên gọi, bao bì, nội dung mạng xã hội cho tới trải nghiệm mở hộp (unboxing). Cosbuilt không chỉ gia công sản phẩm mà còn đồng hành tư vấn định vị và concept, giúp thương hiệu Việt kể được câu chuyện của riêng mình một cách chuyên nghiệp và chạm cảm xúc.",
     date: "18 Tháng 7, 2026",
     author: "Bà Nguyễn Lê Thảo Nguyên (Giám đốc Sáng tạo Thương hiệu)",
-    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=600"
   },
   {
     title: "Mỹ phẩm thông minh tích hợp màng bọc chống ánh sáng xanh (Blue Light Protection)",
@@ -586,7 +586,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Ánh sáng xanh (HEV) từ màn hình thiết bị điện tử có khả năng xâm nhập sâu vào da hơn cả tia UVA, phá hủy collagen và tạo ra vô số gốc tự do có hại. Mỹ phẩm tích hợp cơ chế bảo vệ chống ánh sáng xanh nhờ màng lọc phân tử hữu cơ và chiết xuất vi tảo đỏ, lutein tự nhiên sẽ tạo ra lớp chắn hấp thụ và giảm thiểu tác động của luồng ánh sáng này. Đây hứa hẹn là dòng sản phẩm chăm sóc da bắt buộc phải có cho tệp khách hàng công sở năng động.\n\nBỐI CẢNH: LÀN DA THỜI ĐẠI SỐ\nTrung bình một người dành 7-9 giờ mỗi ngày trước màn hình. Tác hại tích lũy của ánh sáng xanh - thường gọi là 'digital aging' - gây xỉn màu, tăng sắc tố và lão hóa sớm. Nhu cầu bảo vệ da khỏi tác nhân này đang tăng nhanh, mở ra cơ hội lớn cho các sản phẩm 'anti-pollution' và 'blue light defense'.\n\nHOẠT CHẤT CHỦ LỰC\nCác thành phần được ưa chuộng gồm: chiết xuất vi tảo (Astaxanthin), Lutein, chiết xuất hạt lựu, Vitamin E và các phức hợp chống oxy hóa mạnh. Cosbuilt giúp thương hiệu kết hợp bộ chống ánh sáng xanh vào kem dưỡng ngày, kem lót hoặc xịt khoáng - tạo dòng sản phẩm 'must-have' cho lối sống hiện đại.",
     date: "16 Tháng 7, 2026",
     author: "ThS. Dược sĩ Hoàng Lan Phương",
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600"
   },
   {
     title: "Cách lựa chọn chất diện hoạt (Surfactants) dịu nhẹ cho dòng sữa rửa mặt da nhạy cảm",
@@ -595,7 +595,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Xu hướng làm sạch da hiện nay cực kỳ khắt khe với các thành phần tạo bọt rửa mặt. Thay vì các gốc tẩy mạnh truyền thống như SLS/SLES dễ gây khô ráp và mất nước biểu bì, các công thức của Cosbuilt ưu tiên sử dụng chất diện hoạt gốc Acid Amin (như Sodium Cocoyl Glycinate) hoặc gốc đường tự nhiên (Decyl Glucoside). Những hoạt chất này tạo bọt bông mịn dày, làm sạch dầu thừa hiệu quả nhưng giữ nguyên lớp màng lipid ẩm tự nhiên của da sau khi rửa.\n\nDẤU HIỆU CỦA CHẤT TẨY RỬA QUÁ MẠNH\nCảm giác 'da căng rít, khô ráp' sau khi rửa mặt - vốn từng bị hiểu nhầm là 'sạch' - thực chất là dấu hiệu hàng rào bảo vệ da đã bị bào mòn. Việc này kích thích da tiết dầu bù trừ nhiều hơn, gây ra vòng luẩn quẩn dầu - mụn. Chất diện hoạt dịu nhẹ giải quyết tận gốc vấn đề này.\n\nCHỌN CHẤT DIỆN HOẠT THEO LOẠI DA\nDa dầu mụn hợp với hệ amino acid kiểm soát bã nhờn nhẹ nhàng; da khô - nhạy cảm hợp với gốc đường (glucoside) siêu dịu; da thường có thể dùng công thức kết hợp cân bằng. Với sự am hiểu sâu về hóa mỹ phẩm, Cosbuilt giúp thương hiệu tạo ra sữa rửa mặt 'sạch mà không khô' - tiêu chí vàng của người tiêu dùng hiện đại.",
     date: "12 Tháng 7, 2026",
     author: "ThS. Đỗ Tuấn Anh (Chuyên gia nghiên cứu công thức Cosbuilt)",
-    image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600"
   },
   {
     title: "Xu hướng bao bì tái chế PCR và vật liệu xanh trong ngành công nghiệp mỹ phẩm",
@@ -604,7 +604,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: "Sử dụng bao bì sinh thái không còn là sự lựa chọn mà đã trở thành trách nhiệm xã hội và tiêu chuẩn cạnh tranh khắt khe. Nhựa PCR (Post-Consumer Recycled) giúp tái chế rác thải nhựa cũ thành chai lọ mỹ phẩm cao cấp sang trọng, giảm mạnh lượng nhựa nguyên sinh và rác thải ra môi trường. Song song, hộp đựng làm từ giấy bã mía, giấy tái chế FSC hay vật liệu tự hủy sinh học cũng đang chiếm trọn cảm tình của người dùng thế hệ Gen Z, thúc đẩy chuyển đổi xanh mạnh mẽ toàn cầu.\n\nCÁC GIẢI PHÁP VẬT LIỆU XANH\nBên cạnh nhựa PCR, thị trường đang ưa chuộng: nhựa sinh học (bio-PE từ mía), thủy tinh (tái chế vô hạn), nhôm nhẹ, thiết kế refill giảm rác thải, và mực in gốc thực vật. Mỗi lựa chọn có ưu - nhược riêng về chi phí, tính thẩm mỹ và khả năng tương thích với công thức, cần cân nhắc kỹ theo định vị sản phẩm.\n\nXANH THẬT - ĐỪNG 'GREENWASHING'\nNgười tiêu dùng ngày càng tinh ý và tẩy chay các thương hiệu 'tẩy xanh' (greenwashing) - tuyên bố bền vững nhưng không thực chất. Sự minh bạch về tỷ lệ tái chế, chứng nhận vật liệu là điều bắt buộc. Cosbuilt đồng hành tư vấn chuỗi cung ứng bao bì xanh phù hợp, giúp thương hiệu vừa đẹp, vừa bền vững một cách chân thực và đáng tin.",
     date: "10 Tháng 7, 2026",
     author: "Bà Đặng Phương Thảo (Chuyên gia Môi trường & Phát triển Bền vững)",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?q=80&w=600"
   }
 ];
 
