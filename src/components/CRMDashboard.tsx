@@ -376,6 +376,9 @@ export default function CRMDashboard({
   const [blogInitialSnapshot, setBlogInitialSnapshot] = useState<string>("");
   const [showBlogExitPrompt, setShowBlogExitPrompt] = useState(false);
   const [editingImage, setEditingImage] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  // Unified media library: source filter + editor for product/article images.
+  const [mediaFilter, setMediaFilter] = useState<"all" | "gallery" | "product" | "article">("all");
+  const [editingMedia, setEditingMedia] = useState<{ source: "product" | "article"; index: number; title: string; image: string } | null>(null);
   const [editingProduct, setEditingProduct] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [productInitialSnapshot, setProductInitialSnapshot] = useState<string>("");
   const [showProductExitPrompt, setShowProductExitPrompt] = useState(false);
@@ -627,6 +630,33 @@ export default function CRMDashboard({
     const deletedItem = newImages[index];
     newImages.splice(index, 1);
     await saveAllContent({ images: newImages }, { action: "delete", sheetName: "Hình ảnh", index, data: deletedItem });
+  };
+
+  // Save a replaced image back onto its product/article (from the media library).
+  const handleSaveMedia = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingMedia) return;
+    const { source, index, image } = editingMedia;
+    if (source === "product") {
+      const newProducts = customProducts.map((p, i) => i === index ? { ...p, image } : p);
+      const ok = await saveAllContent({ products: newProducts }, { action: "update", sheetName: "Sản phẩm", index, data: newProducts[index] });
+      if (ok) setEditingMedia(null);
+    } else {
+      const newPosts = customBlogPosts.map((a, i) => i === index ? { ...a, image } : a);
+      const ok = await saveAllContent({ articles: newPosts }, { action: "update", sheetName: "Bài viết", index, data: newPosts[index] });
+      if (ok) setEditingMedia(null);
+    }
+  };
+
+  // Clear the image of a product/article (from the media library "delete").
+  const handleClearMediaImage = async (source: "product" | "article", index: number) => {
+    if (source === "product") {
+      const newProducts = customProducts.map((p, i) => i === index ? { ...p, image: "" } : p);
+      await saveAllContent({ products: newProducts }, { action: "update", sheetName: "Sản phẩm", index, data: newProducts[index] });
+    } else {
+      const newPosts = customBlogPosts.map((a, i) => i === index ? { ...a, image: "" } : a);
+      await saveAllContent({ articles: newPosts }, { action: "update", sheetName: "Bài viết", index, data: newPosts[index] });
+    }
   };
 
   const openProductEditor = (payload: { index: number; isNew: boolean; data: any }) => {
@@ -2105,7 +2135,7 @@ export default function CRMDashboard({
                     {[
                       { id: "articles", label: "Bài viết", count: customBlogPosts.length, icon: BookOpen, desc: "Tin tức & Xu hướng" },
                       { id: "products", label: "Sản phẩm", count: customProducts.length, icon: Sparkles, desc: "Mẫu thử gia công" },
-                      { id: "images", label: "Thư viện ảnh", count: customImages.length, icon: Image, desc: "Gallery hoạt động" },
+                      { id: "images", label: "Thư viện ảnh", count: customImages.length + customProducts.length + customBlogPosts.length, icon: Image, desc: "Tất cả ảnh: gallery, sản phẩm, bài viết" },
                       { id: "partners", label: "Đối tác liên kết", count: customLogos.length, icon: Briefcase, desc: "Logo thương hiệu" },
                       { id: "logo", label: "Cấu hình Logo", count: null, icon: Layers, desc: "Logo & Slogan chính" },
                     ].map((subTab) => {
@@ -2443,41 +2473,120 @@ export default function CRMDashboard({
 
                 {/* Sub-tab 3: Gallery Directory */}
                 {cmsSubTab === "images" && (() => {
-                  const filteredImages = customImages.filter(img => 
-                    (img.title || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
-                    (img.category || "").toLowerCase().includes(cmsSearchTerm.toLowerCase()) ||
-                    (img.description || "").toLowerCase().includes(cmsSearchTerm.toLowerCase())
-                  );
+                  // Unified media library: gallery + product + article images.
+                  const galleryItems = customImages.map((img, i) => ({
+                    src: img.image, title: img.title || "Ảnh thư viện", source: "gallery" as const, index: i, raw: img
+                  }));
+                  const productItems = customProducts.map((p, i) => ({
+                    src: p.image, title: p.title || "Sản phẩm", source: "product" as const, index: i, raw: p
+                  }));
+                  const articleItems = customBlogPosts.map((a, i) => ({
+                    src: a.image, title: a.title || "Bài viết", source: "article" as const, index: i, raw: a
+                  }));
+                  let items = [...galleryItems, ...productItems, ...articleItems];
+                  if (mediaFilter !== "all") items = items.filter(x => x.source === mediaFilter);
+                  const q = cmsSearchTerm.toLowerCase();
+                  if (q) items = items.filter(x => (x.title || "").toLowerCase().includes(q));
 
-                  const itemsPerPage = 6;
-                  const totalPages = Math.ceil(filteredImages.length / itemsPerPage);
-                  const activePage = Math.min(cmsImagesPage, Math.max(1, totalPages));
-                  const paginatedImages = filteredImages.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+                  const itemsPerPage = 12;
+                  const totalPages = Math.ceil(items.length / itemsPerPage) || 1;
+                  const activePage = Math.min(cmsImagesPage, totalPages);
+                  const paginated = items.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+
+                  const badge = { gallery: "Thư viện", product: "Sản phẩm", article: "Bài viết" };
+                  const badgeCls = {
+                    gallery: "bg-stone-100 text-stone-600",
+                    product: "bg-emerald-green-light text-emerald-green",
+                    article: "bg-amber-100 text-amber-700",
+                  };
+                  const counts = {
+                    all: galleryItems.length + productItems.length + articleItems.length,
+                    gallery: galleryItems.length, product: productItems.length, article: articleItems.length,
+                  };
+
+                  const onEditItem = (it: any) => {
+                    if (it.source === "gallery") {
+                      setEditingImage({ index: it.index, isNew: false, data: { ...it.raw } });
+                    } else {
+                      setEditingMedia({ source: it.source, index: it.index, title: it.title, image: it.src || "" });
+                    }
+                  };
+                  const onDeleteItem = (it: any) => {
+                    if (it.source === "gallery") {
+                      setDeleteConfirm({
+                        title: "Xóa hình ảnh",
+                        message: "Bạn có chắc muốn xóa ảnh này khỏi thư viện?",
+                        onConfirm: () => { handleDeleteImage(it.index); setDeleteConfirm(null); }
+                      });
+                    } else {
+                      setDeleteConfirm({
+                        title: "Gỡ ảnh",
+                        message: `Gỡ ảnh khỏi ${it.source === "product" ? "sản phẩm" : "bài viết"} "${it.title}"? (Mục vẫn giữ nguyên, chỉ xóa ảnh)`,
+                        onConfirm: () => { handleClearMediaImage(it.source, it.index); setDeleteConfirm(null); }
+                      });
+                    }
+                  };
 
                   return (
-                    <ImageManagement
-                      images={paginatedImages}
-                      searchTerm={cmsSearchTerm}
-                      onEdit={(img, index) => {
-                          const originalIndex = customImages.findIndex(i => i.image === img.image && i.title === img.title);
-                          setEditingImage({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...img } })
-                      }}
-                      onDelete={(index) => {
-                          const img = paginatedImages[index];
-                          const originalIndex = customImages.findIndex(i => i.image === img.image && i.title === img.title);
-                          setDeleteConfirm({
-                            title: "Xóa hình ảnh",
-                            message: "Bạn có chắc chắn muốn xóa hình ảnh này không?",
-                            onConfirm: () => {
-                                handleDeleteImage(originalIndex >= 0 ? originalIndex : index);
-                                setDeleteConfirm(null);
-                            }
-                          });
-                      }}
-                      page={activePage}
-                      setPage={setCmsImagesPage}
-                      totalPages={totalPages}
-                    />
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-3">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {([["all","Tất cả"],["gallery","Thư viện"],["product","Sản phẩm"],["article","Bài viết"]] as const).map(([id,label]) => (
+                            <button
+                              key={id}
+                              onClick={() => { setMediaFilter(id); setCmsImagesPage(1); }}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                mediaFilter === id ? "bg-emerald-green text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                              }`}
+                            >
+                              {label} ({counts[id]})
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setEditingImage({ index: -1, isNew: true, data: { title: "", category: "", image: "", description: "" } })}
+                          className="flex items-center gap-1.5 bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-3 py-1.5 rounded-lg cursor-pointer transition-all shrink-0"
+                        >
+                          <Upload className="w-3.5 h-3.5" /> Thêm ảnh thư viện
+                        </button>
+                      </div>
+
+                      {paginated.length === 0 ? (
+                        <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
+                          Không có ảnh nào phù hợp.
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                          {paginated.map((it, idx) => (
+                            <div key={it.source + it.index + idx} className="bg-white border border-stone-200 rounded-xl overflow-hidden hover:shadow-md hover:border-emerald-green/30 transition-all relative group">
+                              <div className="aspect-square relative bg-stone-100 overflow-hidden">
+                                {it.src ? (
+                                  <img src={it.src} alt={it.title} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" referrerPolicy="no-referrer" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-stone-300"><Image className="w-8 h-8" /></div>
+                                )}
+                                <span className={`absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5 rounded-full ${badgeCls[it.source]}`}>{badge[it.source]}</span>
+                                <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-200 shadow-sm opacity-0 group-hover:opacity-100 transition-all">
+                                  <button onClick={() => onEditItem(it)} title="Đổi ảnh" className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"><Edit3 className="w-3 h-3" /></button>
+                                  <button onClick={() => onDeleteItem(it)} title={it.source === "gallery" ? "Xóa" : "Gỡ ảnh"} className="p-1 hover:bg-red-50 rounded text-stone-700 hover:text-red-600 cursor-pointer"><Trash2 className="w-3 h-3" /></button>
+                                </div>
+                              </div>
+                              <div className="p-2 text-left">
+                                <h5 className="font-bold text-[10px] text-stone-950 truncate">{it.title}</h5>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-1.5 pt-4 border-t border-stone-100 mt-6">
+                          <button onClick={() => setCmsImagesPage(Math.max(1, activePage - 1))} disabled={activePage === 1} className="p-2 border rounded-lg hover:bg-stone-50 disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
+                          <span className="text-xs text-stone-600">{activePage} / {totalPages}</span>
+                          <button onClick={() => setCmsImagesPage(Math.min(totalPages, activePage + 1))} disabled={activePage === totalPages} className="p-2 border rounded-lg hover:bg-stone-50 disabled:opacity-40"><ChevronRight className="w-4 h-4" /></button>
+                        </div>
+                      )}
+                    </div>
                   );
                 })()}
 
@@ -3350,6 +3459,75 @@ export default function CRMDashboard({
                     disabled={isSavingContent}
                     className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shadow-2xs"
                   >
+                    {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                    <span>Lưu ảnh</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* CMS: REPLACE PRODUCT/ARTICLE IMAGE (from media library) */}
+        {editingMedia && (
+          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-stone-150 max-w-md w-full shadow-2xl overflow-hidden flex flex-col"
+            >
+              <div className="p-6 border-b border-stone-150 flex justify-between items-center bg-stone-50">
+                <h3 className="font-serif font-bold text-lg text-stone-950">
+                  Đổi ảnh {editingMedia.source === "product" ? "sản phẩm" : "bài viết"}
+                </h3>
+                <button onClick={() => setEditingMedia(null)} className="p-1.5 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer">
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+              <form onSubmit={handleSaveMedia} className="p-6 space-y-4 text-left text-xs sm:text-sm">
+                <p className="text-xs text-stone-500 font-light">Đang sửa ảnh cho: <span className="font-bold text-stone-800">{editingMedia.title}</span></p>
+                {editingMedia.image && (
+                  <img src={editingMedia.image} alt="preview" className="w-full h-40 object-cover rounded-xl border border-stone-200 bg-stone-100" referrerPolicy="no-referrer" />
+                )}
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Ảnh (chọn file từ máy hoặc điền URL)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="https://... hoặc /uploads/..."
+                      value={editingMedia.image}
+                      onChange={(e) => setEditingMedia(prev => prev ? { ...prev, image: e.target.value } : null)}
+                      className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                    />
+                    <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                      {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                      <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploading}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await handleImageUpload(file);
+                              setEditingMedia(prev => prev ? { ...prev, image: url } : null);
+                            } catch (err: any) {
+                              alert("Lỗi tải ảnh lên: " + err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-3 justify-end -mx-6 -mb-6 pt-3 mt-4">
+                  <button type="button" onClick={() => setEditingMedia(null)} className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition-all">
+                    Hủy
+                  </button>
+                  <button type="submit" disabled={isSavingContent} className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-1.5 shadow-2xs">
                     {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                     <span>Lưu ảnh</span>
                   </button>
