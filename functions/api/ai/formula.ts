@@ -107,8 +107,16 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       } catch (error: any) {
         lastError = error;
         console.error(`AI Formula attempt ${attempt} failed:`, error.message);
-        if (error.message?.includes("RESOURCE_EXHAUSTED") || error.message?.includes('"code":429')) {
+        const msg = error.message || "";
+        // Quota exhausted (429) — retrying won't help, stop immediately.
+        if (msg.includes("RESOURCE_EXHAUSTED") || msg.includes('"code":429')) {
           break;
+        }
+        // Model overloaded (503 / UNAVAILABLE) — a short backoff sometimes helps,
+        // but don't burn 3 slow attempts; try once more then give up quickly.
+        if (msg.includes("UNAVAILABLE") || msg.includes('"code":503')) {
+          if (attempt >= 2) break;
+          await new Promise((r) => setTimeout(r, 800));
         }
       }
     }
@@ -116,12 +124,16 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     throw lastError;
   } catch (error: any) {
     console.error("AI Formula generation failed:", error);
-    const isQuotaError = error.message?.includes("RESOURCE_EXHAUSTED") || error.message?.includes('"code":429');
+    const msg = error.message || "";
+    const isQuotaError = msg.includes("RESOURCE_EXHAUSTED") || msg.includes('"code":429');
+    const isOverloaded = msg.includes("UNAVAILABLE") || msg.includes('"code":503');
     return Response.json({
       error: isQuotaError
         ? "Hệ thống AI đang tạm hết lượt sử dụng miễn phí trong hôm nay. Vui lòng thử lại sau hoặc liên hệ hotline để được hỗ trợ trực tiếp."
-        : "Đã xảy ra lỗi trong quá trình xử lý công thức và định giá.",
+        : isOverloaded
+          ? "Hệ thống AI đang quá tải tạm thời. Vui lòng thử lại sau ít phút hoặc liên hệ hotline để được tư vấn trực tiếp."
+          : "Đã xảy ra lỗi trong quá trình xử lý công thức và định giá.",
       details: error.message
-    }, { status: isQuotaError ? 429 : 500 });
+    }, { status: isQuotaError ? 429 : isOverloaded ? 503 : 500 });
   }
 };

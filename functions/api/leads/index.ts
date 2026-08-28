@@ -1,5 +1,5 @@
 import type { Env } from "../../_shared/types";
-import { requireAdmin } from "../../_shared/auth";
+import { requireStaff } from "../../_shared/auth";
 
 interface Lead {
   id: string;
@@ -16,7 +16,7 @@ interface Lead {
 }
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
-  const unauthorized = requireAdmin(request, env);
+  const unauthorized = await requireStaff(request, env);
   if (unauthorized) return unauthorized;
 
   const { results } = await env.DB

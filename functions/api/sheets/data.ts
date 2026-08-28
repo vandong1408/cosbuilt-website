@@ -1,6 +1,6 @@
 import type { Env } from "../../_shared/types";
 import { loadSheetsConfig, saveSheetsConfig, syncToGoogleSheets } from "../../_shared/sheetsConfig";
-import { requireAdmin } from "../../_shared/auth";
+import { requireStaff } from "../../_shared/auth";
 
 export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
   const config = await loadSheetsConfig(env.DB);
@@ -15,7 +15,8 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
 };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUntil }) => {
-  const unauthorized = requireAdmin(request, env);
+  // Content management (articles / products / images) — admin and staff.
+  const unauthorized = await requireStaff(request, env);
   if (unauthorized) return unauthorized;
 
   try {

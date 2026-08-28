@@ -345,65 +345,72 @@ export const PRICING_LIST: PricingItem[] = [
   {
     productType: "Serum / Ampoule (Dưỡng da chuyên sâu)",
     minOrder: "1,000 chai",
-    priceRange: "15,000 - 35,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Chai (dropper 10-30ml)",
     timeframe: "15 - 20 ngày"
   },
   {
     productType: "Kem dưỡng da mặt (Whitening / Anti-aging Cream)",
     minOrder: "1,000 hũ",
-    priceRange: "18,000 - 45,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Hũ (acrylic/thủy tinh 30-50g)",
     timeframe: "18 - 25 ngày"
   },
   {
     productType: "Kem chống nắng (Sunscreen SPF 50+ PA++++)",
     minOrder: "2,000 tuýp",
-    priceRange: "22,000 - 40,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Tuýp nhựa dẻo (50ml)",
     timeframe: "20 - 25 ngày"
   },
   {
     productType: "Sữa rửa mặt / Gel rửa mặt (Cleanser)",
     minOrder: "2,000 chai/tuýp",
-    priceRange: "12,000 - 28,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Chai vòi nhấn / Tuýp (100-150ml)",
     timeframe: "15 - 18 ngày"
   },
   {
     productType: "Nước tẩy trang / Toner / Xịt khoáng",
     minOrder: "2,000 chai",
-    priceRange: "10,000 - 24,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Chai nắp bật / vòi xịt (150-250ml)",
     timeframe: "15 - 18 ngày"
   },
   {
     productType: "Sữa tắm / Dầu gội / Dầu xả",
     minOrder: "1,000 chai",
-    priceRange: "16,000 - 38,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Chai vòi nhấn lớn (250-500ml)",
     timeframe: "15 - 20 ngày"
   },
   {
     productType: "Tẩy tế bào chết (Body Scrub)",
     minOrder: "1,000 hũ",
-    priceRange: "18,000 - 32,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Hũ nhựa PET rộng miệng (200-250g)",
     timeframe: "15 - 18 ngày"
   },
   {
     productType: "Son kem lì / Son thỏi trang điểm",
     minOrder: "2,000 thỏi",
-    priceRange: "14,000 - 28,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Thỏi son thiết kế riêng (3.5g-5g)",
     timeframe: "20 - 25 ngày"
   },
   {
     productType: "Dung dịch vệ sinh (Intimate Wash)",
     minOrder: "2,000 chai",
-    priceRange: "9,000 - 18,000 VND",
+    priceRange: "60,000 - 160,000 VND",
     unit: "Chai vòi nhấn tạo bọt (100-150ml)",
     timeframe: "15 - 18 ngày"
+  },
+  {
+    productType: "Mặt nạ (Sheet Mask / Mặt nạ dưỡng)",
+    minOrder: "3,000 miếng",
+    priceRange: "6,000 - 16,000 VND",
+    unit: "Túi sachet màng nhôm 3 lớp (20-25ml)",
+    timeframe: "15 - 20 ngày"
   }
 ];
 

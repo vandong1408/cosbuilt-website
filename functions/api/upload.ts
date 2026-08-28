@@ -1,5 +1,5 @@
 import type { Env } from "../_shared/types";
-import { requireAdmin } from "../_shared/auth";
+import { requireStaff } from "../_shared/auth";
 
 const CONTENT_TYPES: Record<string, string> = {
   ".png": "image/png",
@@ -20,7 +20,8 @@ function base64ToUint8Array(base64: string): Uint8Array {
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
-  const unauthorized = requireAdmin(request, env);
+  // Image upload for content — admin and staff.
+  const unauthorized = await requireStaff(request, env);
   if (unauthorized) return unauthorized;
 
   try {

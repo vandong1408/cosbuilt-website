@@ -1,8 +1,9 @@
 import type { Env } from "../../_shared/types";
-import { requireAdmin } from "../../_shared/auth";
+import { requireAdmin, requireStaff } from "../../_shared/auth";
 
 export const onRequestPut: PagesFunction<Env> = async ({ request, env, params }) => {
-  const unauthorized = requireAdmin(request, env);
+  // Staff may update a lead's status/notes; only admin may delete (below).
+  const unauthorized = await requireStaff(request, env);
   if (unauthorized) return unauthorized;
 
   const id = params.id as string;

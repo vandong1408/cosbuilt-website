@@ -217,9 +217,9 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
             {t("footer_rights")}
           </div>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-stone-300 transition-all">{t("footer_policy")}</a>
-            <a href="#" className="hover:text-stone-300 transition-all">{t("footer_terms")}</a>
-            <a href="#" className="hover:text-stone-300 transition-all">{t("footer_sitemap")}</a>
+            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer">{t("footer_policy")}</button>
+            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer">{t("footer_terms")}</button>
+            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer">{t("footer_sitemap")}</button>
           </div>
         </div>
       </div>

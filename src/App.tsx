@@ -81,17 +81,25 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
 
   // Verified cosmetic-packaging photos grouped by physical form, so each
   // suggested "vỏ chai / lọ / tuýp" actually looks like that form.
-  const DROPPER = ["photo-1611930022073-b7a4ba5fcccd", "photo-1617897903246-719242758050", "photo-1515377905703-c4788e51af15", "photo-1608571423902-eed4a5ad8108"];
+  const DROPPER = ["photo-1608571423902-eed4a5ad8108", "photo-1617897903246-719242758050", "photo-1515377905703-c4788e51af15"];
   const TUBE = ["photo-1620916566398-39f1143ab7be", "photo-1608248597279-f99d160bfcbc", "photo-1556228720-195a672e8a03"];
   // Real cosmetic cream jars only (removed a branded flat-lay that showed
   // competitor products instead of an actual jar).
   const JAR = ["photo-1601049541289-9b1b7bbbfe19", "photo-1634449277780-81ab99e85416", "photo-1631438406588-3a079c32b864"];
   const PUMP = ["photo-1540555700478-4be289fbecef", "photo-1526947425960-945c6e72858f"];
-  const BOTTLE = ["photo-1612817288484-6f916006741a", "photo-1535585209827-a15fcdbc4c2d", "photo-1526947425960-945c6e72858f"];
-  const MAKEUP = ["photo-1586495777744-4413f21062fa", "photo-1596462502278-27bfdc403348", "photo-1512496015851-a90fb38ba796", "photo-1522335789203-aabd1fc54bc9"];
+  const BOTTLE = ["photo-1597931752949-98c74b5b159f", "photo-1535585209827-a15fcdbc4c2d", "photo-1526947425960-945c6e72858f"];
+  // Single, clean, unbranded makeup containers — one per slot so the label
+  // (son / compact / kem nền / tuýp) always matches the photo. The old pool used
+  // branded competitor flat-lays (Clinique/NARS/Too Faced) that matched nothing.
+  const MK_LIPSTICK = ["photo-1671575212918-0af5f840997a"];
+  const MK_COMPACT = ["photo-1634205741352-bf5acfb14a94"];
+  const MK_FOUNDATION = ["photo-1597931752949-98c74b5b159f"];
+  const MK_TUBE = ["photo-1662034607100-5acd5131774c"];
   // Foil sachet / pouch photos of actual facial sheet masks, so a "túi sachet"
   // suggestion really looks like a sheet-mask packet (not a jar or flat-lay).
   const SHEETMASK = ["photo-1748385367968-6fd2af37aafb", "photo-1743928217924-77ec5f39c4fb", "photo-1743933282038-e9c576d97076", "photo-1743929812282-3e9a2c149982", "photo-1748390359572-8e7a47bf5cb5"];
+  // Blank stand-up zip pouch (no product label) for a neutral "pouch" option.
+  const POUCH = ["photo-1780586585172-dcdead6332c4"];
 
   const img = (pool: string[], off: number) => `https://images.unsplash.com/${pool[(seed + off) % pool.length]}?q=80&w=600`;
   const P = (type: string, name: string, pool: string[], off: number, description: string): ProductPackaging =>
@@ -101,13 +109,14 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   const cat = prod.category;
   const has = (...keys: string[]) => keys.some((k) => t.includes(k));
 
-  // Makeup
-  if (cat === "makeup" || has("son", "phấn", "kem nền", "cushion", "eyeliner", "kẻ mắt", "má hồng")) {
+  // Makeup — but NOT liquid removers/toners (micellar water etc.), which are
+  // bottled liquids, not lipsticks/compacts. They fall through to the bottle set.
+  if ((cat === "makeup" || has("son", "phấn", "kem nền", "cushion", "eyeliner", "kẻ mắt", "má hồng")) && !has("tẩy trang", "micellar")) {
     return [
-      P("bottle", "Vỏ Son / Thỏi Acrylic Cao Cấp", MAKEUP, 0, "Vỏ thỏi/hộp acrylic dày dặn, khắc logo tinh xảo, khẳng định đẳng cấp thương hiệu trên kệ trưng bày."),
-      P("jar", "Hộp Compact Tích Hợp Gương", MAKEUP, 1, "Hộp phấn compact gương soi sắc nét kèm bông mút rubycell kháng khuẩn, tiện mang theo."),
-      P("dropper", "Chai Kem Nền Vòi Nhấn", MAKEUP, 2, "Chai thủy tinh mờ vòi nhấn định lượng chuẩn, giữ chất nền ổn định, sang trọng."),
-      P("tube", "Tuýp / Bút Bấm Thông Minh", MAKEUP, 3, "Dạng bút bấm/tuýp tiện thao tác, đầu cọ mềm mại, tối ưu cho trang điểm hằng ngày."),
+      P("bottle", "Vỏ Son / Thỏi Acrylic Cao Cấp", MK_LIPSTICK, 0, "Vỏ thỏi/hộp acrylic dày dặn, khắc logo tinh xảo, khẳng định đẳng cấp thương hiệu trên kệ trưng bày."),
+      P("jar", "Hộp Compact Tích Hợp Gương", MK_COMPACT, 0, "Hộp phấn compact gương soi sắc nét kèm bông mút rubycell kháng khuẩn, tiện mang theo."),
+      P("dropper", "Chai Kem Nền Vòi Nhấn", MK_FOUNDATION, 0, "Chai thủy tinh mờ vòi nhấn định lượng chuẩn, giữ chất nền ổn định, sang trọng."),
+      P("tube", "Tuýp / Bút Bấm Thông Minh", MK_TUBE, 0, "Dạng bút bấm/tuýp tiện thao tác, đầu cọ mềm mại, tối ưu cho trang điểm hằng ngày."),
     ];
   }
   // Toothpaste -> tube
@@ -124,21 +133,31 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
     return [
       P("dropper", "Chai Dropper Thủy Tinh Hổ Phách", DROPPER, 0, "Lọ nhỏ giọt thủy tinh nâu hổ phách chống tia UV, bảo vệ tối đa hoạt chất đặc trị nhạy cảm."),
       P("dropper", "Chai Nhỏ Giọt Thủy Tinh Trong", DROPPER, 1, "Thủy tinh borosilicate siêu trong khoe trọn màu sắc và kết cấu tinh chất cao cấp."),
-      P("bottle", "Chai Airless Chân Không", DROPPER, 3, "Công nghệ airless hút chân không ngăn oxy hóa, giữ hoạt chất tươi mới đến giọt cuối."),
+      P("bottle", "Chai Airless Chân Không", ["photo-1597931752949-98c74b5b159f"], 0, "Công nghệ airless hút chân không ngăn oxy hóa, giữ hoạt chất tươi mới đến giọt cuối."),
       P("bottle", "Chai Bơm Định Lượng", PUMP, 0, "Vòi bơm định lượng chính xác, vệ sinh, phù hợp tinh chất/dầu dưỡng dùng hằng ngày."),
     ];
   }
   // Mask -> sachet / jar
   if (has("mặt nạ") || cat === "mask") {
+    // Peel-off / clay / charcoal masks are creams or gels — they use jars/tubes.
+    if (has("lột", "than hoạt tính", "đất sét", "clay", "peel")) {
+      return [
+        P("sachet", "Gói Sachet Dùng Thử", SHEETMASK, 4, "Gói nhôm đơn liều tiện lợi, chống thấm khí, lý tưởng cho mẫu thử một lần dùng."),
+        P("jar", "Hũ Thủy Tinh Cao Cấp", JAR, 1, "Hũ thủy tinh mờ sang trọng, nắp kín khít, lý tưởng cho mặt nạ đất sét/kem dẻo."),
+        P("tube", "Tuýp Mặt Nạ Dạng Gel", TUBE, 0, "Tuýp mềm phủ lì, nắp bật kín, lấy lượng gel/kem sạch sẽ, tiện lợi."),
+        P("bottle", "Chai Bơm Chân Không", PUMP, 0, "Vòi nhấn chân không kiểm soát liều lượng, ngăn oxy hóa cho mặt nạ dạng lỏng."),
+      ];
+    }
+    // Sheet / bio-cellulose masks only ever ship in a sachet or pouch.
     return [
-      P("sachet", "Túi Sachet Màng Nhôm 3 Lớp", SHEETMASK, 0, "Túi nhôm phức hợp chống thấm khí tuyệt đối, lưu giữ trọn vẹn tinh chất cho từng lần dùng."),
-      P("jar", "Hũ Thủy Tinh Cao Cấp", JAR, 1, "Hũ thủy tinh mờ sang trọng, nắp kín khít, lý tưởng cho mặt nạ đất sét/kem dẻo."),
-      P("tube", "Tuýp Mặt Nạ Dạng Gel", TUBE, 0, "Tuýp mềm phủ lì, nắp bật kín, lấy lượng gel/kem sạch sẽ, tiện lợi."),
-      P("bottle", "Chai Bơm Chân Không", PUMP, 0, "Vòi nhấn chân không kiểm soát liều lượng, ngăn oxy hóa cho mặt nạ dạng lỏng."),
+      P("sachet", "Túi Sachet Màng Nhôm 3 Lớp", SHEETMASK, 1, "Túi nhôm phức hợp 3 lớp chống thấm khí tuyệt đối, giữ tinh chất tươi mới cho từng miếng đắp."),
+      P("sachet", "Túi Sachet Nhôm Mờ Cao Cấp", SHEETMASK, 3, "Bề mặt nhôm phủ mờ sang trọng, in ấn sắc nét, khẳng định đẳng cấp thương hiệu trên kệ."),
+      P("sachet", "Túi Zip Đứng Nhiều Miếng", POUCH, 0, "Túi zip đứng tái niêm phong, đóng gói nhiều miếng mặt nạ cho liệu trình dùng dài ngày."),
+      P("sachet", "Túi Sachet Nhôm Ép Kim", SHEETMASK, 2, "Sachet ép kim ánh nhũ nổi bật, chất liệu phức hợp bảo quản tối ưu, phù hợp dòng cao cấp."),
     ];
   }
-  // Wash / shampoo / cleanser / scrub -> pump & bottle
-  if (has("sữa rửa", "sữa tắm", "dầu gội", "rửa tay", "dung dịch vệ sinh", "nước súc miệng", "kem xả", "dầu xả", "gel tẩy", "tẩy tế bào", "kem ủ tóc")) {
+  // Wash / shampoo / cleanser / scrub / makeup remover -> pump & bottle
+  if (has("sữa rửa", "sữa tắm", "dầu gội", "rửa tay", "dung dịch vệ sinh", "nước súc miệng", "kem xả", "dầu xả", "gel tẩy", "tẩy tế bào", "kem ủ tóc", "tẩy trang", "micellar")) {
     return [
       P("bottle", "Chai Bơm Định Lượng", PUMP, 0, "Vòi bơm tiện lợi, kiểm soát lượng dùng, lý tưởng cho sữa rửa/sữa tắm/dầu gội."),
       P("bottle", "Chai Nắp Bật Tiện Lợi", BOTTLE, 2, "Nắp bật (flip-top) thao tác nhanh một tay, kín khít, phù hợp phòng tắm."),
@@ -695,7 +714,8 @@ export default function App() {
         "Shower Gel / Shampoo / Conditioner",
         "Body Scrub (Salt or Coffee)",
         "Velvet Matte Lipstick / Tint / Lip Balm",
-        "Intimate Wash (Gentle Foaming)"
+        "Intimate Wash (Gentle Foaming)",
+        "Facial Mask (Sheet Mask / Treatment Mask)"
       ];
       const enUnits = [
         "Bottle (dropper 10-30ml)",
@@ -706,11 +726,12 @@ export default function App() {
         "Large pump bottle (250-500ml)",
         "Wide-mouth PET jar (200-250g)",
         "Custom designed bullet/wand (3.5g-5g)",
-        "Foaming pump bottle (100-150ml)"
+        "Foaming pump bottle (100-150ml)",
+        "3-layer foil sachet (20-25ml)"
       ];
       return {
         productType: enProductTypes[idx],
-        minOrder: item.minOrder.replace("chai", "pcs").replace("hũ", "jars").replace("tuýp", "tubes").replace("thỏi", "lipsticks"),
+        minOrder: item.minOrder.replace("chai", "pcs").replace("hũ", "jars").replace("tuýp", "tubes").replace("thỏi", "lipsticks").replace("miếng", "sheets"),
         priceRange: item.priceRange,
         unit: enUnits[idx],
         timeframe: item.timeframe.replace("ngày", "days")
@@ -725,7 +746,8 @@ export default function App() {
         "약산성 바디워시 / 허벌 탈모 샴푸 / 트리트먼트",
         "바디 스크럽 (천연 솔트 & 원두 가루)",
         "벨벳 립틴트 / 모이스처 칼라 립스틱",
-        "약산성 여성/남성 청결제 (마일드 폼 제형)"
+        "약산성 여성/남성 청결제 (마일드 폼 제형)",
+        "마스크팩 (시트 마스크 / 트리트먼트 마스크)"
       ];
       const koUnits = [
         "스포이드 병 (10-30ml)",
@@ -736,11 +758,12 @@ export default function App() {
         "대용량 디스펜서 펌프 용기 (250-500ml)",
         "넓은 목 PET 단지 용기 (200-250g)",
         "독점 디자인 립스틱/틴트 부자재 (3.5g-5g)",
-        "거품 자동 토출형 펌프 용기 (100-150ml)"
+        "거품 자동 토출형 펌프 용기 (100-150ml)",
+        "3중 알루미늄 사쉐 (20-25ml)"
       ];
       return {
         productType: koProductTypes[idx],
-        minOrder: item.minOrder.replace("chai", "개").replace("hũ", "개").replace("tuýp", "개").replace("thỏi", "개"),
+        minOrder: item.minOrder.replace("chai", "개").replace("hũ", "개").replace("tuýp", "개").replace("thỏi", "개").replace("miếng", "장"),
         priceRange: item.priceRange,
         unit: koUnits[idx],
         timeframe: item.timeframe.replace("ngày", "일")
@@ -985,7 +1008,11 @@ export default function App() {
     ...post,
     slug: customBlogPosts[idx].slug || slugify(customBlogPosts[idx].title),
   }));
-  const [activeTab, setActiveTab] = useState("home");
+  // Initialise the tab straight from the URL so a deep link / refresh renders the
+  // right tab on the FIRST paint. Starting at "home" and switching in an effect
+  // made AnimatePresence (mode="wait") deadlock on the home→target flash, leaving
+  // non-home deep links stuck showing the home tab.
+  const [activeTab, setActiveTab] = useState(() => parseLocation(window.location.pathname).tab);
   const [activeSubTab, setActiveSubTab] = useState<string | undefined>(undefined);
   // Set true by internal navigation right before it calls navigate(), so the
   // URL-reconcile effect knows the view state is already applied and skips its
@@ -1050,6 +1077,13 @@ export default function App() {
     setSelectedSkinType("Tất cả loại da");
     setSelectedLabs([]);
     setSelectedSort("Mặc định công thức");
+    // Clear the category slug and ?loai-da query from the URL too, so a reset
+    // actually sticks on refresh / back instead of the URL re-applying old filters.
+    const targetPath = TAB_TO_PATH.categories;
+    if (location.pathname + location.search !== targetPath) {
+      skipReconcileRef.current = true;
+      navigate(targetPath);
+    }
   };
 
   const handleLabToggle = (lab: string) => {
@@ -1169,6 +1203,8 @@ export default function App() {
   });
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+  const [contactError, setContactError] = useState("");
 
   // Apply Estimate configuration to Contact tab
   const handleApplyEstimateToContact = (
@@ -1209,29 +1245,32 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
   // Product groups and specific product lines for the estimator
   const PRODUCT_LINES_DATA: Record<string, { name: string; basePrice: number }[]> = {
+    // basePrice = chi phí công thức + nguyên liệu / sản phẩm. Đặt sao cho ĐƠN GIÁ
+    // hoàn thiện (basePrice + vỏ ~3.500 + pháp lý phân bổ ~4.500 ở MOQ 1.000) rơi
+    // vào khoảng 60.000–160.000đ, khớp bảng giá gia công. Dòng cao cấp cao hơn.
     "Da Mặt": [
-      { name: "Serum B5 HA Phục Hồi Đa Tầng", basePrice: 6500 },
-      { name: "Kem Dưỡng Trắng Da Mờ Thâm Niacinamide", basePrice: 8500 },
-      { name: "Sữa Rửa Mặt Tạo Bọt Dịu Nhẹ", basePrice: 5000 },
-      { name: "Kem Chống Nắng Vật Lý Phổ Rộng", basePrice: 9500 },
-      { name: "Nước Tẩy Trang Sạch Sâu", basePrice: 4000 }
+      { name: "Serum B5 HA Phục Hồi Đa Tầng", basePrice: 130000 },
+      { name: "Kem Dưỡng Trắng Da Mờ Thâm Niacinamide", basePrice: 110000 },
+      { name: "Sữa Rửa Mặt Tạo Bọt Dịu Nhẹ", basePrice: 60000 },
+      { name: "Kem Chống Nắng Vật Lý Phổ Rộng", basePrice: 120000 },
+      { name: "Nước Tẩy Trang Sạch Sâu", basePrice: 56000 }
     ],
     "Body": [
-      { name: "Sữa Tắm Truyền Trắng Body Hương Nước Hoa", basePrice: 7000 },
-      { name: "Tẩy Tế Bào Chết Hạt Cà Phê Đăk Lăk Mịn Da", basePrice: 5500 },
-      { name: "Kem Body Mềm Trắng Da Toàn Thân", basePrice: 8000 }
+      { name: "Sữa Tắm Truyền Trắng Body Hương Nước Hoa", basePrice: 84000 },
+      { name: "Tẩy Tế Bào Chết Hạt Cà Phê Đăk Lăk Mịn Da", basePrice: 68000 },
+      { name: "Kem Body Mềm Trắng Da Toàn Thân", basePrice: 104000 }
     ],
     "Chăm Tóc": [
-      { name: "Dầu Gội Bưởi Đậm Đặc Ngăn Rụng & Kích Mọc Tóc", basePrice: 6000 },
-      { name: "Kem Xả Tóc Tinh Dầu Bưởi Phục Hồi Tóc Hư Tổn", basePrice: 5500 }
+      { name: "Dầu Gội Bưởi Đậm Đặc Ngăn Rụng & Kích Mọc Tóc", basePrice: 78000 },
+      { name: "Kem Xả Tóc Tinh Dầu Bưởi Phục Hồi Tóc Hư Tổn", basePrice: 72000 }
     ],
     "Trang Điểm": [
-      { name: "Son Kem Lì Velvet Lip Tint Siêu Mịn Môi", basePrice: 5000 },
-      { name: "Phấn Nước Cushion Che Phủ Hoàn Hảo & Kiềm Dầu", basePrice: 12000 }
+      { name: "Son Kem Lì Velvet Lip Tint Siêu Mịn Môi", basePrice: 62000 },
+      { name: "Phấn Nước Cushion Che Phủ Hoàn Hảo & Kiềm Dầu", basePrice: 140000 }
     ],
     "Cá Nhân": [
-      { name: "Dung Dịch Vệ Sinh Trầu Không Dịu Nhẹ Kháng Khuẩn", basePrice: 4500 },
-      { name: "Lăn Khử Mùi Thảo Mộc Khô Thoáng", basePrice: 4000 }
+      { name: "Dung Dịch Vệ Sinh Trầu Không Dịu Nhẹ Kháng Khuẩn", basePrice: 58000 },
+      { name: "Lăn Khử Mùi Thảo Mộc Khô Thoáng", basePrice: 54000 }
     ]
   };
 
@@ -1397,6 +1436,22 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     }
   };
 
+  // Category filter -> reflected in the URL path (/danh-muc-gia-cong/<slug>), so
+  // the chosen category is deep-linkable and survives refresh. The current
+  // skin-type query (?loai-da=...) is preserved so the two filters combine.
+  const handleSelectCategory = (catId: string) => {
+    setSelectedCategory(catId);
+    const params = new URLSearchParams(location.search);
+    const slug = catId && catId !== "all" ? (CATEGORY_SLUGS[catId] || catId) : "";
+    const basePath = slug ? `${TAB_TO_PATH.categories}/${slug}` : TAB_TO_PATH.categories;
+    const qs = params.toString();
+    const targetPath = basePath + (qs ? `?${qs}` : "");
+    if (location.pathname + location.search !== targetPath) {
+      skipReconcileRef.current = true;
+      navigate(targetPath);
+    }
+  };
+
   // News sub-category filter -> reflected in the URL as ?chuyen-muc=...
   const handleBlogCategory = (cat: "all" | "cẩm nang" | "xu hướng") => {
     setBlogCategoryFilter(cat);
@@ -1468,22 +1523,32 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    // Determine where to route based on query context
+    // Empty search: just clear, don't navigate anywhere.
+    if (!query.trim()) return;
+    // Determine where to route based on query context. The box is labelled
+    // "Tìm kiếm công thức" so a free-text term (product name / ingredient) is
+    // treated as a PRODUCT search — routed to the catalog and used to filter the
+    // product list. Only explicit section keywords jump to those sections.
     const lowerQuery = query.toLowerCase();
-    let target = "services";
-    if (lowerQuery.includes("giá") || lowerQuery.includes("bảng giá") || lowerQuery.includes("bao nhiêu") || lowerQuery.includes("chi phí")) {
+    let target = "categories";
+    if (lowerQuery.includes("bảng giá") || lowerQuery.includes("bao nhiêu") || lowerQuery.includes("chi phí") || lowerQuery.includes("báo giá")) {
       target = "pricing";
     } else if (lowerQuery.includes("tin tức") || lowerQuery.includes("xu hướng") || lowerQuery.includes("cẩm nang") || lowerQuery.includes("bài viết")) {
       target = "news";
-    } else if (lowerQuery.includes("da mặt") || lowerQuery.includes("body") || lowerQuery.includes("tóc") || lowerQuery.includes("son") || lowerQuery.includes("trang điểm") || lowerQuery.includes("cá nhân")) {
+    } else if (lowerQuery.includes("liên hệ") || lowerQuery.includes("tư vấn") || lowerQuery.includes("đăng ký gia công")) {
+      target = "contact";
+    } else {
+      // Product / formula search across the whole catalog. Reset category & skin
+      // filters so a leftover filter never hides matching products; the query
+      // itself filters the list (see the categories `matchesSearch`).
       target = "categories";
       if (lowerQuery.includes("da mặt")) setSelectedCategory("facial-care");
       else if (lowerQuery.includes("body") || lowerQuery.includes("cơ thể")) setSelectedCategory("body-care");
       else if (lowerQuery.includes("tóc")) setSelectedCategory("hair-care");
       else if (lowerQuery.includes("son") || lowerQuery.includes("trang điểm") || lowerQuery.includes("makeup")) setSelectedCategory("makeup");
       else if (lowerQuery.includes("cá nhân") || lowerQuery.includes("vệ sinh")) setSelectedCategory("personal-care");
-    } else if (lowerQuery.includes("liên hệ") || lowerQuery.includes("tư vấn") || lowerQuery.includes("đăng ký") || lowerQuery.includes("sđt") || lowerQuery.includes("email")) {
-      target = "contact";
+      else setSelectedCategory("all");
+      setSelectedSkinType("Tất cả loại da");
     }
     // Switch section (keeping the search query) and reflect it in the URL.
     setActiveTab(target);
@@ -1498,33 +1563,40 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
   const handleContactSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmittedEmail(contactForm.email);
-    setIsFormSubmitted(true);
+    setContactError("");
+    setIsSubmittingContact(true);
 
     try {
       // Public lead submission — no auth required. The admin CRM refreshes its
-      // own list (authenticated) when the owner opens it.
-      await fetch("/api/leads", {
+      // own list (authenticated) when the owner opens it. Only show success once
+      // the server confirms it saved the lead, so a failure never looks like a win.
+      const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(contactForm)
       });
+      if (!res.ok) throw new Error(`Server returned status ${res.status}`);
+
+      setSubmittedEmail(contactForm.email);
+      setIsFormSubmitted(true);
+      setTimeout(() => {
+        setIsFormSubmitted(false);
+        setContactForm({
+          name: "",
+          phone: "",
+          email: "",
+          brandName: "",
+          category: "Chăm sóc da mặt",
+          moq: "1000",
+          message: ""
+        });
+      }, 5000);
     } catch (err) {
       console.error("Error submitting lead to server API:", err);
+      setContactError("Gửi yêu cầu chưa thành công. Vui lòng thử lại hoặc gọi Hotline 0966 373 686 để được hỗ trợ ngay.");
+    } finally {
+      setIsSubmittingContact(false);
     }
-
-    setTimeout(() => {
-      setIsFormSubmitted(false);
-      setContactForm({
-        name: "",
-        phone: "",
-        email: "",
-        brandName: "",
-        category: "Chăm sóc da mặt",
-        moq: "1000",
-        message: ""
-      });
-    }, 5000);
   };
 
   const filteredPricingList = localizedPricingList.filter(item => 
@@ -1544,7 +1616,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   });
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark">
+    <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-hidden">
       {location.pathname !== "/admin" && (
         <Navbar 
           activeTab={activeTab} 
@@ -1558,9 +1630,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       )}
 
       <main className="flex-1 w-full">
-        {/* Dynamic content rendering with Framer Motion Page Transitions */}
-        <AnimatePresence mode="wait">
-          
+        {/* Each tab is a motion.div that fades in on mount (initial/animate).
+            We deliberately do NOT wrap these in <AnimatePresence mode="wait">:
+            with this many conditional sibling blocks it deadlocked — the exiting
+            tab never finished animating out, so the entering tab never mounted,
+            which left deep links / tab switches stuck on the previous (home) tab.
+            Dropping it makes tab switches instant and reliable. */}
+        <>
+
           {/* SEARCH RESULTS BANNER */}
           {searchQuery && (
             <motion.div 
@@ -1972,7 +2049,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveAboutTab(tab.id)}
+                      onClick={() => handleTabChange("about", tab.id)}
                       className={`flex items-center gap-2 py-3 px-1 border-b-2 font-bold text-xs sm:text-sm tracking-wide transition-all cursor-pointer whitespace-nowrap ${
                         isActive
                           ? "border-emerald-green text-emerald-green"
@@ -2225,10 +2302,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       return (
                         <button
                           key={tab.id}
-                          onClick={() => {
-                            setActiveServiceTab(tab.id);
-                            setActiveSubTab(tab.id);
-                          }}
+                          onClick={() => handleTabChange("services", tab.id)}
                           className={`flex items-center gap-2.5 px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 cursor-pointer whitespace-nowrap snap-align-start border ${
                             isSelected
                               ? "bg-emerald-green border-emerald-green text-white shadow-md scale-[1.02]"
@@ -2371,7 +2445,13 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               // Filter by labs
               const matchesLab = selectedLabs.length === 0 || selectedLabs.includes(prod.lab);
 
-              return matchesCategory && matchesSkin && matchesLab;
+              // Free-text search across name / ingredients / description / badge,
+              // so the "Tìm kiếm công thức" box actually finds products.
+              const q = searchQuery.trim().toLowerCase();
+              const matchesSearch = !q || [prod.title, prod.ingredients, prod.description, prod.badge, prod.lab]
+                .some(field => (field || "").toLowerCase().includes(q));
+
+              return matchesCategory && matchesSkin && matchesLab && matchesSearch;
             });
 
             // Sort products
@@ -2452,7 +2532,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
                                 <span className="text-[10px] text-stone-500 font-bold uppercase tracking-widest">
-                                  {language === "en" ? "PROPOSED PACKAGING VISUAL" : language === "ko" ? "제안용 용기/포장재 스타일 chọn" : "BAO BÌ ĐỀ XUẤT CHO MẪU THỬ"}
+                                  {language === "en" ? "PROPOSED PACKAGING VISUAL" : language === "ko" ? "제안용 용기/포장재 스타일" : "BAO BÌ ĐỀ XUẤT CHO MẪU THỬ"}
                                 </span>
                                 <span className="text-[9px] bg-emerald-green/10 text-emerald-green font-bold px-2 py-0.5 rounded-full uppercase">
                                   {language === "en" ? "Interactive" : language === "ko" ? "대화형" : "Đa dạng vỏ chai"}
@@ -2771,9 +2851,9 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             </span>
                             <div className="space-y-1.5">
                               <button
-                                onClick={() => setSelectedCategory("all")}
+                                onClick={() => handleSelectCategory("all")}
                                 className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
-                                  selectedCategory === "all" 
+                                  selectedCategory === "all"
                                     ? "bg-emerald-green text-white shadow-xs" 
                                     : "text-stone-750 hover:bg-stone-50 border border-stone-100 bg-white"
                                 }`}
@@ -2784,7 +2864,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               {localizedCategories.map((cat) => (
                                 <button
                                   key={cat.id}
-                                  onClick={() => setSelectedCategory(cat.id)}
+                                  onClick={() => handleSelectCategory(cat.id)}
                                   className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
                                     selectedCategory === cat.id 
                                       ? "bg-emerald-green text-white shadow-xs" 
@@ -3111,7 +3191,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
           {/* BẢNG GIÁ GIA CÔNG / PRICING LIST */}
           {activeTab === "pricing" && (() => {
             // New High-Fidelity Estimator Pricing Calculations
-            const activeProduct = PRODUCT_LINES_DATA[estGroup]?.find(p => p.name === estProductLine) || { name: estProductLine, basePrice: 6500 };
+            const activeProduct = PRODUCT_LINES_DATA[estGroup]?.find(p => p.name === estProductLine) || { name: estProductLine, basePrice: 92000 };
             
             // Calculate quantity discount multiplier
             let liquidDiscount = 0;
@@ -4042,17 +4122,17 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           </div>
                           <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900">Gửi Yêu Cầu Thành Công!</h3>
                           
-                          {/* Automatic Email Confirmation Box */}
+                          {/* Request received confirmation */}
                           <div className="bg-emerald-green/5 border border-emerald-green/20 rounded-2xl p-4 max-w-lg w-full text-left space-y-2">
                             <div className="flex items-center gap-2 text-emerald-green-dark font-bold text-xs uppercase tracking-wider">
-                              <Mail className="w-4 h-4 shrink-0" />
-                              <span>Đã gửi Email xác nhận tự động</span>
+                              <CheckCircle className="w-4 h-4 shrink-0" />
+                              <span>Đã tiếp nhận yêu cầu của bạn</span>
                             </div>
                             <p className="text-stone-600 text-xs leading-relaxed">
-                              Thư xác nhận tiếp nhận hồ sơ đã được gửi trực tiếp tới hòm thư: <strong className="text-stone-900 font-mono font-bold underline">{submittedEmail || "email của bạn"}</strong>
+                              Hồ sơ đã được ghi nhận vào hệ thống. Chuyên viên Cosbuilt sẽ chủ động liên hệ qua số điện thoại{submittedEmail ? <> / email <strong className="text-stone-900 font-mono font-bold">{submittedEmail}</strong></> : null} của bạn.
                             </p>
                             <div className="text-[11px] text-stone-500 font-light pt-1 border-t border-emerald-green/10 flex justify-between items-center">
-                              <span>Trạng thái Email: <span className="text-emerald-green font-bold">Đã phát thành công</span></span>
+                              <span>Trạng thái: <span className="text-emerald-green font-bold">Đã ghi nhận</span></span>
                               <span>Mã hồ sơ: <strong className="font-mono text-stone-800">CB-2026-{(Math.floor(Math.random() * 90000) + 10000)}</strong></span>
                             </div>
                           </div>
@@ -4156,12 +4236,19 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             />
                           </div>
 
-                          <button 
+                          {contactError && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl px-4 py-3">
+                              {contactError}
+                            </div>
+                          )}
+
+                          <button
                             type="submit"
-                            className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-sm py-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                            disabled={isSubmittingContact}
+                            className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-sm py-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
                           >
                             <Send className="w-4 h-4" />
-                            Gửi Yêu Cầu Thiết Kế & Nhận Mẫu Thử
+                            {isSubmittingContact ? "Đang gửi..." : "Gửi Yêu Cầu Thiết Kế & Nhận Mẫu Thử"}
                           </button>
                         </motion.form>
                       )}
@@ -4207,7 +4294,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
             </motion.div>
           )}
 
-        </AnimatePresence>
+        </>
       </main>
 
       {/* B2B SAMPLE CART DRAWER/SIDEBAR */}

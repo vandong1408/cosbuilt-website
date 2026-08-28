@@ -35,6 +35,11 @@ export default function AIFormulaAdvisor() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    // Never let the request hang forever if the AI backend is slow/overloaded:
+    // abort after 60s so the user always gets a clear result instead of an
+    // endless "đang phân tích" spinner.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
     try {
       const response = await fetch("/api/ai/formula", {
         method: "POST",
@@ -47,11 +52,12 @@ export default function AIFormulaAdvisor() {
           targetAudience,
           extraDemands,
           language
-        })
+        }),
+        signal: controller.signal
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || (language === "en" ? "Failed to connect to the AI server." : language === "ko" ? "AI 서버에 연결할 수 없습니다." : "Không thể kết nối đến máy chủ AI."));
       }
 
@@ -59,8 +65,14 @@ export default function AIFormulaAdvisor() {
       setResult(data);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || (language === "en" ? "An unknown error occurred. Please try again." : language === "ko" ? "알 수 없는 오류가 발생했습니다. 다시 시도해 주세요." : "Đã xảy ra lỗi không xác định. Vui lòng thử lại."));
+      const timedOut = err?.name === "AbortError";
+      setError(
+        timedOut
+          ? (language === "en" ? "The AI is taking too long (high demand). Please try again in a moment." : language === "ko" ? "AI 응답이 지연되고 있습니다(요청 폭주). 잠시 후 다시 시도해 주세요." : "AI đang phản hồi quá lâu do quá tải. Vui lòng thử lại sau ít phút hoặc liên hệ hotline.")
+          : (err.message || (language === "en" ? "An unknown error occurred. Please try again." : language === "ko" ? "알 수 없는 오류가 발생했습니다. 다시 시도해 주세요." : "Đã xảy ra lỗi không xác định. Vui lòng thử lại."))
+      );
     } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
     }
   };

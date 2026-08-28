@@ -6,7 +6,6 @@ import {
   X, 
   Search, 
   Sparkles,
-  Heart,
   ShoppingBag,
   Star,
   Globe
@@ -188,16 +187,8 @@ export default function Navbar({
             </button>
           </form>
 
-          {/* Heart & Shopping Bag Actions */}
+          {/* Shopping Bag Actions */}
           <div className="flex items-center gap-3">
-            {/* Favorites Icon */}
-            <div className="relative p-2 text-stone-800 hover:bg-stone-100 rounded-full cursor-pointer transition-all">
-              <Heart className="w-6 h-6 text-stone-700" />
-              <span className="absolute -top-0.5 -right-0.5 bg-stone-900 border border-white text-white text-[9px] font-bold rounded-full w-4.5 h-4.5 flex items-center justify-center shadow-xs">
-                0
-              </span>
-            </div>
-            
             {/* Cart Icon */}
             <div 
               onClick={onToggleSampleCart}

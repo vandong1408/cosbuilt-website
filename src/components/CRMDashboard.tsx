@@ -1,4 +1,5 @@
 import { useState, useEffect, FormEvent } from "react";
+import { createPortal } from "react-dom";
 import ArticleManagement from "./ArticleManagement";
 import ImageManagement from "./ImageManagement";
 import Sidebar from "./Sidebar";
@@ -40,7 +41,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { authHeaders, setAdminToken, clearAdminToken, verifyAdminToken } from "../lib/adminAuth";
+import { authHeaders, setAdminToken, clearAdminToken, login as loginRequest, getStoredRole, setStoredRole, type AdminRole } from "../lib/adminAuth";
 import { slugify } from "../lib/slug";
 import {
   initAuth,
@@ -108,17 +109,23 @@ const getDefaultPackagings = (prod: any) => {
   seed = Math.abs(seed);
 
   const isMask = productObj.title?.toLowerCase().includes("mặt nạ") || productObj.id?.toLowerCase().includes("mask") || productObj.category === "mask";
+  // Peel-off / clay / charcoal masks are creams/gels (jar/tube); everything else
+  // under "mặt nạ" is a sheet mask that only ever ships in a sachet/pouch.
+  const maskTitle = productObj.title?.toLowerCase() || "";
+  const isCreamMask = ["lột", "than hoạt tính", "đất sét", "clay", "peel"].some(k => maskTitle.includes(k));
+  const isSheetMask = isMask && !isCreamMask;
   const isSerumOrLiquid = productObj.title?.toLowerCase().includes("serum") || productObj.title?.toLowerCase().includes("tinh chất") || productObj.title?.toLowerCase().includes("ampoule") || productObj.title?.toLowerCase().includes("xịt") || productObj.title?.toLowerCase().includes("nước") || productObj.title?.toLowerCase().includes("toner");
-  const isMakeup = productObj.category === "makeup" || productObj.title?.toLowerCase().includes("son") || productObj.title?.toLowerCase().includes("phấn") || productObj.title?.toLowerCase().includes("kem nền") || productObj.title?.toLowerCase().includes("cushion") || productObj.title?.toLowerCase().includes("eyeliner");
+  const isRemover = /tẩy trang|micellar/.test(productObj.title?.toLowerCase() || "");
+  const isMakeup = !isRemover && (productObj.category === "makeup" || productObj.title?.toLowerCase().includes("son") || productObj.title?.toLowerCase().includes("phấn") || productObj.title?.toLowerCase().includes("kem nền") || productObj.title?.toLowerCase().includes("cushion") || productObj.title?.toLowerCase().includes("eyeliner"));
 
   const serumPool = [
     "photo-1620916566398-39f1143ab7be",
     "photo-1601049541289-9b1b7bbbfe19",
-    "photo-1611930022073-b7a4ba5fcccd",
+    "photo-1608571423902-eed4a5ad8108",
     "photo-1547887537-6158d64c35b3",
     "photo-1616683693504-3ea7e9ad6fec",
     "photo-1551288049-bebda4e38f71",
-    "photo-1612817288484-6f916006741a",
+    "photo-1597931752949-98c74b5b159f",
     "photo-1556228453-efd6c1ff04f6"
   ];
 
@@ -168,6 +175,37 @@ const getDefaultPackagings = (prod: any) => {
     return `https://images.unsplash.com/${imgId}?q=80&w=600`;
   };
 
+  if (isSheetMask) {
+    // A paper / bio-cellulose sheet mask only ships in a sachet or pouch —
+    // never a jar, tube, or pump bottle.
+    return [
+      {
+        type: "sachet" as const,
+        name: "Túi Sachet Màng Nhôm 3 Lớp",
+        image: selectImg(sheetMaskPool, 1),
+        description: "Túi nhôm phức hợp 3 lớp chống thấm khí tuyệt đối, giữ tinh chất tươi mới cho từng miếng đắp."
+      },
+      {
+        type: "sachet" as const,
+        name: "Túi Sachet Nhôm Mờ Cao Cấp",
+        image: selectImg(sheetMaskPool, 3),
+        description: "Bề mặt nhôm phủ mờ sang trọng, in ấn sắc nét, khẳng định đẳng cấp thương hiệu trên kệ."
+      },
+      {
+        type: "sachet" as const,
+        name: "Túi Zip Đứng Nhiều Miếng",
+        image: selectImg(["photo-1780586585172-dcdead6332c4"], 0),
+        description: "Túi zip đứng tái niêm phong, đóng gói nhiều miếng mặt nạ tiện lợi cho liệu trình dùng dài ngày."
+      },
+      {
+        type: "sachet" as const,
+        name: "Túi Sachet Nhôm Ép Kim",
+        image: selectImg(sheetMaskPool, 2),
+        description: "Sachet ép kim ánh nhũ nổi bật, chất liệu phức hợp bảo quản tối ưu, phù hợp dòng cao cấp."
+      }
+    ];
+  }
+
   if (isMask) {
     return [
       {
@@ -200,25 +238,25 @@ const getDefaultPackagings = (prod: any) => {
       {
         type: "dropper" as const,
         name: "Lọ Dropper Thủy Tinh Nâu",
-        image: selectImg(serumPool, 0),
+        image: selectImg(["photo-1617897903246-719242758050"], 0),
         description: "Lọ nhỏ giọt thủy tinh cao cấp bảo vệ tối đa các tinh chất đặc trị nhạy cảm trước bức xạ tia cực tím."
       },
       {
         type: "bottle" as const,
         name: "Chai Nhấn Vòi Chân Không",
-        image: selectImg(serumPool, 1),
+        image: selectImg(["photo-1597931752949-98c74b5b159f"], 0),
         description: "Chai vòi nhấn hút chân không acrylic cao cấp chống tiếp xúc không khí oxy hóa, kiểm soát lượng nhấn cực chuẩn."
       },
       {
         type: "tube" as const,
         name: "Tuýp Nhỏ Đầu Nhọn Định Lượng",
-        image: selectImg(serumPool, 2),
+        image: selectImg(["photo-1620916566398-39f1143ab7be"], 0),
         description: "Thiết kế tuýp thon gọn với đầu phun định lượng siêu nhỏ thích hợp cho các tinh chất cô đặc cao."
       },
       {
         type: "dropper" as const,
         name: "Lọ Dropper Thủy Tinh Trong",
-        image: selectImg(serumPool, 3),
+        image: selectImg(["photo-1515377905703-c4788e51af15"], 0),
         description: "Thủy tinh borosilicate siêu trong suốt khoe trọn vẹn màu sắc tự nhiên và cấu trúc hạt của tinh chất cao cấp."
       }
     ];
@@ -227,25 +265,25 @@ const getDefaultPackagings = (prod: any) => {
       {
         type: "bottle" as const,
         name: "Vỏ Son / Hộp Acrylic Cao Cấp",
-        image: selectImg(makeupPool, 0),
+        image: selectImg(["photo-1671575212918-0af5f840997a"], 0),
         description: "Thiết kế vỏ tinh xảo, chất liệu acrylic dày dặn, sang trọng khẳng định giá trị thương hiệu dẫn đầu."
       },
       {
         type: "jar" as const,
         name: "Hộp Compact Phấn Nước Tiện Dụng",
-        image: selectImg(makeupPool, 1),
+        image: selectImg(["photo-1634205741352-bf5acfb14a94"], 0),
         description: "Hộp phấn nước tích hợp gương soi sắc nét và bông mút rubycell kháng khuẩn kháng nước tuyệt đối."
       },
       {
         type: "bottle" as const,
         name: "Chai Thủy Tinh Vòi Nhấn Tinh Tế",
-        image: selectImg(makeupPool, 2),
+        image: selectImg(["photo-1597931752949-98c74b5b159f"], 0),
         description: "Chai kem nền thủy tinh mờ dầy dặn cầm đầm tay, vòi nhấn mạ kim loại sang trọng nâng tầm đẳng cấp mỹ phẩm."
       },
       {
         type: "tube" as const,
         name: "Bút Kẻ / Thỏi Satin Độc Quyền",
-        image: selectImg(makeupPool, 3),
+        image: selectImg(["photo-1662034607100-5acd5131774c"], 0),
         description: "Bao bì dạng bút hoặc thỏi bấm thông minh, tối ưu hóa thao tác trang điểm chuyên nghiệp hằng ngày."
       }
     ];
@@ -326,6 +364,81 @@ export default function CRMDashboard({
     return localStorage.getItem("cosbuilt_admin_logged_in") === "true"
       && !!localStorage.getItem("cosbuilt_admin_token");
   });
+  // "admin" = full access; "staff" = content (articles/products/images) + view
+  // leads & update status, but no admin settings / Sheets config / lead delete.
+  const [role, setRole] = useState<AdminRole>(() => getStoredRole());
+  const isAdmin = role === "admin";
+
+  // Staff-account management (admin only).
+  const [staffList, setStaffList] = useState<Array<{ id: string; username: string; displayName: string; active: boolean; createdAt: string }>>([]);
+  const [newStaff, setNewStaff] = useState({ username: "", password: "", displayName: "" });
+  const [staffMsg, setStaffMsg] = useState<{ text: string; type: "success" | "error" | "" }>({ text: "", type: "" });
+  const [staffBusy, setStaffBusy] = useState(false);
+  const [resetPwFor, setResetPwFor] = useState<string | null>(null);
+  const [resetPwValue, setResetPwValue] = useState("");
+
+  const fetchStaff = async () => {
+    try {
+      const res = await fetch("/api/staff", { headers: authHeaders() });
+      if (res.ok) setStaffList(await res.json());
+    } catch (e) { console.error("Load staff failed:", e); }
+  };
+
+  const handleAddStaff = async (e: FormEvent) => {
+    e.preventDefault();
+    setStaffBusy(true);
+    setStaffMsg({ text: "", type: "" });
+    try {
+      const res = await fetch("/api/staff", {
+        method: "POST",
+        headers: authHeaders(true),
+        body: JSON.stringify(newStaff)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setStaffMsg({ text: `Đã tạo tài khoản "${newStaff.username}".`, type: "success" });
+        setNewStaff({ username: "", password: "", displayName: "" });
+        fetchStaff();
+      } else {
+        setStaffMsg({ text: data.error || "Không tạo được tài khoản.", type: "error" });
+      }
+    } catch {
+      setStaffMsg({ text: "Lỗi kết nối máy chủ.", type: "error" });
+    } finally { setStaffBusy(false); }
+  };
+
+  const handleUpdateStaff = async (id: string, patch: { active?: boolean; password?: string; displayName?: string }) => {
+    try {
+      const res = await fetch(`/api/staff/${id}`, {
+        method: "PUT",
+        headers: authHeaders(true),
+        body: JSON.stringify(patch)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setStaffMsg({ text: patch.password ? "Đã đổi mật khẩu." : "Đã cập nhật tài khoản.", type: "success" });
+        setResetPwFor(null); setResetPwValue("");
+        fetchStaff();
+      } else {
+        setStaffMsg({ text: data.error || "Không cập nhật được.", type: "error" });
+      }
+    } catch { setStaffMsg({ text: "Lỗi kết nối máy chủ.", type: "error" }); }
+  };
+
+  const handleDeleteStaff = async (id: string, username: string) => {
+    setDeleteConfirm({
+      title: "Xóa tài khoản nhân viên",
+      message: `Xóa vĩnh viễn tài khoản "${username}"? Nhân viên này sẽ mất quyền truy cập ngay.`,
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/staff/${id}`, { method: "DELETE", headers: authHeaders() });
+          if (res.ok) { setStaffMsg({ text: `Đã xóa tài khoản "${username}".`, type: "success" }); fetchStaff(); }
+        } catch { setStaffMsg({ text: "Lỗi kết nối máy chủ.", type: "error" }); }
+        setDeleteConfirm(null);
+      }
+    });
+  };
+
   const [activeSidebarTab, setActiveSidebarTab] = useState("articles");
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
@@ -339,27 +452,25 @@ export default function CRMDashboard({
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (usernameInput.trim().toLowerCase() !== adminUsername.trim().toLowerCase()) {
-      setLoginError("Tên đăng nhập hoặc mật khẩu quản trị không chính xác.");
-      return;
-    }
-
-    // The password IS the server-side ADMIN_TOKEN. Verify it against the
-    // server so that access to sensitive data is enforced by the backend,
-    // not just the browser.
-    const token = passwordInput.trim();
+    // Auth is enforced server-side: admin logs in with the ADMIN_TOKEN as the
+    // password; staff use their account username + password. The server returns
+    // a session token + role.
     setIsLoggingIn(true);
-    const ok = await verifyAdminToken(token);
+    const result = await loginRequest(usernameInput.trim(), passwordInput.trim());
     setIsLoggingIn(false);
 
-    if (ok) {
-      setAdminToken(token);
+    if (result) {
+      setAdminToken(result.token);
+      setStoredRole(result.role);
+      setRole(result.role);
+      // Staff never lands on an admin-only section.
+      if (result.role === "staff") setActiveSubTab("leads");
       setIsLoggedIn(true);
       localStorage.setItem("cosbuilt_admin_logged_in", "true");
       setLoginError("");
       if (onLogin) onLogin();
     } else {
-      setLoginError("Tên đăng nhập hoặc mật khẩu quản trị không chính xác.");
+      setLoginError("Tên đăng nhập hoặc mật khẩu không chính xác.");
     }
   };
 
@@ -367,6 +478,8 @@ export default function CRMDashboard({
     setIsLoggedIn(false);
     clearAdminToken();
     localStorage.removeItem("cosbuilt_admin_logged_in");
+    localStorage.removeItem("cosbuilt_admin_role");
+    setRole("admin");
     setUsernameInput("");
     setPasswordInput("");
     if (onLogout) onLogout();
@@ -380,6 +493,17 @@ export default function CRMDashboard({
   const [editingImage, setEditingImage] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   // Unified media library: source filter + editor for product/article images.
   const [mediaFilter, setMediaFilter] = useState<"all" | "gallery" | "product" | "article">("all");
+  // Secondary filter: when browsing PRODUCT images, narrow by manufacturing
+  // category so a specific product's image is easy to find and edit.
+  const [mediaCategory, setMediaCategory] = useState<string>("all");
+  const MEDIA_CATEGORY_LABELS: Record<string, string> = {
+    "facial-care": "Chăm sóc da mặt",
+    "body-care": "Chăm sóc body",
+    "hair-care": "Chăm sóc tóc",
+    "makeup": "Trang điểm",
+    "personal-care": "Chăm sóc cá nhân",
+    "new-tech": "Công nghệ mới",
+  };
   const [editingMedia, setEditingMedia] = useState<{ source: "product" | "article"; index: number; title: string; image: string } | null>(null);
   const [editingProduct, setEditingProduct] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
   const [productInitialSnapshot, setProductInitialSnapshot] = useState<string>("");
@@ -387,6 +511,9 @@ export default function CRMDashboard({
   const [newPkg, setNewPkg] = useState<{ type: "bottle" | "jar" | "tube" | "dropper" | "sachet"; name: string; image: string; description: string } | null>(null);
   const [editingPkgIdx, setEditingPkgIdx] = useState<number | null>(null);
   const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  // Confirmation before leaving the admin workspace ("site" = back to website,
+  // "logout" = sign out). Prevents accidental exits from the management page.
+  const [leaveConfirm, setLeaveConfirm] = useState<null | "site" | "logout">(null);
   const [isEditingWebsiteLogo, setIsEditingWebsiteLogo] = useState(false);
   const [tempWebsiteLogo, setTempWebsiteLogo] = useState({
     name: websiteLogo?.name || "COSBUILT",
@@ -894,6 +1021,28 @@ export default function CRMDashboard({
     }
   }, [isLoggedIn]);
 
+  // Load staff accounts when an admin opens the account-management tab.
+  useEffect(() => {
+    if (isLoggedIn && isAdmin && activeSubTab === "admin-settings") {
+      fetchStaff();
+    }
+  }, [isLoggedIn, isAdmin, activeSubTab]);
+
+  // The product / article editors are full-screen pages, not popups. Lock the
+  // background from scrolling and reset to the top whenever one opens, so the
+  // editor always fills the viewport as a clean page instead of appearing to
+  // float over a scrolled list.
+  useEffect(() => {
+    if (editingProduct || editingBlogPost) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      window.scrollTo(0, 0);
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [editingProduct, editingBlogPost]);
+
   useEffect(() => {
     if (sheetsConfig.spreadsheetId) {
       setSheetInput(sheetsConfig.spreadsheetId);
@@ -1398,17 +1547,17 @@ export default function CRMDashboard({
                 CB
               </div>
               <div className="text-left leading-none">
-                <span className="text-xs font-bold block text-stone-200">Admin Cosbuilt</span>
+                <span className="text-xs font-bold block text-stone-200">{isAdmin ? "Admin Cosbuilt" : "Nhân viên Cosbuilt"}</span>
                 <span className="text-[9px] text-stone-500 flex items-center gap-1 mt-0.5 font-light">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-green animate-pulse inline-block"></span>
-                  Trực tuyến
+                  <span className={`w-1.5 h-1.5 rounded-full animate-pulse inline-block ${isAdmin ? "bg-emerald-green" : "bg-amber-400"}`}></span>
+                  {isAdmin ? "Quản trị viên · Trực tuyến" : "Nhân viên · Quyền hạn chế"}
                 </span>
               </div>
             </div>
 
             {/* Back to Home Button */}
             <button
-              onClick={() => onTabChange("home")}
+              onClick={() => setLeaveConfirm("site")}
               className="bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/15 transition-all px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
               <span>Quay lại Website</span>
@@ -1417,7 +1566,7 @@ export default function CRMDashboard({
 
             {/* Log out Button */}
             <button
-              onClick={handleLogout}
+              onClick={() => setLeaveConfirm("logout")}
               className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/15 hover:border-red-500/25 transition-all px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -1426,6 +1575,55 @@ export default function CRMDashboard({
           </div>
         </div>
       </header>
+
+      {/* Exit confirmation: ask before leaving the management page.
+          Portaled to <body> so the page-transition wrapper's transform can't
+          push this fixed dialog off-centre. */}
+      {leaveConfirm && createPortal(
+        <div className="fixed inset-0 z-[70] bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-stone-200 shadow-2xl max-w-sm w-full p-6 text-left space-y-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                <LogOut className="w-4.5 h-4.5" />
+              </div>
+              <h4 className="font-serif font-bold text-base text-stone-950">
+                {leaveConfirm === "logout" ? "Đăng xuất khỏi hệ thống?" : "Thoát khỏi trang quản lý?"}
+              </h4>
+            </div>
+            <p className="text-xs text-stone-500 font-light leading-relaxed">
+              {leaveConfirm === "logout"
+                ? "Bạn có chắc muốn đăng xuất khỏi hệ thống quản trị không?"
+                : "Bạn có muốn thoát khỏi trang quản lý và quay lại website không?"}
+            </p>
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setLeaveConfirm(null)}
+                className="flex-1 bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all"
+              >
+                Ở lại
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const action = leaveConfirm;
+                  setLeaveConfirm(null);
+                  if (action === "logout") {
+                    handleLogout();
+                  } else {
+                    onTabChange("home");
+                  }
+                }}
+                className="flex-1 bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-center gap-1.5"
+              >
+                {leaveConfirm === "logout" ? "Đăng xuất" : "Thoát"}
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* Main Back-office Workspace */}
       <div id="crm-admin-panel" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -1499,11 +1697,11 @@ export default function CRMDashboard({
       {/* Sub Tabs Selection */}
       <div className="flex border-b border-stone-200">
         {[
-          { id: "leads", label: "YÊU CẦU TƯ VẤN (CRM)", icon: Users },
-          { id: "sheets", label: "ĐỒNG BỘ GOOGLE SHEET", icon: FileSpreadsheet },
-          { id: "content", label: "BIÊN TẬP NỘI DUNG (CMS)", icon: Layers },
-          { id: "admin-settings", label: "TÀI KHOẢN ADMIN", icon: Lock }
-        ].map(tab => {
+          { id: "leads", label: "YÊU CẦU TƯ VẤN (CRM)", icon: Users, adminOnly: false },
+          { id: "sheets", label: "ĐỒNG BỘ GOOGLE SHEET", icon: FileSpreadsheet, adminOnly: true },
+          { id: "content", label: "BIÊN TẬP NỘI DUNG (CMS)", icon: Layers, adminOnly: false },
+          { id: "admin-settings", label: "TÀI KHOẢN ADMIN", icon: Lock, adminOnly: true }
+        ].filter(tab => isAdmin || !tab.adminOnly).map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
           return (
@@ -1790,22 +1988,24 @@ export default function CRMDashboard({
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                <button
-                                  onClick={() => {
-                                    setDeleteConfirm({
-                                      title: "Xóa yêu cầu tư vấn",
-                                      message: "Bạn có chắc chắn muốn xóa yêu cầu tư vấn này không?",
-                                      onConfirm: () => {
-                                        handleDeleteLead(lead.id);
-                                        setDeleteConfirm(null);
-                                      }
-                                    });
-                                  }}
-                                  className="p-2 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                  title="Xóa yêu cầu tư vấn"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                {isAdmin && (
+                                  <button
+                                    onClick={() => {
+                                      setDeleteConfirm({
+                                        title: "Xóa yêu cầu tư vấn",
+                                        message: "Bạn có chắc chắn muốn xóa yêu cầu tư vấn này không?",
+                                        onConfirm: () => {
+                                          handleDeleteLead(lead.id);
+                                          setDeleteConfirm(null);
+                                        }
+                                      });
+                                    }}
+                                    className="p-2 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                    title="Xóa yêu cầu tư vấn"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -1849,7 +2049,7 @@ export default function CRMDashboard({
         )}
 
         {/* SHEETS SYNC PANEL */}
-        {activeSubTab === "sheets" && (
+        {isAdmin && activeSubTab === "sheets" && (
           <section className="space-y-6 text-left pt-2">
             {/* Status Alert & Sync Feedback Banner */}
             {syncMessage.text && (
@@ -2113,7 +2313,7 @@ export default function CRMDashboard({
         )}
 
         {/* ADMIN SETTINGS PANEL */}
-        {activeSubTab === "admin-settings" && (
+        {isAdmin && activeSubTab === "admin-settings" && (
           <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6 text-left pt-2">
             <h3 className="font-serif font-bold text-xl text-stone-900">Quản lý Tài khoản Admin</h3>
             <p className="text-stone-500 text-sm font-light">Cập nhật tên đăng nhập hiển thị. Mật khẩu quản trị được bảo vệ ở phía máy chủ.</p>
@@ -2146,6 +2346,89 @@ export default function CRMDashboard({
               >
                 Lưu Thay Đổi
               </button>
+            </div>
+
+            {/* STAFF ACCOUNT MANAGEMENT */}
+            <div className="border-t border-stone-200 pt-6 space-y-4">
+              <div>
+                <h3 className="font-serif font-bold text-xl text-stone-900">Quản lý Tài khoản Nhân viên</h3>
+                <p className="text-stone-500 text-sm font-light mt-1">
+                  Nhân viên đăng nhập cùng trang này bằng tài khoản riêng. Quyền: quản lý bài viết & sản phẩm, xem yêu cầu tư vấn và cập nhật trạng thái.
+                  Không được xóa yêu cầu, cấu hình Google Sheets hay mở phần cài đặt admin.
+                </p>
+              </div>
+
+              {staffMsg.text && (
+                <div className={`text-xs font-bold rounded-xl px-4 py-2.5 ${staffMsg.type === "success" ? "bg-emerald-green-light text-emerald-green" : "bg-red-50 text-red-600 border border-red-200"}`}>
+                  {staffMsg.text}
+                </div>
+              )}
+
+              {/* Add staff form */}
+              <form onSubmit={handleAddStaff} className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end bg-stone-50 border border-stone-200 rounded-2xl p-4">
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên đăng nhập</label>
+                  <input required value={newStaff.username} onChange={(e) => setNewStaff({ ...newStaff, username: e.target.value })}
+                    placeholder="vd: nhanvien01" className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm focus:border-emerald-green focus:outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên hiển thị</label>
+                  <input value={newStaff.displayName} onChange={(e) => setNewStaff({ ...newStaff, displayName: e.target.value })}
+                    placeholder="vd: Nguyễn Văn A" className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm focus:border-emerald-green focus:outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Mật khẩu (≥6 ký tự)</label>
+                  <input required type="text" value={newStaff.password} onChange={(e) => setNewStaff({ ...newStaff, password: e.target.value })}
+                    placeholder="mật khẩu nhân viên" className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm focus:border-emerald-green focus:outline-none" />
+                </div>
+                <button type="submit" disabled={staffBusy}
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all cursor-pointer disabled:opacity-60 h-[38px]">
+                  {staffBusy ? "Đang tạo..." : "+ Thêm nhân viên"}
+                </button>
+              </form>
+
+              {/* Staff list */}
+              {staffList.length === 0 ? (
+                <div className="text-center py-8 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
+                  Chưa có tài khoản nhân viên nào. Thêm ở trên.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {staffList.map((s) => (
+                    <div key={s.id} className="flex flex-wrap items-center gap-3 justify-between border border-stone-200 rounded-xl px-4 py-3 bg-white">
+                      <div className="text-left">
+                        <div className="font-bold text-sm text-stone-900">{s.displayName} <span className="text-stone-400 font-mono text-xs">@{s.username}</span></div>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.active ? "bg-emerald-green-light text-emerald-green" : "bg-stone-100 text-stone-500"}`}>
+                          {s.active ? "Đang hoạt động" : "Đã khóa"}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {resetPwFor === s.id ? (
+                          <div className="flex items-center gap-1.5">
+                            <input autoFocus type="text" value={resetPwValue} onChange={(e) => setResetPwValue(e.target.value)}
+                              placeholder="mật khẩu mới (≥6)" className="bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs w-40 focus:border-emerald-green focus:outline-none" />
+                            <button onClick={() => handleUpdateStaff(s.id, { password: resetPwValue })} disabled={resetPwValue.trim().length < 6}
+                              className="text-xs font-bold text-white bg-emerald-green px-2.5 py-1.5 rounded-lg cursor-pointer disabled:opacity-50">Lưu</button>
+                            <button onClick={() => { setResetPwFor(null); setResetPwValue(""); }}
+                              className="text-xs font-bold text-stone-500 hover:text-stone-800 px-1.5 cursor-pointer">Hủy</button>
+                          </div>
+                        ) : (
+                          <>
+                            <button onClick={() => { setResetPwFor(s.id); setResetPwValue(""); }}
+                              className="text-xs font-bold text-stone-600 hover:text-emerald-green border border-stone-200 hover:border-emerald-green/40 px-3 py-1.5 rounded-lg cursor-pointer transition-all">Đổi mật khẩu</button>
+                            <button onClick={() => handleUpdateStaff(s.id, { active: !s.active })}
+                              className={`text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer border transition-all ${s.active ? "text-amber-700 border-amber-200 hover:bg-amber-50" : "text-emerald-green border-emerald-green/30 hover:bg-emerald-green-light"}`}>
+                              {s.active ? "Khóa" : "Mở khóa"}
+                            </button>
+                            <button onClick={() => handleDeleteStaff(s.id, s.username)}
+                              className="text-xs font-bold text-red-600 border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg cursor-pointer transition-all">Xóa</button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -2528,8 +2811,20 @@ export default function CRMDashboard({
                   }));
                   let items = [...galleryItems, ...productItems, ...articleItems];
                   if (mediaFilter !== "all") items = items.filter(x => x.source === mediaFilter);
+                  // Narrow product images by manufacturing category (only meaningful
+                  // when viewing products).
+                  if (mediaFilter === "product" && mediaCategory !== "all") {
+                    items = items.filter(x => x.source === "product" && (x.raw as any).category === mediaCategory);
+                  }
                   const q = cmsSearchTerm.toLowerCase();
                   if (q) items = items.filter(x => (x.title || "").toLowerCase().includes(q));
+
+                  // Per-category counts for the product sub-filter chips.
+                  const productCatCounts: Record<string, number> = {};
+                  for (const p of productItems) {
+                    const c = (p.raw as any).category || "khác";
+                    productCatCounts[c] = (productCatCounts[c] || 0) + 1;
+                  }
 
                   const itemsPerPage = 12;
                   const totalPages = Math.ceil(items.length / itemsPerPage) || 1;
@@ -2577,7 +2872,7 @@ export default function CRMDashboard({
                           {([["all","Tất cả"],["gallery","Thư viện"],["product","Sản phẩm"],["article","Bài viết"]] as const).map(([id,label]) => (
                             <button
                               key={id}
-                              onClick={() => { setMediaFilter(id); setCmsImagesPage(1); }}
+                              onClick={() => { setMediaFilter(id); setMediaCategory("all"); setCmsImagesPage(1); }}
                               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                                 mediaFilter === id ? "bg-emerald-green text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
                               }`}
@@ -2593,6 +2888,32 @@ export default function CRMDashboard({
                           <Upload className="w-3.5 h-3.5" /> Thêm ảnh thư viện
                         </button>
                       </div>
+
+                      {/* Product category sub-filter — only when browsing product images */}
+                      {mediaFilter === "product" && (
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mr-1">Danh mục:</span>
+                          <button
+                            onClick={() => { setMediaCategory("all"); setCmsImagesPage(1); }}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                              mediaCategory === "all" ? "bg-emerald-green text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                            }`}
+                          >
+                            Tất cả ({productItems.length})
+                          </button>
+                          {Object.entries(MEDIA_CATEGORY_LABELS).map(([id, label]) => (
+                            <button
+                              key={id}
+                              onClick={() => { setMediaCategory(id); setCmsImagesPage(1); }}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                                mediaCategory === id ? "bg-emerald-green text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                              }`}
+                            >
+                              {label} ({productCatCounts[id] || 0})
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
                       {paginated.length === 0 ? (
                         <div className="text-center py-12 text-stone-400 text-xs border border-dashed border-stone-200 rounded-2xl bg-stone-50">
@@ -2616,6 +2937,11 @@ export default function CRMDashboard({
                               </div>
                               <div className="p-2 text-left">
                                 <h5 className="font-bold text-[10px] text-stone-950 truncate">{it.title}</h5>
+                                {it.source === "product" && (it.raw as any).category && (
+                                  <span className="mt-1 inline-block text-[9px] font-bold text-emerald-green bg-emerald-green-light px-1.5 py-0.5 rounded">
+                                    {MEDIA_CATEGORY_LABELS[(it.raw as any).category] || (it.raw as any).category}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -3134,8 +3460,11 @@ export default function CRMDashboard({
           </div>
         )}
 
-        {/* CMS: EDIT BLOG POST MODAL */}
-        {editingBlogPost && (
+        {/* CMS: FULL-PAGE BLOG POST EDITOR.
+            Rendered through a portal to <body> so no ancestor transform (e.g. the
+            page-transition wrapper in App) can turn `position: fixed` into a
+            content-height block — that made the editor float like a popup. */}
+        {editingBlogPost && createPortal(
           <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col">
             {/* Full-page editor header */}
             <div className="px-5 sm:px-8 py-4 border-b border-stone-200 flex justify-between items-center bg-white shrink-0">
@@ -3396,7 +3725,8 @@ export default function CRMDashboard({
                 </div>
               </div>
             )}
-          </div>
+          </div>,
+          document.body
         )}
 
         {/* CMS: EDIT IMAGE MODAL */}
@@ -3580,8 +3910,8 @@ export default function CRMDashboard({
           </div>
         )}
 
-        {/* CMS: EDIT PRODUCT MODAL */}
-        {editingProduct && (
+        {/* CMS: FULL-PAGE PRODUCT EDITOR (portaled to <body>, see blog editor note). */}
+        {editingProduct && createPortal(
           <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col">
             <div className="px-5 sm:px-8 py-4 border-b border-stone-200 flex justify-between items-center bg-white shrink-0">
               <div className="flex items-center gap-3 min-w-0">
@@ -4154,7 +4484,8 @@ export default function CRMDashboard({
                 </div>
               </div>
             )}
-          </div>
+          </div>,
+          document.body
         )}
 
         {/* CMS: EDIT PARTNER LOGO MODAL */}
