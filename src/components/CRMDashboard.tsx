@@ -981,7 +981,8 @@ export default function CRMDashboard({
             }
           }
           const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
-          const baseName = (file.name.replace(/\.[^.]+$/, "") || "image").slice(0, 40);
+          // SEO-friendly filename: lowercase, no Vietnamese diacritics, hyphenated.
+          const baseName = slugify(file.name.replace(/\.[^.]+$/, "")).slice(0, 60) || "image";
           resolve({ base64, filename: `${baseName}.${ext}` });
         } catch (err) {
           reject(err);
