@@ -1644,6 +1644,100 @@ export default function CRMDashboard({
         document.body
       )}
 
+      {/* Edit the R&D lead researcher portrait (kept at dashboard root, outside
+          the AnimatePresence, so the portal always mounts). */}
+      {isEditingResearcher && createPortal(
+        <div className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-stone-150 max-w-md w-full shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-5 border-b border-stone-150 flex justify-between items-center bg-stone-50">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-emerald-green" />
+                <h3 className="font-serif font-bold text-base text-stone-950">Ảnh Nhà Nghiên Cứu Hur Beom-Chul</h3>
+              </div>
+              <button
+                onClick={() => setIsEditingResearcher(false)}
+                className="p-1.5 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 text-left text-xs sm:text-sm">
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Ảnh chân dung (upload file hoặc dán link)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Có thể upload file bên cạnh hoặc điền link ảnh..."
+                    value={tempResearcherImage}
+                    onChange={(e) => setTempResearcherImage(e.target.value)}
+                    className="flex-1 border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                  />
+                  <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                    {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                    <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={isUploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try {
+                            const url = await handleImageUpload(file);
+                            setTempResearcherImage(url);
+                          } catch (err: any) {
+                            alert("Lỗi tải ảnh lên: " + err.message);
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                <p className="text-[10px] text-stone-400 font-light">Nên dùng ảnh chân dung dọc, rõ mặt. Để trống sẽ hiển thị ảnh đại diện chữ lồng "HBC".</p>
+              </div>
+
+              {tempResearcherImage ? (
+                <div className="flex items-center gap-3">
+                  <img
+                    src={tempResearcherImage}
+                    alt="Xem trước ảnh nhà nghiên cứu"
+                    className="w-20 h-24 object-cover object-top rounded-xl border border-stone-200"
+                    referrerPolicy="no-referrer"
+                  />
+                  <button
+                    onClick={() => setTempResearcherImage("")}
+                    className="text-xs font-bold text-red-500 hover:text-red-600 flex items-center gap-1 cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Xóa ảnh
+                  </button>
+                </div>
+              ) : null}
+
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  onClick={() => setIsEditingResearcher(false)}
+                  className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleSaveResearcherImage}
+                  disabled={isSavingContent}
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1"
+                >
+                  {isSavingContent ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  Lưu Ảnh
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* Main Back-office Workspace */}
       <div id="crm-admin-panel" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Title Header with Elegant Stats Overview */}
@@ -2828,7 +2922,12 @@ export default function CRMDashboard({
                   const articleItems = customBlogPosts.map((a, i) => ({
                     src: a.image, title: a.title || "Bài viết", source: "article" as const, index: i, raw: a
                   }));
-                  let items = [...galleryItems, ...productItems, ...articleItems];
+                  // The R&D lead researcher portrait lives inside the library
+                  // (Thư viện) rather than as a separate panel.
+                  const researcherItem = {
+                    src: researcherImage, title: "Chân dung GS. Hur Beom-Chul", source: "researcher" as const, index: 0, raw: {}
+                  };
+                  let items: any[] = [...galleryItems, ...productItems, ...articleItems];
                   if (mediaFilter !== "all") items = items.filter(x => x.source === mediaFilter);
                   // Narrow product images by manufacturing category (only meaningful
                   // when viewing products).
@@ -2837,6 +2936,10 @@ export default function CRMDashboard({
                   }
                   const q = cmsSearchTerm.toLowerCase();
                   if (q) items = items.filter(x => (x.title || "").toLowerCase().includes(q));
+                  // Pin the researcher portrait to the front of the Thư viện / Tất cả views.
+                  const showResearcher = (mediaFilter === "all" || mediaFilter === "gallery") &&
+                    (!q || researcherItem.title.toLowerCase().includes(q));
+                  if (showResearcher) items = [researcherItem, ...items];
 
                   // Per-category counts for the product sub-filter chips.
                   const productCatCounts: Record<string, number> = {};
@@ -2850,26 +2953,36 @@ export default function CRMDashboard({
                   const activePage = Math.min(cmsImagesPage, totalPages);
                   const paginated = items.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
-                  const badge = { gallery: "Thư viện", product: "Sản phẩm", article: "Bài viết" };
-                  const badgeCls = {
+                  const badge: Record<string, string> = { gallery: "Thư viện", product: "Sản phẩm", article: "Bài viết", researcher: "Đội ngũ R&D" };
+                  const badgeCls: Record<string, string> = {
                     gallery: "bg-stone-100 text-stone-600",
                     product: "bg-emerald-green-light text-emerald-green",
                     article: "bg-amber-100 text-amber-700",
+                    researcher: "bg-emerald-green text-white",
                   };
                   const counts = {
-                    all: galleryItems.length + productItems.length + articleItems.length,
-                    gallery: galleryItems.length, product: productItems.length, article: articleItems.length,
+                    all: galleryItems.length + productItems.length + articleItems.length + 1,
+                    gallery: galleryItems.length + 1, product: productItems.length, article: articleItems.length,
                   };
 
                   const onEditItem = (it: any) => {
-                    if (it.source === "gallery") {
+                    if (it.source === "researcher") {
+                      setTempResearcherImage(researcherImage || "");
+                      setIsEditingResearcher(true);
+                    } else if (it.source === "gallery") {
                       setEditingImage({ index: it.index, isNew: false, data: { ...it.raw } });
                     } else {
                       setEditingMedia({ source: it.source, index: it.index, title: it.title, image: it.src || "" });
                     }
                   };
                   const onDeleteItem = (it: any) => {
-                    if (it.source === "gallery") {
+                    if (it.source === "researcher") {
+                      setDeleteConfirm({
+                        title: "Xóa ảnh GS. Hur",
+                        message: "Gỡ ảnh chân dung GS. Hur? Hồ sơ nhà nghiên cứu sẽ hiển thị lại ảnh chữ lồng \"HBC\".",
+                        onConfirm: async () => { await saveAllContent({ researcherImage: "" }); setDeleteConfirm(null); }
+                      });
+                    } else if (it.source === "gallery") {
                       setDeleteConfirm({
                         title: "Xóa hình ảnh",
                         message: "Bạn có chắc muốn xóa ảnh này khỏi thư viện?",
@@ -2886,129 +2999,6 @@ export default function CRMDashboard({
 
                   return (
                     <div className="space-y-4">
-                      {/* Lead researcher portrait (Hur Beom-Chul) — managed alongside the media library */}
-                      <div className="bg-white p-5 sm:p-6 rounded-3xl border-2 border-emerald-green/20 shadow-3xs space-y-4">
-                        <div className="flex items-center justify-between border-b border-stone-150 pb-3">
-                          <div className="flex items-center gap-2">
-                            <Users className="w-5 h-5 text-emerald-green" />
-                            <div className="text-left">
-                              <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900">Ảnh Nhà Nghiên Cứu Hur Beom-Chul</h3>
-                              <p className="text-[11px] text-stone-400 font-light">Hiển thị trong hồ sơ R&D ở Trang chủ & mục "Đội ngũ R&D" trang Giới thiệu</p>
-                            </div>
-                          </div>
-                          {!isEditingResearcher ? (
-                            <button
-                              onClick={() => {
-                                setTempResearcherImage(researcherImage || "");
-                                setIsEditingResearcher(true);
-                              }}
-                              className="border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shrink-0"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                              Sửa Ảnh
-                            </button>
-                          ) : null}
-                        </div>
-
-                        {isEditingResearcher ? (
-                          <div className="space-y-4 pt-1 text-left">
-                            <div className="space-y-1.5">
-                              <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Ảnh chân dung (upload file hoặc dán link)</label>
-                              <div className="flex gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Có thể upload file bên cạnh hoặc điền link ảnh..."
-                                  value={tempResearcherImage}
-                                  onChange={(e) => setTempResearcherImage(e.target.value)}
-                                  className="flex-1 border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
-                                />
-                                <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
-                                  {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
-                                  <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    disabled={isUploading}
-                                    onChange={async (e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) {
-                                        try {
-                                          const url = await handleImageUpload(file);
-                                          setTempResearcherImage(url);
-                                        } catch (err: any) {
-                                          alert("Lỗi tải ảnh lên: " + err.message);
-                                        }
-                                      }
-                                    }}
-                                  />
-                                </label>
-                              </div>
-                              <p className="text-[10px] text-stone-400 font-light">Nên dùng ảnh chân dung dọc, rõ mặt. Để trống sẽ hiển thị ảnh đại diện chữ lồng "HBC".</p>
-                            </div>
-
-                            {tempResearcherImage ? (
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src={tempResearcherImage}
-                                  alt="Xem trước ảnh nhà nghiên cứu"
-                                  className="w-20 h-24 object-cover object-top rounded-xl border border-stone-200"
-                                  referrerPolicy="no-referrer"
-                                />
-                                <button
-                                  onClick={() => setTempResearcherImage("")}
-                                  className="text-xs font-bold text-red-500 hover:text-red-600 flex items-center gap-1 cursor-pointer"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                  Xóa ảnh
-                                </button>
-                              </div>
-                            ) : null}
-
-                            <div className="flex justify-end gap-2 pt-2">
-                              <button
-                                onClick={() => { setTempResearcherImage(researcherImage || ""); setIsEditingResearcher(false); }}
-                                className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
-                              >
-                                Hủy
-                              </button>
-                              <button
-                                onClick={handleSaveResearcherImage}
-                                disabled={isSavingContent}
-                                className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1"
-                              >
-                                <Check className="w-3.5 h-3.5" />
-                                Lưu Ảnh
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div className="flex items-center gap-4">
-                              {researcherImage ? (
-                                <img
-                                  src={researcherImage}
-                                  alt="Nhà nghiên cứu Hur Beom-Chul"
-                                  className="w-16 h-20 object-cover object-top rounded-xl border border-stone-200 shrink-0"
-                                  referrerPolicy="no-referrer"
-                                />
-                              ) : (
-                                <div className="w-16 h-20 rounded-xl bg-stone-900 flex items-center justify-center shrink-0">
-                                  <span className="font-serif font-black text-emerald-green tracking-wider">HBC</span>
-                                </div>
-                              )}
-                              <div className="text-left">
-                                <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Trạng thái ảnh</div>
-                                <div className="font-bold text-sm text-stone-900 mt-1">{researcherImage ? "Đã có ảnh chân dung" : "Đang dùng ảnh chữ lồng (HBC)"}</div>
-                              </div>
-                            </div>
-                            <div className="text-xs text-stone-500 font-light max-w-sm text-left">
-                              Tải ảnh GS. Hur lên đây để thay ảnh chữ lồng tạm thời trong hồ sơ nhà nghiên cứu.
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
                       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-3">
                         <div className="flex flex-wrap items-center gap-1.5">
                           {([["all","Tất cả"],["gallery","Thư viện"],["product","Sản phẩm"],["article","Bài viết"]] as const).map(([id,label]) => (
@@ -3064,10 +3054,15 @@ export default function CRMDashboard({
                       ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                           {paginated.map((it, idx) => (
-                            <div key={it.source + it.index + idx} className="bg-white border border-stone-200 rounded-xl overflow-hidden hover:shadow-md hover:border-emerald-green/30 transition-all relative group">
+                            <div key={it.source + it.index + idx} className={`bg-white border rounded-xl overflow-hidden hover:shadow-md transition-all relative group ${it.source === "researcher" ? "border-2 border-emerald-green/40" : "border-stone-200 hover:border-emerald-green/30"}`}>
                               <div className="aspect-square relative bg-stone-100 overflow-hidden">
                                 {it.src ? (
-                                  <img src={it.src} alt={it.title} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" referrerPolicy="no-referrer" />
+                                  <img src={it.src} alt={it.title} className={`w-full h-full group-hover:scale-105 transition-all duration-300 ${it.source === "researcher" ? "object-cover object-top" : "object-cover"}`} referrerPolicy="no-referrer" />
+                                ) : it.source === "researcher" ? (
+                                  <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-stone-900">
+                                    <span className="font-serif font-black text-2xl text-emerald-green tracking-wider">HBC</span>
+                                    <span className="text-[8px] text-stone-400 uppercase tracking-widest font-bold">Chưa có ảnh</span>
+                                  </div>
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center text-stone-300"><Image className="w-8 h-8" /></div>
                                 )}
@@ -3870,7 +3865,6 @@ export default function CRMDashboard({
           </div>,
           document.body
         )}
-
         {/* CMS: EDIT IMAGE MODAL */}
         {editingImage && (
           <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
