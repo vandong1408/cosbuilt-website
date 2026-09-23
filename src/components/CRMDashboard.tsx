@@ -937,11 +937,14 @@ export default function CRMDashboard({
   // Image Upload helper state & function
   const [isUploading, setIsUploading] = useState(false);
 
-  // Downscale + compress an uploaded image so any source size becomes a
-  // standard, web-optimized file (keeps aspect ratio; object-cover then crops
-  // it to fit each placement). PNG stays PNG to preserve transparency (logos);
-  // everything else becomes WebP (fallback JPEG) at good quality.
-  const MAX_UPLOAD_DIMENSION = 1600;
+  // Downscale + compress every uploaded image into a small, SEO-friendly,
+  // fast-loading file. Everything is converted to WebP (best compression, and
+  // it keeps transparency for logos too) — including PNGs, which would otherwise
+  // stay huge as lossless PNG. Only when the browser can't encode WebP do we
+  // fall back to PNG (to preserve transparency) or JPEG. Aspect ratio is kept;
+  // the layout uses object-cover to crop into each placement.
+  const MAX_UPLOAD_DIMENSION = 1280; // longest side; plenty for a site that renders images ≤ ~800px
+  const WEBP_QUALITY = 0.8;
   const optimizeImage = (file: File): Promise<{ base64: string; filename: string }> =>
     new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file);
@@ -963,13 +966,19 @@ export default function CRMDashboard({
           if (!ctx) throw new Error("Không khởi tạo được canvas.");
           ctx.drawImage(img, 0, 0, width, height);
 
-          const isPng = file.type === "image/png";
-          let mime = isPng ? "image/png" : "image/webp";
-          let base64 = canvas.toDataURL(mime, 0.85);
-          // Fallback to JPEG if the browser did not honor WebP.
-          if (!isPng && base64.indexOf("data:image/webp") !== 0) {
-            mime = "image/jpeg";
-            base64 = canvas.toDataURL("image/jpeg", 0.85);
+          // Prefer WebP for every image (smallest size, supports transparency).
+          let mime = "image/webp";
+          let base64 = canvas.toDataURL("image/webp", WEBP_QUALITY);
+          if (base64.indexOf("data:image/webp") !== 0) {
+            // WebP unsupported: keep PNG for transparency, else JPEG.
+            const isPng = file.type === "image/png";
+            if (isPng) {
+              mime = "image/png";
+              base64 = canvas.toDataURL("image/png");
+            } else {
+              mime = "image/jpeg";
+              base64 = canvas.toDataURL("image/jpeg", WEBP_QUALITY);
+            }
           }
           const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
           const baseName = (file.name.replace(/\.[^.]+$/, "") || "image").slice(0, 40);
