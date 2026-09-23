@@ -52,6 +52,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AIFormulaAdvisor from "./components/AIFormulaAdvisor";
 import CRMDashboard from "./components/CRMDashboard";
+import ResearcherProfile from "./components/ResearcherProfile";
 import { useLanguage } from "./contexts/LanguageContext";
 
 import { 
@@ -1828,6 +1829,18 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 </div>
               </section>
 
+              {/* LEAD RESEARCHER / FOUNDER PROFILE (Hur Beom-Chul) */}
+              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center space-y-3 mb-8">
+                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Đội ngũ nghiên cứu R&D</span>
+                  <h2 className="text-3xl font-serif font-bold text-stone-900">Chuyên Gia Đứng Sau Những Công Thức Triệu Đô</h2>
+                  <p className="text-stone-500 text-xs md:text-sm max-w-2xl mx-auto">
+                    Cosbuilt được dẫn dắt bởi những chuyên gia R&D hàng đầu Hàn Quốc với hàng chục năm kinh nghiệm phát triển sản phẩm cho các tập đoàn mỹ phẩm lớn.
+                  </p>
+                </div>
+                <ResearcherProfile />
+              </section>
+
               {/* CORE AI INTERACTIVE R&D ADVISOR PANEL */}
               <section id="ai-advisor" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <AIFormulaAdvisor />
@@ -2196,14 +2209,23 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         </div>
                       </div>
                       <div className="lg:col-span-5 relative">
-                        <img 
-                          src={localizedAboutSections.rdTeam.image} 
-                          alt="R&D Team" 
+                        <img
+                          src={localizedAboutSections.rdTeam.image}
+                          alt="R&D Team"
                           className="w-full h-80 object-cover rounded-2xl shadow-md border border-stone-100"
                           referrerPolicy="no-referrer"
                         />
                       </div>
                     </section>
+
+                    {/* Detailed profile: lead researcher Hur Beom-Chul */}
+                    <div className="mt-8 space-y-4">
+                      <div className="text-left space-y-1.5 px-1">
+                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Chân dung nhà nghiên cứu</span>
+                        <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">Nhà Nghiên Cứu Hur Beom-Chul</h3>
+                      </div>
+                      <ResearcherProfile />
+                    </div>
                   </motion.div>
                 )}
 

@@ -137,6 +137,35 @@ export const ABOUT_SECTIONS = {
   }
 };
 
+// Hồ sơ Nhà nghiên cứu trưởng Hur Beom-Chul (Bum-Chul Hur).
+// LƯU Ý: ảnh chân dung sẽ được cập nhật sau — cứ để `image: ""` thì trang sẽ
+// hiển thị ảnh đại diện chữ lồng tạm thời. Khi có ảnh, dán URL vào `image`.
+export const RESEARCHER_HUR = {
+  name: "Hur Beom-Chul (Bum-Chul Hur)",
+  role: "Nhà sáng lập & CEO Cosbuilt (J&H LAB) · Trưởng Nghiên cứu R&D",
+  badge: "NHÀ NGHIÊN CỨU TRƯỞNG",
+  initials: "HBC",
+  image: "",
+  intro:
+    "Với hơn 20 năm kinh nghiệm trong ngành công nghiệp mỹ phẩm, Nhà nghiên cứu Hur Beom-Chul là \"bộ não\" đứng sau hàng loạt sản phẩm \"triệu đô\" đình đám. Ông từng giữ vị trí Giám đốc Viện Nghiên cứu R&D tại các tập đoàn mỹ phẩm hàng đầu Hàn Quốc như C&C International, Cosnine, FORCOS và SKIN FOOD, trước khi sáng lập J&H LAB / Cosbuilt và kiến tạo nên những công thức đột phá được thị trường quốc tế công nhận.",
+  experience: [
+    { year: "2021 – Nay", detail: "Nhà sáng lập & CEO, J&H LAB (Nhà máy gia công mỹ phẩm OEM/ODM)" },
+    { year: "2020", detail: "Giám đốc Viện Nghiên cứu Chăm sóc da & Trang điểm, FORCOS" },
+    { year: "2016", detail: "Giám đốc Viện Nghiên cứu Chăm sóc da & Trang điểm, Cosnine" },
+    { year: "2013", detail: "Giám đốc Viện Nghiên cứu Chăm sóc da & Trang điểm, C&C International" },
+    { year: "2003", detail: "Nghiên cứu viên Trang điểm, Trung tâm R&D SKIN FOOD" }
+  ],
+  awards: [
+    "2019: Chiến thắng hạng mục Chống nắng (Sun Care) tại giải thưởng Allure Beauty Best of.",
+    "2018 – Cosmopack Asia Awards (Hong Kong): Giải Nhất (Winner) hạng mục Công nghệ & Thiết kế Bao bì Trang điểm.",
+    "2018 – Cosmopack Asia Awards: Lọt vào chung kết (Finalist) tại 2 hạng mục Công thức Chăm sóc da."
+  ],
+  achievements: [
+    "2020: Phát triển 'J.ONE HAIRA Ampoule' – đạt doanh số home shopping cao nhất trong năm.",
+    "2016: Hoàn thiện phát triển 'Guerisson 9 Complex Horse Oil Cream' tại Cosnine."
+  ]
+};
+
 export const DEFAULT_GALLERY_IMAGES = [
   {
     title: "Dây chuyền chiết rót mỹ phẩm tự động",
