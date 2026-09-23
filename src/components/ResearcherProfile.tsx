@@ -7,15 +7,23 @@ import { RESEARCHER_HUR } from "../data";
  * The portrait falls back to an elegant monogram placeholder until a photo
  * URL is set in `RESEARCHER_HUR.image`.
  */
-export default function ResearcherProfile({ profile = RESEARCHER_HUR }: { profile?: typeof RESEARCHER_HUR }) {
+export default function ResearcherProfile({
+  profile = RESEARCHER_HUR,
+  image
+}: {
+  profile?: typeof RESEARCHER_HUR;
+  /** Overrides the portrait (e.g. the admin-managed URL); falls back to profile.image. */
+  image?: string;
+}) {
+  const portrait = image || profile.image;
   return (
     <div className="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
       {/* Header: portrait + intro */}
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <div className="lg:col-span-4 relative bg-gradient-to-br from-stone-900 to-stone-800 min-h-[260px] flex items-center justify-center overflow-hidden">
-          {profile.image ? (
+          {portrait ? (
             <img
-              src={profile.image}
+              src={portrait}
               alt={profile.name}
               className="absolute inset-0 w-full h-full object-cover object-top"
               referrerPolicy="no-referrer"

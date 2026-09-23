@@ -324,6 +324,7 @@ interface CRMDashboardProps {
   customLogos: any[];
   websiteLogo: any;
   footerLogo: any;
+  researcherImage: string;
   customProducts: any[];
   sheetsConfig: any;
   setCustomBlogPosts: (posts: any[]) => void;
@@ -331,6 +332,7 @@ interface CRMDashboardProps {
   setCustomLogos: (logos: any[]) => void;
   setWebsiteLogo: (logo: any) => void;
   setFooterLogo: (logo: any) => void;
+  setResearcherImage: (url: string) => void;
   setCustomProducts: (products: any[]) => void;
   setSheetsConfig: (config: any) => void;
   onTabChange: (tab: string) => void;
@@ -344,6 +346,7 @@ export default function CRMDashboard({
   customLogos,
   websiteLogo,
   footerLogo,
+  researcherImage,
   customProducts,
   sheetsConfig,
   setCustomBlogPosts,
@@ -351,6 +354,7 @@ export default function CRMDashboard({
   setCustomLogos,
   setWebsiteLogo,
   setFooterLogo,
+  setResearcherImage,
   setCustomProducts,
   setSheetsConfig,
   onTabChange,
@@ -558,7 +562,7 @@ export default function CRMDashboard({
 
   // Sync / Save dynamic changes helper
   const saveAllContent = async (
-    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any; footerLogo?: any; products?: any[] },
+    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any; footerLogo?: any; researcherImage?: string; products?: any[] },
     actionInfo?: { action: "add" | "update" | "delete"; sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm"; index?: number; data?: any }
   ) => {
     setIsSavingContent(true);
@@ -578,6 +582,7 @@ export default function CRMDashboard({
           if (payload.logos !== undefined) setCustomLogos(result.data.logos);
           if (payload.websiteLogo !== undefined) setWebsiteLogo(result.data.websiteLogo);
           if (payload.footerLogo !== undefined) setFooterLogo(result.data.footerLogo);
+          if (payload.researcherImage !== undefined) setResearcherImage(result.data.researcherImage);
           if (payload.products !== undefined) setCustomProducts(result.data.products);
           
           // 2. If logged in with Google and a Spreadsheet ID exists, perform direct sync!
@@ -860,6 +865,20 @@ export default function CRMDashboard({
     const success = await saveAllContent({ footerLogo: tempFooterLogo });
     if (success) {
       setIsEditingFooterLogo(false);
+    }
+  };
+
+  // Researcher (Hur Beom-Chul) portrait management
+  const [isEditingResearcher, setIsEditingResearcher] = useState(false);
+  const [tempResearcherImage, setTempResearcherImage] = useState<string>(researcherImage || "");
+  useEffect(() => {
+    setTempResearcherImage(researcherImage || "");
+  }, [researcherImage]);
+
+  const handleSaveResearcherImage = async () => {
+    const success = await saveAllContent({ researcherImage: tempResearcherImage.trim() });
+    if (success) {
+      setIsEditingResearcher(false);
     }
   };
 
@@ -2867,6 +2886,129 @@ export default function CRMDashboard({
 
                   return (
                     <div className="space-y-4">
+                      {/* Lead researcher portrait (Hur Beom-Chul) — managed alongside the media library */}
+                      <div className="bg-white p-5 sm:p-6 rounded-3xl border-2 border-emerald-green/20 shadow-3xs space-y-4">
+                        <div className="flex items-center justify-between border-b border-stone-150 pb-3">
+                          <div className="flex items-center gap-2">
+                            <Users className="w-5 h-5 text-emerald-green" />
+                            <div className="text-left">
+                              <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900">Ảnh Nhà Nghiên Cứu Hur Beom-Chul</h3>
+                              <p className="text-[11px] text-stone-400 font-light">Hiển thị trong hồ sơ R&D ở Trang chủ & mục "Đội ngũ R&D" trang Giới thiệu</p>
+                            </div>
+                          </div>
+                          {!isEditingResearcher ? (
+                            <button
+                              onClick={() => {
+                                setTempResearcherImage(researcherImage || "");
+                                setIsEditingResearcher(true);
+                              }}
+                              className="border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs px-3 py-1.5 rounded-lg flex items-center gap-1 cursor-pointer transition-all shrink-0"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                              Sửa Ảnh
+                            </button>
+                          ) : null}
+                        </div>
+
+                        {isEditingResearcher ? (
+                          <div className="space-y-4 pt-1 text-left">
+                            <div className="space-y-1.5">
+                              <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Ảnh chân dung (upload file hoặc dán link)</label>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="Có thể upload file bên cạnh hoặc điền link ảnh..."
+                                  value={tempResearcherImage}
+                                  onChange={(e) => setTempResearcherImage(e.target.value)}
+                                  className="flex-1 border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                                />
+                                <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                                  {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                                  <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    disabled={isUploading}
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        try {
+                                          const url = await handleImageUpload(file);
+                                          setTempResearcherImage(url);
+                                        } catch (err: any) {
+                                          alert("Lỗi tải ảnh lên: " + err.message);
+                                        }
+                                      }
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                              <p className="text-[10px] text-stone-400 font-light">Nên dùng ảnh chân dung dọc, rõ mặt. Để trống sẽ hiển thị ảnh đại diện chữ lồng "HBC".</p>
+                            </div>
+
+                            {tempResearcherImage ? (
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={tempResearcherImage}
+                                  alt="Xem trước ảnh nhà nghiên cứu"
+                                  className="w-20 h-24 object-cover object-top rounded-xl border border-stone-200"
+                                  referrerPolicy="no-referrer"
+                                />
+                                <button
+                                  onClick={() => setTempResearcherImage("")}
+                                  className="text-xs font-bold text-red-500 hover:text-red-600 flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  Xóa ảnh
+                                </button>
+                              </div>
+                            ) : null}
+
+                            <div className="flex justify-end gap-2 pt-2">
+                              <button
+                                onClick={() => { setTempResearcherImage(researcherImage || ""); setIsEditingResearcher(false); }}
+                                className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                              >
+                                Hủy
+                              </button>
+                              <button
+                                onClick={handleSaveResearcherImage}
+                                disabled={isSavingContent}
+                                className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                Lưu Ảnh
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-stone-50 p-4 rounded-xl border border-stone-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-4">
+                              {researcherImage ? (
+                                <img
+                                  src={researcherImage}
+                                  alt="Nhà nghiên cứu Hur Beom-Chul"
+                                  className="w-16 h-20 object-cover object-top rounded-xl border border-stone-200 shrink-0"
+                                  referrerPolicy="no-referrer"
+                                />
+                              ) : (
+                                <div className="w-16 h-20 rounded-xl bg-stone-900 flex items-center justify-center shrink-0">
+                                  <span className="font-serif font-black text-emerald-green tracking-wider">HBC</span>
+                                </div>
+                              )}
+                              <div className="text-left">
+                                <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Trạng thái ảnh</div>
+                                <div className="font-bold text-sm text-stone-900 mt-1">{researcherImage ? "Đã có ảnh chân dung" : "Đang dùng ảnh chữ lồng (HBC)"}</div>
+                              </div>
+                            </div>
+                            <div className="text-xs text-stone-500 font-light max-w-sm text-left">
+                              Tải ảnh GS. Hur lên đây để thay ảnh chữ lồng tạm thời trong hồ sơ nhà nghiên cứu.
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-3">
                         <div className="flex flex-wrap items-center gap-1.5">
                           {([["all","Tất cả"],["gallery","Thư viện"],["product","Sản phẩm"],["article","Bài viết"]] as const).map(([id,label]) => (

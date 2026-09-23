@@ -10,6 +10,8 @@ export interface SheetsConfig {
   logos?: any[];
   websiteLogo?: { name: string; slogan?: string; image?: string };
   footerLogo?: { name: string; slogan?: string; image?: string };
+  // Portrait URL for the R&D lead researcher (Hur Beom-Chul), managed from the admin.
+  researcherImage?: string;
 }
 
 const KEY = "sheets_config";

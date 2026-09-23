@@ -327,6 +327,8 @@ export default function App() {
   const [customLogos, setCustomLogos] = useState<any[]>(ABOUT_SECTIONS.partners.logos);
   const [websiteLogo, setWebsiteLogo] = useState<any>({ name: "COSBUILT" });
   const [footerLogo, setFooterLogo] = useState<any>({ name: "COSBUILT" });
+  // Admin-managed portrait for the R&D lead researcher (Hur Beom-Chul).
+  const [researcherImage, setResearcherImage] = useState<string>("");
   const [customProducts, setCustomProducts] = useState<FormulaProduct[]>(FORMULA_PRODUCTS);
 
   const localizedAboutSections = {
@@ -1166,6 +1168,9 @@ export default function App() {
           if (data.footerLogo) {
             setFooterLogo(data.footerLogo);
           }
+          if (typeof data.researcherImage === "string") {
+            setResearcherImage(data.researcherImage);
+          }
           if (data.products && data.products.length > 0) {
             setCustomProducts(data.products);
           }
@@ -1838,7 +1843,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     Cosbuilt được dẫn dắt bởi những chuyên gia R&D hàng đầu Hàn Quốc với hàng chục năm kinh nghiệm phát triển sản phẩm cho các tập đoàn mỹ phẩm lớn.
                   </p>
                 </div>
-                <ResearcherProfile />
+                <ResearcherProfile image={researcherImage} />
               </section>
 
               {/* CORE AI INTERACTIVE R&D ADVISOR PANEL */}
@@ -2224,7 +2229,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Chân dung nhà nghiên cứu</span>
                         <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">Nhà Nghiên Cứu Hur Beom-Chul</h3>
                       </div>
-                      <ResearcherProfile />
+                      <ResearcherProfile image={researcherImage} />
                     </div>
                   </motion.div>
                 )}
@@ -4297,6 +4302,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 customLogos={customLogos}
                 websiteLogo={websiteLogo}
                 footerLogo={footerLogo}
+                researcherImage={researcherImage}
                 customProducts={customProducts}
                 sheetsConfig={sheetsConfig}
                 setCustomBlogPosts={setCustomBlogPosts}
@@ -4304,6 +4310,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 setCustomLogos={setCustomLogos}
                 setWebsiteLogo={setWebsiteLogo}
                 setFooterLogo={setFooterLogo}
+                setResearcherImage={setResearcherImage}
                 setCustomProducts={setCustomProducts}
                 setSheetsConfig={setSheetsConfig}
                 onTabChange={handleTabChange}
