@@ -519,7 +519,7 @@ export default function CRMDashboard({
   const [showProductExitPrompt, setShowProductExitPrompt] = useState(false);
   const [newPkg, setNewPkg] = useState<{ type: "bottle" | "jar" | "tube" | "dropper" | "sachet"; name: string; image: string; description: string } | null>(null);
   const [editingPkgIdx, setEditingPkgIdx] = useState<number | null>(null);
-  const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [editingPartnerLogo, setEditingPartnerLogo] = useState<{ index: number; isNew: boolean; data: any; _snapshot?: string } | null>(null);
   // Confirmation before leaving the admin workspace ("site" = back to website,
   // "logout" = sign out). Prevents accidental exits from the management page.
   const [leaveConfirm, setLeaveConfirm] = useState<null | "site" | "logout">(null);
@@ -854,8 +854,16 @@ export default function CRMDashboard({
     }
   };
 
+  // Unsaved-changes exit prompt shared by the full-page editors. Holds the
+  // "leave anyway" action; showing it means there are pending changes.
+  const [editorExitPrompt, setEditorExitPrompt] = useState<{ onConfirm: () => void } | null>(null);
+  const attemptCloseEditor = (dirty: boolean, doClose: () => void) => {
+    if (dirty) setEditorExitPrompt({ onConfirm: () => { doClose(); setEditorExitPrompt(null); } });
+    else doClose();
+  };
+
   // Certifications management
-  const [editingCertification, setEditingCertification] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const [editingCertification, setEditingCertification] = useState<{ index: number; isNew: boolean; data: any; _snapshot?: string } | null>(null);
   const handleSaveCertification = async (e: FormEvent) => {
     e.preventDefault();
     if (!editingCertification) return;
@@ -1783,7 +1791,7 @@ export default function CRMDashboard({
             <div className="flex items-center gap-3 min-w-0">
               <button
                 type="button"
-                onClick={() => setEditingCertification(null)}
+                onClick={() => attemptCloseEditor(JSON.stringify(editingCertification.data) !== editingCertification._snapshot, () => setEditingCertification(null))}
                 className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-emerald-green transition-colors cursor-pointer shrink-0"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -1894,7 +1902,7 @@ export default function CRMDashboard({
             <div className="flex items-center gap-3 min-w-0">
               <button
                 type="button"
-                onClick={() => setEditingPartnerLogo(null)}
+                onClick={() => attemptCloseEditor(JSON.stringify(editingPartnerLogo.data) !== editingPartnerLogo._snapshot, () => setEditingPartnerLogo(null))}
                 className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-emerald-green transition-colors cursor-pointer shrink-0"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -2003,6 +2011,40 @@ export default function CRMDashboard({
                 <p className="text-[10px] text-stone-400 font-light">Có link thì logo trên website sẽ bấm mở được trang đối tác.</p>
               </div>
             </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Unsaved-changes prompt when leaving a full-page editor */}
+      {editorExitPrompt && createPortal(
+        <div className="fixed inset-0 z-[70] bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-stone-200 shadow-2xl max-w-sm w-full p-6 text-left space-y-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                <Info className="w-4.5 h-4.5" />
+              </div>
+              <h4 className="font-serif font-bold text-base text-stone-950">Thoát khỏi trình sửa?</h4>
+            </div>
+            <p className="text-xs text-stone-500 font-light leading-relaxed">
+              Bạn đang có thay đổi chưa lưu. Nếu thoát bây giờ, các thay đổi này sẽ không được giữ lại.
+            </p>
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setEditorExitPrompt(null)}
+                className="flex-1 bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all"
+              >
+                Ở lại tiếp tục
+              </button>
+              <button
+                type="button"
+                onClick={editorExitPrompt.onConfirm}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 rounded-xl cursor-pointer transition-all shadow-2xs"
+              >
+                Thoát không lưu
+              </button>
+            </div>
           </div>
         </div>,
         document.body
@@ -2966,13 +3008,15 @@ export default function CRMDashboard({
                           setEditingPartnerLogo({
                             index: -1,
                             isNew: true,
-                            data: { name: "", type: "", image: "", website: "" }
+                            data: { name: "", type: "", image: "", website: "" },
+                            _snapshot: JSON.stringify({ name: "", type: "", image: "", website: "" })
                           });
                         } else if (cmsSubTab === "certifications") {
                           setEditingCertification({
                             index: -1,
                             isNew: true,
-                            data: { name: "", issuer: "", description: "", image: "" }
+                            data: { name: "", issuer: "", description: "", image: "" },
+                            _snapshot: JSON.stringify({ name: "", issuer: "", description: "", image: "" })
                           });
                         }
                       }}
@@ -3426,7 +3470,7 @@ export default function CRMDashboard({
                                   <div className="absolute top-2 right-2 flex gap-1 bg-white/95 backdrop-blur-3xs p-1 rounded-lg border border-stone-150 opacity-0 group-hover:opacity-100 transition-all duration-150">
                                     <button
                                       type="button"
-                                      onClick={() => setEditingPartnerLogo({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...logo } })}
+                                      onClick={() => setEditingPartnerLogo({ index: originalIndex >= 0 ? originalIndex : index, isNew: false, data: { ...logo }, _snapshot: JSON.stringify(logo) })}
                                       className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-emerald-green cursor-pointer"
                                       title="Sửa đối tác"
                                     >
@@ -3567,7 +3611,7 @@ export default function CRMDashboard({
                               </div>
                               <div className="flex items-center justify-end gap-1 px-3 py-2 border-t border-stone-100 bg-stone-50">
                                 <button
-                                  onClick={() => setEditingCertification({ index, isNew: false, data: { ...c } })}
+                                  onClick={() => setEditingCertification({ index, isNew: false, data: { ...c }, _snapshot: JSON.stringify(c) })}
                                   className="p-1.5 hover:bg-stone-200 rounded-lg text-stone-600 hover:text-emerald-green cursor-pointer transition-colors"
                                   title="Sửa chứng nhận"
                                 >
