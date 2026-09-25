@@ -2704,7 +2704,7 @@ export default function CRMDashboard({
                           setEditingPartnerLogo({
                             index: -1,
                             isNew: true,
-                            data: { name: "", type: "" }
+                            data: { name: "", type: "", image: "", website: "" }
                           });
                         }
                       }}
@@ -4641,12 +4641,15 @@ export default function CRMDashboard({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl border border-stone-150 max-w-xs w-full shadow-2xl overflow-hidden flex flex-col"
+              className="bg-white rounded-3xl border border-stone-150 max-w-md w-full shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
             >
               <div className="p-5 border-b border-stone-150 flex justify-between items-center bg-stone-50">
-                <h3 className="font-serif font-bold text-sm text-stone-950">
-                  {editingPartnerLogo.isNew ? "Thêm Đối Tác Mới" : "Sửa Đối Tác"}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-emerald-green" />
+                  <h3 className="font-serif font-bold text-base text-stone-950">
+                    {editingPartnerLogo.isNew ? "Thêm Đối Tác Mới" : "Sửa Đối Tác"}
+                  </h3>
+                </div>
                 <button
                   onClick={() => setEditingPartnerLogo(null)}
                   className="p-1 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
@@ -4655,9 +4658,23 @@ export default function CRMDashboard({
                 </button>
               </div>
 
-              <form onSubmit={handleSavePartnerLogo} className="p-5 space-y-4 text-left text-xs">
+              <form onSubmit={handleSavePartnerLogo} className="p-6 space-y-4 text-left text-xs overflow-y-auto">
+                {/* Logo preview */}
+                <div className="flex justify-center">
+                  <div className="w-28 h-28 rounded-2xl border border-stone-200 bg-stone-50 flex items-center justify-center overflow-hidden">
+                    {editingPartnerLogo.data.image ? (
+                      <img src={editingPartnerLogo.data.image} alt="Xem trước logo" className="max-w-[85%] max-h-[85%] object-contain" referrerPolicy="no-referrer" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-stone-300">
+                        <Briefcase className="w-8 h-8" />
+                        <span className="text-[9px] font-bold uppercase tracking-wider">Chưa có logo</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên đối tác / Thương hiệu</label>
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên đối tác / Thương hiệu *</label>
                   <input
                     type="text"
                     required
@@ -4669,7 +4686,7 @@ export default function CRMDashboard({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Phân loại / Mô tả</label>
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Phân loại / Mô tả *</label>
                   <input
                     type="text"
                     required
@@ -4681,7 +4698,7 @@ export default function CRMDashboard({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Hình ảnh Logo đối tác (Tùy chọn - Chọn file hoặc điền URL)</label>
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Logo đối tác (upload file hoặc dán URL)</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -4712,9 +4729,22 @@ export default function CRMDashboard({
                       />
                     </label>
                   </div>
+                  <p className="text-[10px] text-stone-400 font-light">Nên dùng logo nền trong suốt (PNG) để hiển thị đẹp nhất.</p>
                 </div>
 
-                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-5 -mb-5 pt-3 mt-4">
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Website đối tác (tùy chọn)</label>
+                  <input
+                    type="text"
+                    placeholder="https://..."
+                    value={editingPartnerLogo.data.website || ""}
+                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, website: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                  />
+                  <p className="text-[10px] text-stone-400 font-light">Có link thì logo trên website sẽ bấm mở được trang đối tác.</p>
+                </div>
+
+                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-6 -mb-6 pt-3 mt-4">
                   <button
                     type="button"
                     onClick={() => setEditingPartnerLogo(null)}

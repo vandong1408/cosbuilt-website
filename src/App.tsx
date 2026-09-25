@@ -2252,13 +2252,63 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           {localizedAboutSections.partners.description}
                         </p>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 pt-4">
-                        {ABOUT_SECTIONS.partners.logos.map((logo, idx) => (
-                          <div key={idx} className="bg-stone-50 border border-stone-200 rounded-2xl p-5 text-center flex flex-col justify-center items-center h-28 hover:shadow-xs transition-all">
-                            <span className="font-serif font-black text-stone-750 text-sm">{logo.name}</span>
-                            <span className="text-[10px] text-stone-400 font-bold uppercase mt-1 tracking-wider">{logo.type}</span>
-                          </div>
-                        ))}
+                      {/* Trust strip */}
+                      <div className="flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-stone-150 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className="font-serif font-black text-2xl text-emerald-green">{customLogos.length}+</span>
+                          <span className="text-[11px] text-stone-500 font-medium leading-tight">Thương hiệu &amp;<br />nhãn hàng đối tác</span>
+                        </div>
+                        <div className="hidden sm:block w-px h-9 bg-stone-200" />
+                        <div className="flex items-center gap-2">
+                          <span className="font-serif font-black text-2xl text-emerald-green">250+</span>
+                          <span className="text-[11px] text-stone-500 font-medium leading-tight">Spa, clinic &amp; nhà<br />thuốc tin dùng</span>
+                        </div>
+                        <div className="hidden lg:block w-px h-9 bg-stone-200" />
+                        <div className="flex items-center gap-2">
+                          <span className="font-serif font-black text-2xl text-emerald-green">Watsons</span>
+                          <span className="text-[11px] text-stone-500 font-medium leading-tight">Gia công PB Line<br />Đông Nam Á &amp; HK</span>
+                        </div>
+                      </div>
+
+                      {/* Partner logo wall */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+                        {customLogos.map((logo, idx) => {
+                          const initials = (logo.name || "?")
+                            .replace(/\([^)]*\)/g, " ")
+                            .split(/\s+/)
+                            .filter(Boolean)
+                            .slice(0, 2)
+                            .map((w: string) => w[0])
+                            .join("")
+                            .toUpperCase();
+                          const CardTag: any = logo.website ? "a" : "div";
+                          return (
+                            <CardTag
+                              key={idx}
+                              {...(logo.website ? { href: logo.website, target: "_blank", rel: "noopener noreferrer" } : {})}
+                              className="group bg-white border border-stone-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3.5 hover:shadow-lg hover:border-emerald-green/40 hover:-translate-y-0.5 transition-all duration-300"
+                            >
+                              <div className="h-16 w-full flex items-center justify-center">
+                                {logo.image ? (
+                                  <img
+                                    src={logo.image}
+                                    alt={logo.name}
+                                    className="max-h-14 max-w-[85%] object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                                    referrerPolicy="no-referrer"
+                                  />
+                                ) : (
+                                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-stone-900 to-stone-700 text-white flex items-center justify-center font-serif font-black text-lg tracking-wide shrink-0 shadow-sm">
+                                    {initials}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="space-y-1">
+                                <div className="font-serif font-bold text-stone-900 text-sm leading-tight">{logo.name}</div>
+                                <div className="text-[10px] text-stone-400 font-bold uppercase tracking-wider leading-snug">{logo.type}</div>
+                              </div>
+                            </CardTag>
+                          );
+                        })}
                       </div>
                     </section>
                   </motion.div>
