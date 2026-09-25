@@ -23,6 +23,7 @@ import {
   BookOpen, 
   Info,
   Calendar,
+  ShieldCheck,
   Layers,
   ArrowRight,
   Lock,
@@ -325,6 +326,7 @@ interface CRMDashboardProps {
   websiteLogo: any;
   footerLogo: any;
   researcherImage: string;
+  customCertifications: any[];
   customProducts: any[];
   sheetsConfig: any;
   setCustomBlogPosts: (posts: any[]) => void;
@@ -333,6 +335,7 @@ interface CRMDashboardProps {
   setWebsiteLogo: (logo: any) => void;
   setFooterLogo: (logo: any) => void;
   setResearcherImage: (url: string) => void;
+  setCustomCertifications: (certs: any[]) => void;
   setCustomProducts: (products: any[]) => void;
   setSheetsConfig: (config: any) => void;
   onTabChange: (tab: string) => void;
@@ -347,6 +350,7 @@ export default function CRMDashboard({
   websiteLogo,
   footerLogo,
   researcherImage,
+  customCertifications,
   customProducts,
   sheetsConfig,
   setCustomBlogPosts,
@@ -355,6 +359,7 @@ export default function CRMDashboard({
   setWebsiteLogo,
   setFooterLogo,
   setResearcherImage,
+  setCustomCertifications,
   setCustomProducts,
   setSheetsConfig,
   onTabChange,
@@ -562,7 +567,7 @@ export default function CRMDashboard({
 
   // Sync / Save dynamic changes helper
   const saveAllContent = async (
-    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any; footerLogo?: any; researcherImage?: string; products?: any[] },
+    payload: { articles?: any[]; images?: any[]; logos?: any[]; websiteLogo?: any; footerLogo?: any; researcherImage?: string; certifications?: any[]; products?: any[] },
     actionInfo?: { action: "add" | "update" | "delete"; sheetName: "Bài viết" | "Hình ảnh" | "Sản phẩm"; index?: number; data?: any }
   ) => {
     setIsSavingContent(true);
@@ -583,6 +588,7 @@ export default function CRMDashboard({
           if (payload.websiteLogo !== undefined) setWebsiteLogo(result.data.websiteLogo);
           if (payload.footerLogo !== undefined) setFooterLogo(result.data.footerLogo);
           if (payload.researcherImage !== undefined) setResearcherImage(result.data.researcherImage);
+          if (payload.certifications !== undefined) setCustomCertifications(result.data.certifications);
           if (payload.products !== undefined) setCustomProducts(result.data.products);
           
           // 2. If logged in with Google and a Spreadsheet ID exists, perform direct sync!
@@ -848,6 +854,28 @@ export default function CRMDashboard({
     }
   };
 
+  // Certifications management
+  const [editingCertification, setEditingCertification] = useState<{ index: number; isNew: boolean; data: any } | null>(null);
+  const handleSaveCertification = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingCertification) return;
+    const next = [...customCertifications];
+    if (editingCertification.isNew) next.push(editingCertification.data);
+    else next[editingCertification.index] = editingCertification.data;
+    const success = await saveAllContent({ certifications: next });
+    if (success) setEditingCertification(null);
+  };
+  const handleDeleteCertification = (index: number) => {
+    setDeleteConfirm({
+      title: "Xóa chứng nhận",
+      message: "Bạn có chắc muốn xóa chứng nhận này khỏi website?",
+      onConfirm: async () => {
+        await saveAllContent({ certifications: customCertifications.filter((_, i) => i !== index) });
+        setDeleteConfirm(null);
+      }
+    });
+  };
+
   const handleDeletePartnerLogo = async (index: number) => {
     let newLogos = [...customLogos];
     newLogos.splice(index, 1);
@@ -883,7 +911,7 @@ export default function CRMDashboard({
   };
 
   const [activeSubTab, setActiveSubTab] = useState<"leads" | "sheets" | "content" | "admin-settings">("leads");
-  const [cmsSubTab, setCmsSubTab] = useState<"articles" | "products" | "images" | "partners" | "logo">("articles");
+  const [cmsSubTab, setCmsSubTab] = useState<"articles" | "products" | "images" | "partners" | "certifications" | "logo">("articles");
   const [cmsSearchTerm, setCmsSearchTerm] = useState("");
   const [cmsArticlesPage, setCmsArticlesPage] = useState(1);
   const [cmsProductsPage, setCmsProductsPage] = useState(1);
@@ -1748,6 +1776,124 @@ export default function CRMDashboard({
         document.body
       )}
 
+      {/* CERTIFICATION EDITOR (dashboard root, outside AnimatePresence) */}
+      {editingCertification && createPortal(
+        <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-stone-150 max-w-md w-full shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            <div className="p-5 border-b border-stone-150 flex justify-between items-center bg-stone-50">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-emerald-green" />
+                <h3 className="font-serif font-bold text-base text-stone-950">
+                  {editingCertification.isNew ? "Thêm Chứng Nhận" : "Sửa Chứng Nhận"}
+                </h3>
+              </div>
+              <button
+                onClick={() => setEditingCertification(null)}
+                className="p-1 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveCertification} className="p-6 space-y-4 text-left text-xs overflow-y-auto">
+              {/* Document preview */}
+              <div className="flex justify-center">
+                <div className="w-40 h-32 rounded-2xl border border-stone-200 bg-stone-50 flex items-center justify-center overflow-hidden">
+                  {editingCertification.data.image ? (
+                    <img src={editingCertification.data.image} alt="Xem trước giấy tờ" className="max-w-[90%] max-h-[90%] object-contain" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-1 text-stone-300">
+                      <ShieldCheck className="w-9 h-9" />
+                      <span className="text-[9px] font-bold uppercase tracking-wider">Chưa có giấy tờ</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên chứng nhận *</label>
+                <input
+                  type="text" required
+                  placeholder="VD: CGMP ASEAN / ISO 22716"
+                  value={editingCertification.data.name}
+                  onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, name: e.target.value } } : null)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đơn vị cấp *</label>
+                <input
+                  type="text" required
+                  placeholder="VD: UNI-CERT (Mã: KU0025-GMP)"
+                  value={editingCertification.data.issuer}
+                  onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, issuer: e.target.value } } : null)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Mô tả</label>
+                <textarea
+                  rows={3}
+                  placeholder="Nội dung / phạm vi của chứng nhận..."
+                  value={editingCertification.data.description}
+                  onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, description: e.target.value } } : null)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none resize-y"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Ảnh giấy chứng nhận (upload file hoặc dán URL)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Upload file bên cạnh hoặc dán link ảnh..."
+                    value={editingCertification.data.image || ""}
+                    onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                    className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                  />
+                  <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                    {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                    <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                    <input
+                      type="file" accept="image/*" className="hidden" disabled={isUploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try { const url = await handleImageUpload(file); setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, image: url } } : null); }
+                          catch (err: any) { alert("Lỗi tải ảnh lên: " + err.message); }
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                <p className="text-[10px] text-stone-400 font-light">Chụp/scan giấy chứng nhận rồi tải lên — khách bấm vào sẽ xem được bản đầy đủ.</p>
+              </div>
+
+              <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-6 -mb-6 pt-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setEditingCertification(null)}
+                  className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingContent}
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1 shadow-2xs"
+                >
+                  {isSavingContent ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                  <span>Lưu chứng nhận</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* Main Back-office Workspace */}
       <div id="crm-admin-panel" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Title Header with Elegant Stats Overview */}
@@ -2586,6 +2732,7 @@ export default function CRMDashboard({
                       { id: "products", label: "Sản phẩm", count: customProducts.length, icon: Sparkles, desc: "Mẫu thử gia công" },
                       { id: "images", label: "Thư viện ảnh", count: customImages.length + customProducts.length + customBlogPosts.length, icon: Image, desc: "Tất cả ảnh: gallery, sản phẩm, bài viết" },
                       { id: "partners", label: "Đối tác liên kết", count: customLogos.length, icon: Briefcase, desc: "Logo thương hiệu" },
+                      { id: "certifications", label: "Chứng nhận", count: customCertifications.length, icon: ShieldCheck, desc: "Chứng nhận & giấy tờ" },
                       { id: "logo", label: "Cấu hình Logo", count: null, icon: Layers, desc: "Logo & Slogan chính" },
                     ].map((subTab) => {
                       const Icon = subTab.icon;
@@ -2637,6 +2784,7 @@ export default function CRMDashboard({
                           cmsSubTab === "articles" ? "Tìm theo tiêu đề, tóm tắt, tác giả..." :
                           cmsSubTab === "products" ? "Tìm theo tên sản phẩm, danh mục, phòng LAB..." :
                           cmsSubTab === "images" ? "Tìm theo tiêu đề, danh mục ảnh..." :
+                          cmsSubTab === "certifications" ? "Tìm theo tên chứng nhận, đơn vị cấp..." :
                           "Tìm kiếm tên đối tác, loại đối tác..."
                         }
                         value={cmsSearchTerm}
@@ -2706,12 +2854,18 @@ export default function CRMDashboard({
                             isNew: true,
                             data: { name: "", type: "", image: "", website: "" }
                           });
+                        } else if (cmsSubTab === "certifications") {
+                          setEditingCertification({
+                            index: -1,
+                            isNew: true,
+                            data: { name: "", issuer: "", description: "", image: "" }
+                          });
                         }
                       }}
                       className="w-full sm:w-auto bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shrink-0"
                     >
                       <Plus className="w-4 h-4" />
-                      <span>Thêm {cmsSubTab === "articles" ? "bài viết" : cmsSubTab === "products" ? "sản phẩm" : cmsSubTab === "images" ? "hình ảnh" : "đối tác"}</span>
+                      <span>Thêm {cmsSubTab === "articles" ? "bài viết" : cmsSubTab === "products" ? "sản phẩm" : cmsSubTab === "images" ? "hình ảnh" : cmsSubTab === "certifications" ? "chứng nhận" : "đối tác"}</span>
                     </button>
                   </div>
                 )}
@@ -3239,6 +3393,82 @@ export default function CRMDashboard({
                               </button>
                             </div>
                           )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Sub-tab: Certifications / Chứng nhận */}
+                {cmsSubTab === "certifications" && (() => {
+                  const q = cmsSearchTerm.toLowerCase();
+                  const rows = customCertifications
+                    .map((c, index) => ({ c, index }))
+                    .filter(({ c }) => !q || (c.name || "").toLowerCase().includes(q) || (c.issuer || "").toLowerCase().includes(q));
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                        <div className="text-left">
+                          <h3 className="font-serif font-bold text-lg text-stone-900">Chứng Nhận & Giấy Tờ ({customCertifications.length})</h3>
+                          <p className="text-stone-400 text-xs font-light">Các chứng nhận tiêu chuẩn hiển thị ở mục "Chứng nhận CGMP" trang Giới thiệu. Tải ảnh/giấy tờ scan để khách xem trực tiếp.</p>
+                        </div>
+                      </div>
+
+                      {rows.length === 0 ? (
+                        <div className="text-center py-14 border border-dashed border-stone-200 rounded-2xl bg-stone-50 space-y-3">
+                          <div className="w-14 h-14 rounded-full bg-emerald-green-light text-emerald-green flex items-center justify-center mx-auto">
+                            <ShieldCheck className="w-7 h-7" />
+                          </div>
+                          <p className="text-stone-500 text-xs font-light max-w-xs mx-auto">
+                            {customCertifications.length === 0
+                              ? 'Chưa có chứng nhận nào. Bấm "Thêm chứng nhận" để tạo.'
+                              : `Không tìm thấy chứng nhận khớp với "${cmsSearchTerm}".`}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {rows.map(({ c, index }) => (
+                            <div key={index} className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-md hover:border-emerald-green/30 transition-all flex flex-col">
+                              <div className="flex gap-3 p-3">
+                                <div className="w-24 h-24 rounded-xl overflow-hidden bg-stone-50 border border-stone-150 shrink-0 flex items-center justify-center">
+                                  {c.image ? (
+                                    <img src={c.image} alt={c.name} className="max-w-full max-h-full object-contain p-1" referrerPolicy="no-referrer" />
+                                  ) : (
+                                    <div className="flex flex-col items-center gap-1 text-emerald-green/40">
+                                      <ShieldCheck className="w-8 h-8" />
+                                      <span className="text-[7px] font-bold uppercase text-stone-300">Chưa có ảnh</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="min-w-0 flex-1 text-left space-y-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.image ? "bg-emerald-green-light text-emerald-green-dark" : "bg-amber-100 text-amber-700"}`}>
+                                      {c.image ? "Có giấy tờ" : "Thiếu giấy tờ"}
+                                    </span>
+                                  </div>
+                                  <h4 className="font-bold text-xs text-stone-900 leading-tight" title={c.name}>{c.name || "(Chưa có tên)"}</h4>
+                                  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wide truncate" title={c.issuer}>{c.issuer}</p>
+                                  <p className="text-[11px] text-stone-500 font-light line-clamp-2">{c.description}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-end gap-1 px-3 py-2 border-t border-stone-100 bg-stone-50">
+                                <button
+                                  onClick={() => setEditingCertification({ index, isNew: false, data: { ...c } })}
+                                  className="p-1.5 hover:bg-stone-200 rounded-lg text-stone-600 hover:text-emerald-green cursor-pointer transition-colors"
+                                  title="Sửa chứng nhận"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCertification(index)}
+                                  className="p-1.5 hover:bg-red-50 rounded-lg text-stone-600 hover:text-red-600 cursor-pointer transition-colors"
+                                  title="Xóa chứng nhận"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>

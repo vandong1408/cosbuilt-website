@@ -325,6 +325,7 @@ export default function App() {
   const [customBlogPosts, setCustomBlogPosts] = useState<BlogPost[]>(BLOG_POSTS);
   const [customImages, setCustomImages] = useState<any[]>(DEFAULT_GALLERY_IMAGES);
   const [customLogos, setCustomLogos] = useState<any[]>(ABOUT_SECTIONS.partners.logos);
+  const [customCertifications, setCustomCertifications] = useState<any[]>(ABOUT_SECTIONS.certifications.list);
   const [websiteLogo, setWebsiteLogo] = useState<any>({ name: "COSBUILT" });
   const [footerLogo, setFooterLogo] = useState<any>({ name: "COSBUILT" });
   // Admin-managed portrait for the R&D lead researcher (Hur Beom-Chul).
@@ -1170,6 +1171,9 @@ export default function App() {
           }
           if (typeof data.researcherImage === "string") {
             setResearcherImage(data.researcherImage);
+          }
+          if (Array.isArray(data.certifications) && data.certifications.length > 0) {
+            setCustomCertifications(data.certifications);
           }
           if (data.products && data.products.length > 0) {
             setCustomProducts(data.products);
@@ -2170,16 +2174,40 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         <h2 className="text-2xl font-serif font-bold text-stone-900">{localizedAboutSections.certifications.subtitle}</h2>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {localizedAboutSections.certifications.list.map((cert, idx) => (
-                          <div key={idx} className="bg-white border border-stone-200 p-6 rounded-2xl shadow-2xs space-y-3 text-left animate-in fade-in duration-300">
-                            <div className="w-10 h-10 rounded-full bg-emerald-green/10 flex items-center justify-center">
-                              <ShieldCheck className="w-5 h-5 text-emerald-green" />
+                        {customCertifications.map((cert, idx) => (
+                          <div key={idx} className="group bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-2xs hover:shadow-lg hover:border-emerald-green/30 transition-all duration-300 flex flex-col text-left">
+                            {/* Certificate document preview */}
+                            <div className="relative aspect-[4/3] bg-stone-50 border-b border-stone-100 overflow-hidden">
+                              {cert.image ? (
+                                <a href={cert.image} target="_blank" rel="noopener noreferrer" className="block w-full h-full" title="Bấm để xem giấy chứng nhận">
+                                  <img
+                                    src={cert.image}
+                                    alt={cert.name}
+                                    className="w-full h-full object-contain p-3 group-hover:scale-[1.03] transition-transform duration-500"
+                                    referrerPolicy="no-referrer"
+                                  />
+                                  <span className="absolute bottom-2 right-2 bg-stone-950/70 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-1 rounded-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                    <Search className="w-2.5 h-2.5" /> Xem giấy tờ
+                                  </span>
+                                </a>
+                              ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-stone-50 to-stone-100">
+                                  <ShieldCheck className="w-11 h-11 text-emerald-green/30" />
+                                  <span className="text-[9px] font-bold uppercase tracking-widest text-stone-300">Giấy tờ đang cập nhật</span>
+                                </div>
+                              )}
+                              <span className="absolute top-2.5 left-2.5 w-8 h-8 rounded-full bg-emerald-green text-white flex items-center justify-center shadow-md">
+                                <ShieldCheck className="w-4 h-4" />
+                              </span>
                             </div>
-                            <div>
-                              <h3 className="font-serif font-bold text-sm text-stone-900">{cert.name}</h3>
-                              <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider">{cert.issuer}</p>
+                            {/* Text */}
+                            <div className="p-5 space-y-2 flex-1">
+                              <div>
+                                <h3 className="font-serif font-bold text-sm text-stone-900 leading-tight">{cert.name}</h3>
+                                <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">{cert.issuer}</p>
+                              </div>
+                              <p className="text-stone-500 text-xs font-light leading-relaxed">{cert.description}</p>
                             </div>
-                            <p className="text-stone-500 text-xs font-light leading-relaxed">{cert.description}</p>
                           </div>
                         ))}
                       </div>
@@ -4350,6 +4378,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 customBlogPosts={customBlogPosts}
                 customImages={customImages}
                 customLogos={customLogos}
+                customCertifications={customCertifications}
                 websiteLogo={websiteLogo}
                 footerLogo={footerLogo}
                 researcherImage={researcherImage}
@@ -4358,6 +4387,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 setCustomBlogPosts={setCustomBlogPosts}
                 setCustomImages={setCustomImages}
                 setCustomLogos={setCustomLogos}
+                setCustomCertifications={setCustomCertifications}
                 setWebsiteLogo={setWebsiteLogo}
                 setFooterLogo={setFooterLogo}
                 setResearcherImage={setResearcherImage}

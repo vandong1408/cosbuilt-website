@@ -11,6 +11,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
     websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
     footerLogo: config.footerLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
     researcherImage: config.researcherImage || "",
+    certifications: config.certifications || [],
     products: config.products || []
   });
 };
@@ -21,7 +22,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   if (unauthorized) return unauthorized;
 
   try {
-    const { articles, images, logos, websiteLogo, footerLogo, researcherImage, products, actionInfo } = await request.json<any>();
+    const { articles, images, logos, websiteLogo, footerLogo, researcherImage, certifications, products, actionInfo } = await request.json<any>();
     const config = await loadSheetsConfig(env.DB);
 
     if (articles !== undefined) config.articles = articles;
@@ -30,6 +31,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
     if (websiteLogo !== undefined) config.websiteLogo = websiteLogo;
     if (footerLogo !== undefined) config.footerLogo = footerLogo;
     if (researcherImage !== undefined) config.researcherImage = researcherImage;
+    if (certifications !== undefined) config.certifications = certifications;
     if (products !== undefined) config.products = products;
 
     await saveSheetsConfig(env.DB, config);
@@ -64,6 +66,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
         websiteLogo: config.websiteLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
         footerLogo: config.footerLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
         researcherImage: config.researcherImage || "",
+        certifications: config.certifications || [],
         products: config.products || []
       }
     });
