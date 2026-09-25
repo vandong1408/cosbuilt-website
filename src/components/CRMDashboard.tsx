@@ -1776,60 +1776,71 @@ export default function CRMDashboard({
         document.body
       )}
 
-      {/* CERTIFICATION EDITOR (dashboard root, outside AnimatePresence) */}
+      {/* FULL-PAGE CERTIFICATION EDITOR (dashboard root, outside AnimatePresence) */}
       {editingCertification && createPortal(
-        <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-stone-150 max-w-md w-full shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-            <div className="p-5 border-b border-stone-150 flex justify-between items-center bg-stone-50">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-green" />
-                <h3 className="font-serif font-bold text-base text-stone-950">
-                  {editingCertification.isNew ? "Thêm Chứng Nhận" : "Sửa Chứng Nhận"}
-                </h3>
-              </div>
+        <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col">
+          <div className="px-5 sm:px-8 py-4 border-b border-stone-200 flex justify-between items-center bg-white shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
               <button
+                type="button"
                 onClick={() => setEditingCertification(null)}
-                className="p-1 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-emerald-green transition-colors cursor-pointer shrink-0"
               >
-                <XCircle className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4" />
+                Quay lại danh sách
               </button>
+              <span className="w-px h-5 bg-stone-200 hidden sm:block" />
+              <h3 className="font-serif font-bold text-base sm:text-lg text-stone-950 truncate">
+                {editingCertification.isNew ? "Thêm Chứng Nhận" : "Sửa Chứng Nhận"}
+              </h3>
             </div>
+            <button
+              type="submit"
+              form="cert-editor-form"
+              className="flex items-center gap-1.5 bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs shrink-0"
+            >
+              <Save className="w-3.5 h-3.5" />
+              Lưu chứng nhận
+            </button>
+          </div>
 
-            <form onSubmit={handleSaveCertification} className="p-6 space-y-4 text-left text-xs overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
+            <form id="cert-editor-form" onSubmit={handleSaveCertification} className="max-w-3xl mx-auto p-5 sm:p-8 space-y-5 text-left text-xs sm:text-sm">
               {/* Document preview */}
               <div className="flex justify-center">
-                <div className="w-40 h-32 rounded-2xl border border-stone-200 bg-stone-50 flex items-center justify-center overflow-hidden">
+                <div className="w-full max-w-md h-56 rounded-2xl border border-stone-200 bg-white flex items-center justify-center overflow-hidden">
                   {editingCertification.data.image ? (
-                    <img src={editingCertification.data.image} alt="Xem trước giấy tờ" className="max-w-[90%] max-h-[90%] object-contain" referrerPolicy="no-referrer" />
+                    <img src={editingCertification.data.image} alt="Xem trước giấy tờ" className="max-w-[92%] max-h-[92%] object-contain" referrerPolicy="no-referrer" />
                   ) : (
-                    <div className="flex flex-col items-center gap-1 text-stone-300">
-                      <ShieldCheck className="w-9 h-9" />
-                      <span className="text-[9px] font-bold uppercase tracking-wider">Chưa có giấy tờ</span>
+                    <div className="flex flex-col items-center gap-2 text-stone-300">
+                      <ShieldCheck className="w-12 h-12" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Chưa có giấy tờ</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên chứng nhận *</label>
-                <input
-                  type="text" required
-                  placeholder="VD: CGMP ASEAN / ISO 22716"
-                  value={editingCertification.data.name}
-                  onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, name: e.target.value } } : null)}
-                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đơn vị cấp *</label>
-                <input
-                  type="text" required
-                  placeholder="VD: UNI-CERT (Mã: KU0025-GMP)"
-                  value={editingCertification.data.issuer}
-                  onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, issuer: e.target.value } } : null)}
-                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên chứng nhận *</label>
+                  <input
+                    type="text" required
+                    placeholder="VD: CGMP ASEAN / ISO 22716"
+                    value={editingCertification.data.name}
+                    onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, name: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Đơn vị cấp *</label>
+                  <input
+                    type="text" required
+                    placeholder="VD: UNI-CERT (Mã: KU0025-GMP)"
+                    value={editingCertification.data.issuer}
+                    onChange={(e) => setEditingCertification(prev => prev ? { ...prev, data: { ...prev.data, issuer: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
@@ -1870,23 +1881,126 @@ export default function CRMDashboard({
                 </div>
                 <p className="text-[10px] text-stone-400 font-light">Chụp/scan giấy chứng nhận rồi tải lên — khách bấm vào sẽ xem được bản đầy đủ.</p>
               </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
 
-              <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-6 -mb-6 pt-3 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setEditingCertification(null)}
-                  className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSavingContent}
-                  className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1 shadow-2xs"
-                >
-                  {isSavingContent ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-                  <span>Lưu chứng nhận</span>
-                </button>
+      {/* FULL-PAGE PARTNER EDITOR (dashboard root, outside AnimatePresence) */}
+      {editingPartnerLogo && createPortal(
+        <div className="fixed inset-0 z-50 bg-stone-100 flex flex-col">
+          <div className="px-5 sm:px-8 py-4 border-b border-stone-200 flex justify-between items-center bg-white shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={() => setEditingPartnerLogo(null)}
+                className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-emerald-green transition-colors cursor-pointer shrink-0"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Quay lại danh sách
+              </button>
+              <span className="w-px h-5 bg-stone-200 hidden sm:block" />
+              <h3 className="font-serif font-bold text-base sm:text-lg text-stone-950 truncate">
+                {editingPartnerLogo.isNew ? "Thêm Đối Tác Mới" : "Sửa Đối Tác"}
+              </h3>
+            </div>
+            <button
+              type="submit"
+              form="partner-editor-form"
+              className="flex items-center gap-1.5 bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs shrink-0"
+            >
+              <Save className="w-3.5 h-3.5" />
+              Lưu đối tác
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
+            <form id="partner-editor-form" onSubmit={handleSavePartnerLogo} className="max-w-3xl mx-auto p-5 sm:p-8 space-y-5 text-left text-xs sm:text-sm">
+              {/* Logo preview */}
+              <div className="flex justify-center">
+                <div className="w-40 h-40 rounded-2xl border border-stone-200 bg-white flex items-center justify-center overflow-hidden">
+                  {editingPartnerLogo.data.image ? (
+                    <img src={editingPartnerLogo.data.image} alt="Xem trước logo" className="max-w-[85%] max-h-[85%] object-contain" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-1.5 text-stone-300">
+                      <Briefcase className="w-10 h-10" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Chưa có logo</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên đối tác / Thương hiệu *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ví dụ: Luxury Spa Group"
+                    value={editingPartnerLogo.data.name}
+                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, name: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Phân loại / Mô tả *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ví dụ: Thương hiệu Spa cao cấp"
+                    value={editingPartnerLogo.data.type}
+                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, type: e.target.value } } : null)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Logo đối tác (upload file hoặc dán URL)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Có thể upload file bên cạnh hoặc điền link..."
+                    value={editingPartnerLogo.data.image || ""}
+                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
+                    className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                  />
+                  <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
+                    {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
+                    <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={isUploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try {
+                            const url = await handleImageUpload(file);
+                            setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, image: url } } : null);
+                          } catch (err: any) {
+                            alert("Lỗi tải ảnh lên: " + err.message);
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                <p className="text-[10px] text-stone-400 font-light">Nên dùng logo nền trong suốt (PNG) để hiển thị đẹp nhất.</p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Website đối tác (tùy chọn)</label>
+                <input
+                  type="text"
+                  placeholder="https://..."
+                  value={editingPartnerLogo.data.website || ""}
+                  onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, website: e.target.value } } : null)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
+                />
+                <p className="text-[10px] text-stone-400 font-light">Có link thì logo trên website sẽ bấm mở được trang đối tác.</p>
               </div>
             </form>
           </div>
@@ -4864,137 +4978,6 @@ export default function CRMDashboard({
           document.body
         )}
 
-        {/* CMS: EDIT PARTNER LOGO MODAL */}
-        {editingPartnerLogo && (
-          <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl border border-stone-150 max-w-md w-full shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
-            >
-              <div className="p-5 border-b border-stone-150 flex justify-between items-center bg-stone-50">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-emerald-green" />
-                  <h3 className="font-serif font-bold text-base text-stone-950">
-                    {editingPartnerLogo.isNew ? "Thêm Đối Tác Mới" : "Sửa Đối Tác"}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setEditingPartnerLogo(null)}
-                  className="p-1 hover:bg-stone-200 rounded-full text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
-                >
-                  <XCircle className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSavePartnerLogo} className="p-6 space-y-4 text-left text-xs overflow-y-auto">
-                {/* Logo preview */}
-                <div className="flex justify-center">
-                  <div className="w-28 h-28 rounded-2xl border border-stone-200 bg-stone-50 flex items-center justify-center overflow-hidden">
-                    {editingPartnerLogo.data.image ? (
-                      <img src={editingPartnerLogo.data.image} alt="Xem trước logo" className="max-w-[85%] max-h-[85%] object-contain" referrerPolicy="no-referrer" />
-                    ) : (
-                      <div className="flex flex-col items-center gap-1 text-stone-300">
-                        <Briefcase className="w-8 h-8" />
-                        <span className="text-[9px] font-bold uppercase tracking-wider">Chưa có logo</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Tên đối tác / Thương hiệu *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="ví dụ: Luxury Spa Group"
-                    value={editingPartnerLogo.data.name}
-                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, name: e.target.value } } : null)}
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Phân loại / Mô tả *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="ví dụ: Thương hiệu Spa cao cấp"
-                    value={editingPartnerLogo.data.type}
-                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, type: e.target.value } } : null)}
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Logo đối tác (upload file hoặc dán URL)</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Có thể upload file bên cạnh hoặc điền link..."
-                      value={editingPartnerLogo.data.image || ""}
-                      onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, image: e.target.value } } : null)}
-                      className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
-                    />
-                    <label className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 select-none">
-                      {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
-                      <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        disabled={isUploading}
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            try {
-                              const url = await handleImageUpload(file);
-                              setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, image: url } } : null);
-                            } catch (err: any) {
-                              alert("Lỗi tải ảnh lên: " + err.message);
-                            }
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-                  <p className="text-[10px] text-stone-400 font-light">Nên dùng logo nền trong suốt (PNG) để hiển thị đẹp nhất.</p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Website đối tác (tùy chọn)</label>
-                  <input
-                    type="text"
-                    placeholder="https://..."
-                    value={editingPartnerLogo.data.website || ""}
-                    onChange={(e) => setEditingPartnerLogo(prev => prev ? { ...prev, data: { ...prev.data, website: e.target.value } } : null)}
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-green focus:outline-none font-mono text-[11px]"
-                  />
-                  <p className="text-[10px] text-stone-400 font-light">Có link thì logo trên website sẽ bấm mở được trang đối tác.</p>
-                </div>
-
-                <div className="p-4 border-t border-stone-150 bg-stone-50 flex gap-2 justify-end -mx-6 -mb-6 pt-3 mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setEditingPartnerLogo(null)}
-                    className="bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSavingContent}
-                    className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-1 shadow-2xs"
-                  >
-                    {isSavingContent ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-                    <span>Lưu đối tác</span>
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
         {deleteConfirm && (
           <div className="fixed inset-0 z-55 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
             <motion.div
