@@ -213,10 +213,10 @@ export default function LandingPage() {
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
               className="rounded-3xl border border-white/15 bg-white/10 backdrop-blur-md p-5 md:p-6">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-satin-gold">{hero.stepsTitle}</p>
-              <ol className="mt-4 space-y-2.5">
+              <ol className="mt-4 space-y-2">
                 {hero.steps.map((s, i) => (
-                  <li key={i} className="flex items-center gap-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-green text-[13px] font-bold text-white">{pad(i + 1)}</span>
+                  <li key={i} className="flex items-center gap-3.5 rounded-2xl bg-white/5 border border-white/10 px-3.5 py-2.5">
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-emerald-green text-xs font-bold text-white">{pad(i + 1)}</span>
                     <span>
                       <span className="block text-sm font-semibold text-white">{s.title}</span>
                       <span className="block text-xs text-stone-400">{s.desc}</span>
