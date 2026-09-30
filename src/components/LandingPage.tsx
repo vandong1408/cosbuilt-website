@@ -11,6 +11,7 @@ import {
   Gem, Lock, MapPin, MessageCircle, Palette, Phone, ShieldCheck, Sparkles, Truck,
 } from "lucide-react";
 import { ABOUT_SECTIONS } from "../data";
+import CertificateViewer from "./CertificateViewer";
 import { DEFAULT_LANDING, mergeLanding, safeHttpUrl, telHref, type LandingContent } from "../lib/landingContent";
 
 export const LANDING_PATH = "/catalogue";
@@ -79,6 +80,7 @@ export default function LandingPage() {
   const [researcherImage, setResearcherImage] = useState("");
   const [logos, setLogos] = useState({ dark: LOGO_DARK, white: LOGO_WHITE });
   const [activeCat, setActiveCat] = useState(0);
+  const [viewCert, setViewCert] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [scrolled, setScrolled] = useState(false);
 
@@ -422,7 +424,10 @@ export default function LandingPage() {
                 return (
                   <Reveal key={c.name + i} delay={i * 0.05} className="rounded-3xl border border-stone-100 bg-[#FAF8F5] p-6">
                     {c.image ? (
-                      <img src={c.image} alt={c.name} loading="lazy" className="mb-5 aspect-[3/4] w-full rounded-xl object-cover bg-white border border-stone-100" />
+                      <button type="button" onClick={() => setViewCert(i)} className="group relative mb-5 block w-full cursor-zoom-in" aria-label={`Xem ${c.name}`}>
+                        <img src={c.image} alt={c.name} loading="lazy" className="aspect-[3/4] w-full rounded-xl object-cover object-top bg-white border border-stone-100" />
+                        <span className="absolute bottom-2 right-2 rounded-full bg-stone-950/75 px-3 py-1.5 text-[11px] font-semibold text-white sm:opacity-0 sm:group-hover:opacity-100 transition">Xem giấy tờ</span>
+                      </button>
                     ) : (
                       <span className="grid h-12 w-12 place-items-center rounded-2xl bg-satin-gold-light text-satin-gold-dark"><Icon className="w-5 h-5" /></span>
                     )}
@@ -550,6 +555,8 @@ export default function LandingPage() {
           </div>
         </section>
       )}
+
+      <CertificateViewer docs={certs} index={viewCert} onClose={() => setViewCert(null)} onIndexChange={setViewCert} />
 
       <footer className="bg-stone-950 text-stone-400">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">

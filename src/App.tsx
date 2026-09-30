@@ -53,6 +53,7 @@ import Footer from "./components/Footer";
 import AIFormulaAdvisor from "./components/AIFormulaAdvisor";
 import CRMDashboard from "./components/CRMDashboard";
 import ResearcherProfile from "./components/ResearcherProfile";
+import CertificateViewer from "./components/CertificateViewer";
 import { useLanguage } from "./contexts/LanguageContext";
 
 import { 
@@ -1200,6 +1201,8 @@ export default function App() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [submittedCode, setSubmittedCode] = useState("");
+  // Giấy tờ đang mở trong khung xem (index trong customCertifications).
+  const [viewCertIndex, setViewCertIndex] = useState<number | null>(null);
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
   const [contactError, setContactError] = useState("");
 
@@ -2214,17 +2217,17 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             {/* Certificate document preview */}
                             <div className="relative aspect-[4/3] bg-stone-50 border-b border-stone-100 overflow-hidden">
                               {cert.image ? (
-                                <a href={cert.image} target="_blank" rel="noopener noreferrer" className="block w-full h-full" title={L("Bấm để xem giấy chứng nhận", "Click to view the certificate", "클릭하여 인증서 보기")}>
+                                <button type="button" onClick={() => setViewCertIndex(idx)} className="block w-full h-full cursor-zoom-in" title={L("Bấm để xem giấy chứng nhận", "Click to view the certificate", "클릭하여 인증서 보기")}>
                                   <img
                                     src={cert.image}
                                     alt={cert.name}
                                     className="w-full h-full object-contain p-3 group-hover:scale-[1.03] transition-transform duration-500"
                                     referrerPolicy="no-referrer"
                                   />
-                                  <span className="absolute bottom-2 right-2 bg-stone-950/70 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-1 rounded-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                                    <Search className="w-2.5 h-2.5" /> Xem giấy tờ
+                                  <span className="absolute bottom-2 right-2 bg-stone-950/70 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+                                    <Search className="w-3 h-3" /> {L("Xem giấy tờ", "View document", "문서 보기")}
                                   </span>
-                                </a>
+                                </button>
                               ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-stone-50 to-stone-100">
                                   <ShieldCheck className="w-11 h-11 text-emerald-green/30" />
@@ -4620,6 +4623,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
           </div>
         )}
       </AnimatePresence>
+
+      <CertificateViewer docs={customCertifications} index={viewCertIndex} onClose={() => setViewCertIndex(null)} onIndexChange={setViewCertIndex} />
 
       {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={footerLogo} />}
       
