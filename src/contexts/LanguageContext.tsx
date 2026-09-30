@@ -18,6 +18,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return "vi";
   });
 
+  // Thẻ <html lang> theo ngôn ngữ đang dùng (SEO + trình đọc màn hình).
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   const setLanguage = (lang: LanguageType) => {
     setLanguageState(lang);
     localStorage.setItem("cosbuilt_language", lang);

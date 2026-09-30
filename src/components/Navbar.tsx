@@ -49,7 +49,7 @@ export default function Navbar({
       <div className="bg-white border-b border-stone-200 text-stone-600 text-[11px] sm:text-xs py-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-3">
-            <span>{t("hotline")}: <strong>0966 373 686</strong></span>
+            <a href="tel:+84966373686" className="whitespace-nowrap hover:text-emerald-green">{t("hotline")}: <strong>0966 373 686</strong></a>
             <span className="text-stone-300">|</span>
             {/* Custom Premium Dropdown Language Selector */}
             <div className="relative z-50 flex items-center">
@@ -126,11 +126,11 @@ export default function Navbar({
             <span className="text-stone-300">|</span>
             <span>VNĐ</span>
           </div>
-          <div className="hidden lg:block text-stone-700 font-medium text-[11px] sm:text-xs">
+          <div className="hidden xl:block text-stone-700 font-medium text-[11px] sm:text-xs truncate">
             {t("accept_small_orders")}
           </div>
           <div className="flex items-center gap-3 text-[11px] sm:text-xs">
-            <span className="hidden md:inline">{t("free_delivery")}</span>
+            <span className="hidden lg:inline whitespace-nowrap">{t("free_delivery")}</span>
             {/* Removed CRM link */}
           </div>
         </div>
@@ -193,6 +193,7 @@ export default function Navbar({
             <div 
               onClick={onToggleSampleCart}
               className="relative p-2 text-stone-800 hover:bg-stone-100 rounded-full cursor-pointer transition-all"
+              aria-label={language === "en" ? "Sample cart" : language === "ko" ? "샘플 장바구니" : "Giỏ mẫu thử"}
             >
               <ShoppingBag className="w-6 h-6 text-stone-700" />
               <span className="absolute -top-0.5 -right-0.5 bg-emerald-green border border-white text-white text-[9px] font-bold rounded-full w-4.5 h-4.5 flex items-center justify-center shadow-xs">
@@ -203,7 +204,7 @@ export default function Navbar({
             {/* Hamburger menu for mobile */}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-stone-800 hover:bg-stone-100 rounded-lg transition-all"
+              className="lg:hidden p-2 text-stone-800 hover:bg-stone-100 rounded-lg transition-all"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6 text-emerald-green" /> : <Menu className="w-6 h-6 text-emerald-green" />}
@@ -213,7 +214,7 @@ export default function Navbar({
       </div>
 
       {/* Primary Navigation Bar */}
-      <nav className="hidden md:block bg-white border-t border-b border-stone-200">
+      <nav className="hidden lg:block bg-white border-t border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             
@@ -224,7 +225,7 @@ export default function Navbar({
               <div className="relative group">
                 <button 
                   onClick={() => onTabChange("categories")}
-                  className="bg-emerald-green hover:bg-emerald-green-dark text-white px-6 py-4 text-xs font-bold uppercase tracking-wider flex items-center gap-3 transition-all cursor-pointer"
+                  className="bg-emerald-green hover:bg-emerald-green-dark text-white px-4 xl:px-6 py-4 text-xs font-bold uppercase tracking-wider whitespace-nowrap flex items-center gap-2 xl:gap-3 transition-all cursor-pointer"
                 >
                   <Menu className="w-4 h-4 text-white" />
                   <span>{t("menu_directory")}</span>
@@ -243,13 +244,13 @@ export default function Navbar({
               </div>
 
               {/* Menus */}
-              <div className="flex items-center gap-1.5 ml-4">
+              <div className="flex items-center gap-0.5 xl:gap-1.5 ml-2 xl:ml-4">
                 
                 {/* Trang Chủ */}
                 <div className="py-4">
                   <button 
                     onClick={() => onTabChange("home")}
-                    className={`px-3 py-2 text-xs font-bold tracking-wider rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
+                    className={`px-2 xl:px-3 py-2 text-xs font-bold tracking-normal xl:tracking-wider whitespace-nowrap rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
                       activeTab === "home" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
@@ -261,7 +262,7 @@ export default function Navbar({
                 <div className="relative group py-4">
                   <button 
                     onClick={() => onTabChange("about")}
-                    className={`px-3 py-2 text-xs font-bold tracking-wider rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
+                    className={`px-2 xl:px-3 py-2 text-xs font-bold tracking-normal xl:tracking-wider whitespace-nowrap rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
                       activeTab === "about" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
@@ -281,7 +282,7 @@ export default function Navbar({
                 <div className="relative group py-4">
                   <button 
                     onClick={() => onTabChange("services")}
-                    className={`px-3 py-2 text-xs font-bold tracking-wider rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
+                    className={`px-2 xl:px-3 py-2 text-xs font-bold tracking-normal xl:tracking-wider whitespace-nowrap rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
                       activeTab === "services" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
@@ -303,7 +304,7 @@ export default function Navbar({
                 <div className="relative group py-4">
                   <button 
                     onClick={() => onTabChange("categories")}
-                    className={`px-3 py-2 text-xs font-bold tracking-wider rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
+                    className={`px-2 xl:px-3 py-2 text-xs font-bold tracking-normal xl:tracking-wider whitespace-nowrap rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
                       activeTab === "categories" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
@@ -327,7 +328,7 @@ export default function Navbar({
                   </div>
                   <button 
                     onClick={() => onTabChange("pricing")}
-                    className={`px-3 py-2 text-xs font-bold tracking-wider rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
+                    className={`px-2 xl:px-3 py-2 text-xs font-bold tracking-normal xl:tracking-wider whitespace-nowrap rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
                       activeTab === "pricing" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
@@ -339,7 +340,7 @@ export default function Navbar({
                 <div className="relative group py-4">
                   <button 
                     onClick={() => onTabChange("news")}
-                    className={`px-3 py-2 text-xs font-bold tracking-wider rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
+                    className={`px-2 xl:px-3 py-2 text-xs font-bold tracking-normal xl:tracking-wider whitespace-nowrap rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
                       activeTab === "news" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
@@ -347,8 +348,8 @@ export default function Navbar({
                     <ChevronDown className="w-3 h-3 opacity-60 group-hover:rotate-180 transition-transform" />
                   </button>
                   <div className="absolute top-full left-0 bg-white border border-stone-200 shadow-lg py-2 w-56 hidden group-hover:block z-50">
-                    <button onClick={() => onTabChange("news", "manufacturing-guide")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Cẩm nang gia công</button>
-                    <button onClick={() => onTabChange("news", "ingredient-trends")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">Xu hướng nguyên liệu</button>
+                    <button onClick={() => onTabChange("news", "manufacturing-guide")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{language === "en" ? "Manufacturing guides" : language === "ko" ? "제조 가이드" : "Cẩm nang gia công"}</button>
+                    <button onClick={() => onTabChange("news", "ingredient-trends")} className="w-full text-left px-4 py-2 text-xs text-stone-700 hover:text-emerald-green hover:bg-stone-50 transition-all font-medium">{language === "en" ? "Ingredient trends" : language === "ko" ? "원료 트렌드" : "Xu hướng nguyên liệu"}</button>
                   </div>
                 </div>
 
@@ -356,7 +357,7 @@ export default function Navbar({
                 <div className="py-4">
                   <button 
                     onClick={() => onTabChange("contact")}
-                    className={`px-3 py-2 text-xs font-bold tracking-wider rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
+                    className={`px-2 xl:px-3 py-2 text-xs font-bold tracking-normal xl:tracking-wider whitespace-nowrap rounded-lg transition-all flex items-center gap-1 cursor-pointer select-none ${
                       activeTab === "contact" ? "text-emerald-green font-extrabold" : "text-stone-800 hover:text-emerald-green"
                     }`}
                   >
@@ -375,7 +376,7 @@ export default function Navbar({
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-stone-200 p-4 space-y-4 absolute w-full left-0 top-full shadow-lg z-50">
+        <div className="lg:hidden bg-white border-t border-stone-200 p-4 space-y-4 absolute w-full left-0 top-full shadow-lg z-50">
           {/* Mobile search bar */}
           <form onSubmit={handleSearchSubmit} className="flex bg-stone-50 border border-stone-250 rounded-lg overflow-hidden">
             <input 

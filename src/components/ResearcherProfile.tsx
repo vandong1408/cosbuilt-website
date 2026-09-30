@@ -1,5 +1,6 @@
 import { Award, Briefcase, TrendingUp, Sparkles, CheckCircle } from "lucide-react";
 import { RESEARCHER_HUR } from "../data";
+import { useLanguage } from "../contexts/LanguageContext";
 
 /**
  * Rich profile card for Cosbuilt's lead R&D researcher (Hur Beom-Chul).
@@ -16,6 +17,8 @@ export default function ResearcherProfile({
   image?: string;
 }) {
   const portrait = image || profile.image;
+  const { language } = useLanguage();
+  const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);
   return (
     <div className="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
       {/* Header: portrait + intro */}
@@ -33,7 +36,7 @@ export default function ResearcherProfile({
               <div className="w-24 h-24 rounded-full border-2 border-emerald-green/40 bg-emerald-green/10 flex items-center justify-center">
                 <span className="font-serif font-black text-3xl text-emerald-green tracking-wider">{profile.initials}</span>
               </div>
-              <span className="text-stone-400 text-[10px] uppercase tracking-widest font-bold">Ảnh chân dung đang cập nhật</span>
+              <span className="text-stone-400 text-[10px] uppercase tracking-widest font-bold">{L("Ảnh chân dung đang cập nhật", "Portrait coming soon", "사진 업데이트 예정")}</span>
             </div>
           )}
         </div>
@@ -55,7 +58,7 @@ export default function ResearcherProfile({
         <div className="bg-white p-6 sm:p-8 text-left space-y-4">
           <div className="flex items-center gap-2">
             <Briefcase className="w-4 h-4 text-emerald-green shrink-0" />
-            <h4 className="font-bold text-xs uppercase tracking-wider text-stone-800">Kinh nghiệm chuyên môn</h4>
+            <h4 className="font-bold text-xs uppercase tracking-wider text-stone-800">{L("Kinh nghiệm chuyên môn", "Professional experience", "경력")}</h4>
           </div>
           <ul className="space-y-3">
             {profile.experience.map((exp, idx) => (
@@ -70,7 +73,7 @@ export default function ResearcherProfile({
         <div className="bg-white p-6 sm:p-8 text-left space-y-4">
           <div className="flex items-center gap-2">
             <Award className="w-4 h-4 text-emerald-green shrink-0" />
-            <h4 className="font-bold text-xs uppercase tracking-wider text-stone-800">Giải thưởng & Vinh danh</h4>
+            <h4 className="font-bold text-xs uppercase tracking-wider text-stone-800">{L("Giải thưởng & Vinh danh", "Awards & honours", "수상 경력")}</h4>
           </div>
           <ul className="space-y-3">
             {profile.awards.map((award, idx) => (
@@ -85,7 +88,7 @@ export default function ResearcherProfile({
         <div className="bg-white p-6 sm:p-8 text-left space-y-4">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-emerald-green shrink-0" />
-            <h4 className="font-bold text-xs uppercase tracking-wider text-stone-800">Thành tựu sản phẩm & doanh số</h4>
+            <h4 className="font-bold text-xs uppercase tracking-wider text-stone-800">{L("Thành tựu sản phẩm & doanh số", "Product & sales achievements", "제품 및 매출 성과")}</h4>
           </div>
           <ul className="space-y-3">
             {profile.achievements.map((item, idx) => (

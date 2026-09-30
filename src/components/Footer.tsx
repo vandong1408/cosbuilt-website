@@ -73,11 +73,11 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
             <h4 className="text-white font-bold text-xs tracking-wider uppercase border-b border-stone-800 pb-2">
               {t("footer_service_title")}
             </h4>
-            <ul className="space-y-2.5 text-xs text-stone-400">
+            <ul className="space-y-0.5 text-xs text-stone-400">
               <li>
                 <button 
                   onClick={() => onTabChange("services", "oem-odm")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <ArrowUpRight className="w-3 h-3 text-stone-600" /> {t("service_oem_odm")}
                 </button>
@@ -85,7 +85,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("services", "formula-development")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <ArrowUpRight className="w-3 h-3 text-stone-600" /> {t("service_rd")}
                 </button>
@@ -93,7 +93,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("services", "packaging-print")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <ArrowUpRight className="w-3 h-3 text-stone-600" /> {t("service_packaging")}
                 </button>
@@ -101,7 +101,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("services", "legal-service")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <ArrowUpRight className="w-3 h-3 text-stone-600" /> {t("service_legal")}
                 </button>
@@ -109,7 +109,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("services", "logistics")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <ArrowUpRight className="w-3 h-3 text-stone-600" /> {t("service_logistics")}
                 </button>
@@ -122,11 +122,11 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
             <h4 className="text-white font-bold text-xs tracking-wider uppercase border-b border-stone-800 pb-2">
               {t("footer_cat_title")}
             </h4>
-            <ul className="space-y-2.5 text-xs text-stone-400">
+            <ul className="space-y-0.5 text-xs text-stone-400">
               <li>
                 <button 
                   onClick={() => onTabChange("categories", "facial-care")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <CheckCircle className="w-3 h-3 text-stone-600" /> {t("cat_facial")}
                 </button>
@@ -134,7 +134,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("categories", "body-care")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <CheckCircle className="w-3 h-3 text-stone-600" /> {t("cat_body")}
                 </button>
@@ -142,7 +142,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("categories", "hair-care")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <CheckCircle className="w-3 h-3 text-stone-600" /> {t("cat_hair")}
                 </button>
@@ -150,7 +150,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("categories", "makeup")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <CheckCircle className="w-3 h-3 text-stone-600" /> {t("cat_makeup")}
                 </button>
@@ -158,7 +158,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("categories", "personal-care")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <CheckCircle className="w-3 h-3 text-stone-600" /> {t("cat_personal")}
                 </button>
@@ -166,7 +166,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
               <li>
                 <button 
                   onClick={() => onTabChange("categories", "new-tech")}
-                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left"
+                  className="hover:text-satin-gold transition-all flex items-center gap-1 cursor-pointer text-left py-1.5 min-h-[32px]"
                 >
                   <CheckCircle className="w-3 h-3 text-stone-600" /> {t("cat_new_tech")}
                 </button>
@@ -217,9 +217,9 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
             {t("footer_rights")}
           </div>
           <div className="flex gap-6">
-            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer">{t("footer_policy")}</button>
-            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer">{t("footer_terms")}</button>
-            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer">{t("footer_sitemap")}</button>
+            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer py-2">{t("footer_policy")}</button>
+            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer py-2">{t("footer_terms")}</button>
+            <button type="button" onClick={() => onTabChange("contact")} className="hover:text-stone-300 transition-all cursor-pointer py-2">{t("footer_sitemap")}</button>
           </div>
         </div>
       </div>

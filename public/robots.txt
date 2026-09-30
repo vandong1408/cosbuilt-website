@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /catalogue
+Disallow: /api/
+
+Sitemap: https://cosbuilt.vn/sitemap.xml

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+import { toEditorHtml } from '../lib/articleContent';
 
 interface RichTextEditorProps {
   value: string;
@@ -19,7 +20,8 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         placeholder: placeholder,
         modules: {
           toolbar: [
-            [{ 'header': [1, 2, false] }],
+            // H2/H3: trang bài viết đã có H1 (tên bài); H2/H3 tạo mục lục tự động.
+            [{ 'header': [2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
             [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
             ['link', 'image'],
@@ -33,7 +35,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       });
       
       if (value) {
-        quillInstance.current.clipboard.dangerouslyPasteHTML(value);
+        quillInstance.current.clipboard.dangerouslyPasteHTML(toEditorHtml(value));
       }
     }
   }, [onChange, placeholder]);
@@ -43,7 +45,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
     if (quillInstance.current && value !== quillInstance.current.root.innerHTML) {
       // This is tricky, needs to avoid infinite loops or resetting selection
       // Simple implementation:
-      quillInstance.current.clipboard.dangerouslyPasteHTML(value);
+      quillInstance.current.clipboard.dangerouslyPasteHTML(toEditorHtml(value));
     }
   }, [value]);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useState, useEffect, useMemo, useRef, FormEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
@@ -66,6 +66,10 @@ import {
 } from "./data";
 import { BlogPost, ManufacturingCategory, FormulaProduct, ProductPackaging } from "./types";
 import { slugify } from "./lib/slug";
+import { renderArticle } from "./lib/articleContent";
+
+// Bài nháp (status "draft") không hiển thị ngoài site.
+const isPublishedPost = (post: any) => (post?.status || "published") !== "draft";
 
 export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   if (prod.packagings && prod.packagings.length > 0) {
@@ -318,6 +322,8 @@ const blogPath = (post: { slug?: string; title: string }): string =>
 
 export default function App() {
   const { t, language } = useLanguage();
+  // Chọn chuỗi theo ngôn ngữ đang dùng (vi / en / ko).
+  const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -1213,6 +1219,7 @@ export default function App() {
   });
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const [submittedCode, setSubmittedCode] = useState("");
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
   const [contactError, setContactError] = useState("");
 
@@ -1419,6 +1426,19 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
+  // Article view: nội dung đã chuẩn hoá + mục lục, ô tìm kiếm ở sidebar.
+  const [tocOpen, setTocOpen] = useState(true);
+  const [articleSearch, setArticleSearch] = useState("");
+  const articleView = useMemo(() => renderArticle(selectedBlog?.content), [selectedBlog]);
+  const sidebarPosts = useMemo(() => {
+    const others = customBlogPosts.filter((p) => isPublishedPost(p) && p !== selectedBlog && p.title !== selectedBlog?.title);
+    const q = articleSearch.trim().toLowerCase();
+    if (!q) return others.slice(0, 4);
+    const norm = (x: string) => slugify(x || "").replace(/-/g, " ");
+    const nq = norm(q);
+    return others.filter((p) => norm(`${p.title} ${p.summary || ""} ${p.category || ""}`).includes(nq)).slice(0, 8);
+  }, [customBlogPosts, selectedBlog, articleSearch]);
+
   // Close an article and return to the news list.
   const handleBackToNews = () => {
     setSelectedBlog(null);
@@ -1586,6 +1606,9 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
         body: JSON.stringify(contactForm)
       });
       if (!res.ok) throw new Error(`Server returned status ${res.status}`);
+      const saved = await res.json().catch(() => null);
+      const leadId: string = saved?.lead?.id || "";
+      setSubmittedCode(leadId ? "CB-" + leadId.replace(/^lead_/, "").toUpperCase() : "");
 
       setSubmittedEmail(contactForm.email);
       setIsFormSubmitted(true);
@@ -1603,7 +1626,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       }, 5000);
     } catch (err) {
       console.error("Error submitting lead to server API:", err);
-      setContactError("Gửi yêu cầu chưa thành công. Vui lòng thử lại hoặc gọi Hotline 0966 373 686 để được hỗ trợ ngay.");
+      setContactError(L("Gửi yêu cầu chưa thành công. Vui lòng thử lại hoặc gọi Hotline 0966 373 686 để được hỗ trợ ngay.", "Your request could not be sent. Please try again or call our hotline +84 966 373 686.", "요청을 보내지 못했습니다. 다시 시도하시거나 핫라인 +84 966 373 686으로 연락해 주세요."));
     } finally {
       setIsSubmittingContact(false);
     }
@@ -1624,6 +1647,38 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     ) : true;
     return isPublished(post) && matchesCategory && matchesSearch;
   });
+
+  // Tiêu đề tab + meta description theo trang đang xem (SEO, chia sẻ link).
+  useEffect(() => {
+    const SITE = "Cosbuilt";
+    const DEFAULT_TITLE = "Cosbuilt - Gia công mỹ phẩm trọn gói đạt chuẩn CGMP ASEAN";
+    const titles: Record<string, string> = {
+      about: L("Giới thiệu năng lực", "About us", "회사 소개"),
+      services: L("Dịch vụ gia công OEM/ODM", "OEM/ODM services", "OEM/ODM 서비스"),
+      categories: L("Danh mục gia công mỹ phẩm", "Manufacturing catalogue", "제조 카테고리"),
+      pricing: L("Bảng giá gia công", "Manufacturing price list", "제조 단가표"),
+      news: L("Tin tức & cẩm nang", "News & guides", "뉴스 & 가이드"),
+      contact: L("Liên hệ nhận báo giá", "Contact & quotes", "문의 & 견적"),
+      crm: L("Quản trị", "Admin", "관리자"),
+    };
+    let title = L(DEFAULT_TITLE, "Cosbuilt - Korean OEM/ODM Cosmetics Manufacturer (CGMP ASEAN)", "코스빌트 - 한국 OEM/ODM 화장품 제조 (CGMP ASEAN)");
+    let desc = "";
+    if (activeTab === "categories" && selectedProductDetails) {
+      title = `${selectedProductDetails.title} | ${SITE}`;
+      desc = (selectedProductDetails as { description?: string }).description || "";
+    } else if (activeTab === "news" && selectedBlog) {
+      title = `${selectedBlog.title} | ${SITE}`;
+      desc = selectedBlog.summary || "";
+    } else if (titles[activeTab]) {
+      title = `${titles[activeTab]} | ${SITE}`;
+    }
+    document.title = title;
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (meta) {
+      if (!meta.dataset.default) meta.dataset.default = meta.content;
+      meta.content = (desc || meta.dataset.default).replace(/\s+/g, " ").trim().slice(0, 160);
+    }
+  }, [activeTab, selectedProductDetails, selectedBlog, language]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-hidden">
@@ -1658,7 +1713,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               className="bg-emerald-green-light border-b border-emerald-green-light py-3 px-4 text-center text-xs text-emerald-green-dark"
             >
               Đang hiển thị kết quả tìm kiếm cho từ khóa: <strong className="font-bold">"{searchQuery}"</strong>. 
-              <button onClick={() => setSearchQuery("")} className="ml-2 font-bold underline hover:text-emerald-green-dark">Xóa tìm kiếm</button>
+              <button onClick={() => setSearchQuery("")} className="ml-2 font-bold underline hover:text-emerald-green-dark">{L("Xóa tìm kiếm", "Clear search", "검색 지우기")}</button>
             </motion.div>
           )}
 
@@ -1831,7 +1886,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute -bottom-6 -left-6 bg-stone-950 p-6 rounded-2xl border border-stone-800 text-white space-y-1 shadow-xl hidden sm:block">
-                      <div className="text-xs text-stone-400 font-bold uppercase">Chứng nhận tiêu chuẩn</div>
+                      <div className="text-xs text-stone-400 font-bold uppercase">{L("Chứng nhận tiêu chuẩn", "Certified standards", "인증 기준")}</div>
                       <div className="text-base font-serif font-bold text-emerald-green">CGMP ASEAN / ISO 22716</div>
                     </div>
                   </div>
@@ -1841,10 +1896,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               {/* LEAD RESEARCHER / FOUNDER PROFILE (Hur Beom-Chul) */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-3 mb-8">
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Đội ngũ nghiên cứu R&D</span>
-                  <h2 className="text-3xl font-serif font-bold text-stone-900">Chuyên Gia Đứng Sau Những Công Thức Triệu Đô</h2>
+                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Đội ngũ nghiên cứu R&D", "R&D research team", "R&D 연구팀")}</span>
+                  <h2 className="text-3xl font-serif font-bold text-stone-900">{L("Chuyên Gia Đứng Sau Những Công Thức Triệu Đô", "The Experts Behind Million-Dollar Formulas", "밀리언달러 처방을 만든 전문가")}</h2>
                   <p className="text-stone-500 text-xs md:text-sm max-w-2xl mx-auto">
-                    Cosbuilt được dẫn dắt bởi những chuyên gia R&D hàng đầu Hàn Quốc với hàng chục năm kinh nghiệm phát triển sản phẩm cho các tập đoàn mỹ phẩm lớn.
+                    {L("Cosbuilt được dẫn dắt bởi những chuyên gia R&D hàng đầu Hàn Quốc với hàng chục năm kinh nghiệm phát triển sản phẩm cho các tập đoàn mỹ phẩm lớn.", "Cosbuilt is led by top Korean R&D experts with decades of experience developing products for major cosmetics groups.", "코스빌트는 대형 화장품 그룹의 제품 개발 경력을 수십 년 쌓아 온 한국 최고의 R&D 전문가들이 이끌고 있습니다.")}
                   </p>
                 </div>
                 <ResearcherProfile image={researcherImage} />
@@ -1859,10 +1914,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               <section className="bg-stone-100 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                   <div className="text-center space-y-3">
-                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Thế mạnh vượt trội</span>
-                    <h2 className="text-3xl font-serif font-bold text-stone-900">Danh Mục Gia Công Mũi Nhọn</h2>
+                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{t("strength_title")}</span>
+                    <h2 className="text-3xl font-serif font-bold text-stone-900">{t("strength_headline")}</h2>
                     <p className="text-stone-500 text-xs md:text-sm max-w-xl mx-auto">
-                      Cosbuilt nghiên cứu và sản xuất trọn gói mọi phân khúc mỹ phẩm chăm sóc toàn thân chất lượng hàng đầu thế giới.
+                      {t("strength_desc")}
                     </p>
                   </div>
 
@@ -1954,14 +2009,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-stone-200 pb-5">
                   <div className="text-left space-y-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Tin tức thị trường</span>
-                    <h2 className="text-3xl font-serif font-bold text-stone-900">Cẩm Nang & Xu Hướng Hoạt Chất</h2>
+                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Tin tức thị trường", "Market news", "시장 뉴스")}</span>
+                    <h2 className="text-3xl font-serif font-bold text-stone-900">{L("Cẩm Nang & Xu Hướng Hoạt Chất", "Guides & Ingredient Trends", "가이드 & 원료 트렌드")}</h2>
                   </div>
                   <button 
                     onClick={() => handleTabChange("news")}
                     className="text-xs font-bold uppercase tracking-wider text-emerald-green hover:text-emerald-green-dark flex items-center gap-1 cursor-pointer transition-all shrink-0"
                   >
-                    Xem tất cả bài viết <ChevronRight className="w-4 h-4" />
+                    {L("Xem tất cả bài viết", "View all articles", "전체 글 보기")} <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
 
@@ -2010,24 +2065,24 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <Briefcase className="w-6 h-6 text-emerald-green" />
                   </div>
                   <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-100">
-                    Sẵn Sàng Xây Dựng Thương Hiệu Của Riêng Bạn?
+                    {t("ready_brand")}
                   </h2>
                   <p className="text-stone-300 text-sm max-w-xl mx-auto font-light leading-relaxed">
-                    Đừng ngần ngại liên hệ với chuyên viên phát triển dự án của Cosbuilt. Chúng tôi luôn sẵn sàng hỗ trợ tư vấn và gửi tặng mẫu test thử nghiệm vật lý miễn phí.
+                    {t("ready_brand_desc")}
                   </p>
                   <div className="flex flex-wrap justify-center gap-4 pt-4">
                     <button 
                       onClick={() => handleTabChange("contact")}
                       className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs md:text-sm px-8 py-3.5 rounded-full transition-all cursor-pointer"
                     >
-                      Liên hệ Gửi thông tin Yêu cầu
+                      {t("contact_expert")}
                     </button>
                     <a 
                       href="tel:+84966373686"
                       className="bg-white/15 hover:bg-white/20 text-white font-bold text-xs md:text-sm px-8 py-3.5 rounded-full transition-all flex items-center gap-2 border border-white/10"
                     >
                       <Phone className="w-4 h-4 text-emerald-green" />
-                      Gọi điện: (+84) 966 373 686
+                      {t("call_us")}: (+84) 966 373 686
                     </a>
                   </div>
                 </div>
@@ -2049,10 +2104,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               {/* Header */}
               <div className="text-center space-y-4 max-w-4xl mx-auto pb-4">
                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-green">
-                  GIỚI THIỆU NĂNG LỰC
+                  {t("about_title")}
                 </span>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 leading-tight">
-                  Nền Tảng Vững Chắc Kiến Tạo Thương Hiệu Mỹ Phẩm Triệu Đô
+                  {t("about_headline")}
                 </h1>
                 <div className="w-16 h-1 bg-emerald-green mx-auto mt-4 mb-2"></div>
               </div>
@@ -2060,11 +2115,11 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               {/* Sub navigation for about section tabs */}
               <div className="flex flex-wrap items-center justify-center border-b border-stone-200 overflow-x-auto scrollbar-none gap-2 sm:gap-6 md:gap-8 pb-0">
                 {[
-                  { id: "about-us", label: "VỀ COSBUILT", icon: FileText },
-                  { id: "factory-capacity", label: "NHÀ MÁY & NĂNG LỰC", icon: Building2 },
-                  { id: "certifications", label: "CHỨNG NHẬN CGMP", icon: ShieldCheck },
-                  { id: "rd-team", label: "ĐỘI NGŨ R&D", icon: Users },
-                  { id: "partners", label: "ĐỐI TÁC", icon: Award }
+                  { id: "about-us", label: L("VỀ COSBUILT", "ABOUT COSBUILT", "코스빌트 소개"), icon: FileText },
+                  { id: "factory-capacity", label: L("NHÀ MÁY & NĂNG LỰC", "FACTORIES & CAPACITY", "공장 & 생산능력"), icon: Building2 },
+                  { id: "certifications", label: L("CHỨNG NHẬN CGMP", "CGMP CERTIFICATIONS", "CGMP 인증"), icon: ShieldCheck },
+                  { id: "rd-team", label: L("ĐỘI NGŨ R&D", "R&D TEAM", "R&D 팀"), icon: Users },
+                  { id: "partners", label: L("ĐỐI TÁC", "PARTNERS", "파트너"), icon: Award }
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeAboutTab === tab.id;
@@ -2179,7 +2234,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             {/* Certificate document preview */}
                             <div className="relative aspect-[4/3] bg-stone-50 border-b border-stone-100 overflow-hidden">
                               {cert.image ? (
-                                <a href={cert.image} target="_blank" rel="noopener noreferrer" className="block w-full h-full" title="Bấm để xem giấy chứng nhận">
+                                <a href={cert.image} target="_blank" rel="noopener noreferrer" className="block w-full h-full" title={L("Bấm để xem giấy chứng nhận", "Click to view the certificate", "클릭하여 인증서 보기")}>
                                   <img
                                     src={cert.image}
                                     alt={cert.name}
@@ -2193,7 +2248,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-stone-50 to-stone-100">
                                   <ShieldCheck className="w-11 h-11 text-emerald-green/30" />
-                                  <span className="text-[9px] font-bold uppercase tracking-widest text-stone-300">Giấy tờ đang cập nhật</span>
+                                  <span className="text-[9px] font-bold uppercase tracking-widest text-stone-300">{L("Giấy tờ đang cập nhật", "Document coming soon", "문서 업데이트 예정")}</span>
                                 </div>
                               )}
                               <span className="absolute top-2.5 left-2.5 w-8 h-8 rounded-full bg-emerald-green text-white flex items-center justify-center shadow-md">
@@ -2254,8 +2309,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     {/* Detailed profile: lead researcher Hur Beom-Chul */}
                     <div className="mt-8 space-y-4">
                       <div className="text-left space-y-1.5 px-1">
-                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Chân dung nhà nghiên cứu</span>
-                        <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">Nhà Nghiên Cứu Hur Beom-Chul</h3>
+                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Chân dung nhà nghiên cứu", "Researcher profile", "연구원 프로필")}</span>
+                        <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">{L("Nhà Nghiên Cứu Hur Beom-Chul", "Researcher Hur Beom-Chul", "허범철 연구원")}</h3>
                       </div>
                       <ResearcherProfile image={researcherImage} />
                     </div>
@@ -2284,17 +2339,17 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <div className="flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-stone-150 py-4">
                         <div className="flex items-center gap-2">
                           <span className="font-serif font-black text-2xl text-emerald-green">{customLogos.length}+</span>
-                          <span className="text-[11px] text-stone-500 font-medium leading-tight">Thương hiệu &amp;<br />nhãn hàng đối tác</span>
+                          <span className="text-[11px] text-stone-500 font-medium leading-tight">{L("Thương hiệu &", "Partner brands", "파트너")}<br />{L("nhãn hàng đối tác", "& labels", "브랜드")}</span>
                         </div>
                         <div className="hidden sm:block w-px h-9 bg-stone-200" />
                         <div className="flex items-center gap-2">
                           <span className="font-serif font-black text-2xl text-emerald-green">250+</span>
-                          <span className="text-[11px] text-stone-500 font-medium leading-tight">Spa, clinic &amp; nhà<br />thuốc tin dùng</span>
+                          <span className="text-[11px] text-stone-500 font-medium leading-tight">{L("Spa, clinic & nhà", "Trusted by spas,", "스파·클리닉·")}<br />{L("thuốc tin dùng", "clinics & pharmacies", "약국 신뢰")}</span>
                         </div>
                         <div className="hidden lg:block w-px h-9 bg-stone-200" />
                         <div className="flex items-center gap-2">
                           <span className="font-serif font-black text-2xl text-emerald-green">Watsons</span>
-                          <span className="text-[11px] text-stone-500 font-medium leading-tight">Gia công PB Line<br />Đông Nam Á &amp; HK</span>
+                          <span className="text-[11px] text-stone-500 font-medium leading-tight">{L("Gia công PB Line", "PB line manufacturing", "PB 라인 생산")}<br />{L("Đông Nam Á & HK", "SE Asia & HK", "동남아 & 홍콩")}</span>
                         </div>
                       </div>
 
@@ -3894,51 +3949,64 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       />
                     </div>
 
-                    {/* TOC Box */}
-                    <div className="bg-stone-50 border border-stone-200 rounded-xl p-6">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-lg text-stone-900">Nội Dung Trong Bài Viết</h3>
-                        <ChevronUp className="w-5 h-5 text-stone-600" />
-                      </div>
-                      <ol className="list-decimal list-inside space-y-2 text-sm text-stone-700">
-                        <li>Nám da là gì và tại sao nó khó trị?</li>
-                        <li>Tranexamic acid và cơ chế liên quan đến nám</li>
-                        <li>Bằng chứng lâm sàng: TXA hiệu quả đến đâu?</li>
-                        <li>Dùng tranexamic acid thế nào để giảm rủi ro kích ứng?</li>
-                        <li>Kỳ vọng thực tế khi dùng tranexamic acid trị nám</li>
-                        <li>Tranexamic acid trị nám, nên hay không?</li>
-                      </ol>
-                    </div>
+                    {/* Mục lục — tự tạo từ các tiêu đề h2/h3 trong bài; ẩn nếu bài không có */}
+                    {articleView.toc.length >= 2 && (
+                      <nav className="bg-stone-50 border border-stone-200 rounded-xl p-6" aria-label={language === "en" ? "Table of contents" : language === "ko" ? "목차" : "Mục lục"}>
+                        <button type="button" onClick={() => setTocOpen((v) => !v)} className="w-full flex justify-between items-center cursor-pointer" aria-expanded={tocOpen}>
+                          <h3 className="font-bold text-lg text-stone-900">{language === "en" ? "In this article" : language === "ko" ? "이 글의 목차" : "Nội Dung Trong Bài Viết"}</h3>
+                          <ChevronUp className={`w-5 h-5 text-stone-600 transition-transform ${tocOpen ? "" : "rotate-180"}`} />
+                        </button>
+                        {tocOpen && (
+                          <ol className="list-decimal list-inside space-y-2 text-sm text-stone-700 mt-4">
+                            {articleView.toc.map((item) => (
+                              <li key={item.id} className={item.level === 3 ? "ml-4 list-none" : ""}>
+                                <a href={`#${item.id}`} onClick={(e) => { e.preventDefault(); document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth", block: "start" }); }} className="hover:text-emerald-green hover:underline">{item.text}</a>
+                              </li>
+                            ))}
+                          </ol>
+                        )}
+                      </nav>
+                    )}
 
-                    {/* Article content */}
-                    <div className="prose prose-stone max-w-none">
-                      <p className="text-stone-800 text-base sm:text-lg leading-relaxed font-light whitespace-pre-line">
-                        {selectedBlog.content}
-                      </p>
-                    </div>
+                    {/* Article content (đã lọc an toàn bằng DOMPurify) */}
+                    <div className="article-body" dangerouslySetInnerHTML={{ __html: articleView.html }} />
                   </div>
 
                   {/* Sidebar */}
                   <div className="space-y-8">
                     <div className="bg-white border border-stone-200 rounded-2xl p-6 space-y-4">
-                      <h3 className="font-bold text-lg text-stone-900">Tìm kiếm bài viết</h3>
+                      <h3 className="font-bold text-lg text-stone-900">{language === "en" ? "Search articles" : language === "ko" ? "글 검색" : "Tìm kiếm bài viết"}</h3>
                       <div className="flex gap-2">
-                        <input type="text" placeholder="Gõ để bắt đầu tìm..." className="flex-1 border border-stone-300 rounded-lg p-2 text-xs" />
-                        <button className="bg-blue-600 text-white rounded-lg p-2"><Search className="w-4 h-4" /></button>
+                        <input
+                          type="search"
+                          value={articleSearch}
+                          onChange={(e) => setArticleSearch(e.target.value)}
+                          placeholder={language === "en" ? "Type to search..." : language === "ko" ? "검색어를 입력하세요..." : "Gõ để bắt đầu tìm..."}
+                          className="flex-1 min-w-0 border border-stone-300 rounded-lg px-3 py-2 text-xs focus:border-emerald-green focus:outline-none"
+                        />
+                        <span className="bg-emerald-green text-white rounded-lg p-2 grid place-items-center" aria-hidden><Search className="w-4 h-4" /></span>
                       </div>
                     </div>
                     
-                    {/* Related Posts */}
+                    {/* Bài liên quan / kết quả tìm kiếm */}
                     <div className="space-y-4">
-                      {customBlogPosts.filter(isPublished).slice(0, 3).map((post, idx) => (
-                        <div key={idx} className="flex gap-4 items-start">
-                          <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-lg shrink-0" />
+                      <h3 className="font-bold text-sm uppercase tracking-wider text-stone-500">
+                        {articleSearch.trim()
+                          ? (language === "en" ? `Results (${sidebarPosts.length})` : language === "ko" ? `검색 결과 (${sidebarPosts.length})` : `Kết quả (${sidebarPosts.length})`)
+                          : (language === "en" ? "Other articles" : language === "ko" ? "다른 글" : "Bài viết khác")}
+                      </h3>
+                      {sidebarPosts.length === 0 && (
+                        <p className="text-xs text-stone-400">{language === "en" ? "No matching articles." : language === "ko" ? "일치하는 글이 없습니다." : "Không tìm thấy bài viết phù hợp."}</p>
+                      )}
+                      {sidebarPosts.map((post, idx) => (
+                        <button type="button" key={idx} onClick={() => { setArticleSearch(""); handleSelectBlog(post); }} className="w-full flex gap-4 items-start text-left group cursor-pointer">
+                          <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-lg shrink-0" referrerPolicy="no-referrer" />
                           <div className="space-y-1">
-                            <h4 className="font-bold text-sm text-stone-900 line-clamp-2">{post.title}</h4>
+                            <h4 className="font-bold text-sm text-stone-900 line-clamp-2 group-hover:text-emerald-green transition-colors">{post.title}</h4>
                             <p className="text-[10px] text-stone-400">{post.date}</p>
-                            <span className="text-emerald-green text-[10px] font-bold">Đọc thêm »</span>
+                            <span className="text-emerald-green text-[10px] font-bold">{language === "en" ? "Read more »" : language === "ko" ? "더 보기 »" : "Đọc thêm »"}</span>
                           </div>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -4156,12 +4224,12 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
             >
               {/* Header */}
               <div className="text-left space-y-3 max-w-3xl border-b border-stone-200 pb-6">
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">Liên hệ Cosbuilt</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Liên hệ Cosbuilt", "Contact Cosbuilt", "코스빌트 문의")}</span>
                 <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 leading-tight">
-                  Đăng ký nhận báo giá & Mẫu thử vật lý
+                  {t("contact_main_title")}
                 </h1>
                 <p className="text-stone-500 text-sm">
-                  Hãy gửi thông tin dự án của bạn cho bộ phận tư vấn sản phẩm. Chuyên viên của Cosbuilt sẽ gọi lại tư vấn và gửi mẫu test trong vòng 2 giờ làm việc.
+                  {t("contact_main_desc")}
                 </p>
               </div>
 
@@ -4171,23 +4239,23 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 <div className="lg:col-span-4 space-y-6 text-left">
                   <div className="bg-stone-900 text-stone-200 p-6 rounded-2xl border border-stone-800 space-y-4 shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-green/10 rounded-full blur-2xl"></div>
-                    <div className="text-xs text-stone-400 font-bold uppercase tracking-widest">Hotline phát triển dự án</div>
-                    <div className="text-xl font-bold text-white flex items-center gap-1.5 font-mono">
+                    <div className="text-xs text-stone-400 font-bold uppercase tracking-widest">{L("Hotline phát triển dự án", "Project hotline", "프로젝트 핫라인")}</div>
+                    <a href="tel:+84966373686" className="text-xl font-bold text-white flex items-center gap-1.5 font-mono hover:text-satin-gold transition-colors">
                       <Phone className="w-5 h-5 text-satin-gold" />
                       (+84) 966 373 686
-                    </div>
+                    </a>
                     <p className="text-[11px] text-stone-400 leading-relaxed">
-                      Gọi trực tiếp hoặc nhắn tin Zalo để được giải đáp thắc mắc về kỹ thuật hóa mỹ phẩm ngay lập tức.
+                      {L("Gọi trực tiếp hoặc nhắn tin Zalo để được giải đáp thắc mắc về kỹ thuật hóa mỹ phẩm ngay lập tức.", "Call or message us on Zalo for instant answers to your cosmetic formulation questions.", "전화 또는 Zalo 메시지로 화장품 처방 관련 문의에 바로 답변을 받아보세요.")}
                     </p>
                   </div>
 
                   <div className="bg-white p-6 rounded-2xl border border-stone-200 space-y-4 shadow-2xs text-xs">
-                    <h4 className="font-bold text-stone-800 uppercase tracking-wider pb-2 border-b border-stone-100">Thông tin liên lạc</h4>
+                    <h4 className="font-bold text-stone-800 uppercase tracking-wider pb-2 border-b border-stone-100">{L("Thông tin liên lạc", "Contact details", "연락처")}</h4>
                     
                     <div className="flex gap-2.5 items-start">
                       <MapPin className="w-5 h-5 text-emerald-green shrink-0 mt-0.5" />
                       <div className="space-y-0.5">
-                        <strong className="text-stone-900 block">Địa chỉ văn phòng:</strong>
+                        <strong className="text-stone-900 block">{L("Địa chỉ văn phòng:", "Office address:", "사무소 주소:")}</strong>
                         <span className="text-stone-500 leading-relaxed font-light">Văn phòng số 2.40 khu văn phòng, tòa nhà The Prince Residence, số 19-21 Nguyễn Văn Trỗi, Phường Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam.</span>
                       </div>
                     </div>
@@ -4202,17 +4270,22 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   </div>
 
                   {/* Clean Aesthetic Map placeholder with real design */}
-                  <div className="bg-stone-100 border border-stone-250 rounded-2xl p-4 text-center text-xs text-stone-500 font-light space-y-2 relative overflow-hidden h-48 flex flex-col justify-center items-center">
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=The+Prince+Residence+19-21+Nguy%E1%BB%85n+V%C4%83n+Tr%E1%BB%97i+Ph%C3%BA+Nhu%E1%BA%ADn+TP.HCM"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-stone-100 hover:bg-stone-50 border border-stone-250 rounded-2xl p-4 text-center text-xs text-stone-500 font-light space-y-2 relative overflow-hidden h-48 flex flex-col justify-center items-center transition-colors"
+                  >
                     <MapPin className="w-8 h-8 text-emerald-green mb-1" />
-                    <span className="font-bold text-stone-800 block text-xs">Bản đồ vị trí văn phòng Cosbuilt</span>
+                    <span className="font-bold text-stone-800 block text-xs">{L("Bản đồ vị trí văn phòng Cosbuilt", "Cosbuilt office on the map", "코스빌트 사무소 지도")}</span>
                     <span className="text-[11px]">The Prince Residence, 19-21 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM</span>
-                    <span className="text-[10px] bg-white border border-stone-200 text-stone-700 px-2.5 py-1 rounded-full shadow-2xs font-semibold uppercase tracking-wider">Trụ sở công ty</span>
-                  </div>
+                    <span className="text-[10px] bg-white border border-stone-200 text-stone-700 px-2.5 py-1 rounded-full shadow-2xs font-semibold uppercase tracking-wider">{L("Mở Google Maps", "Open Google Maps", "구글 지도 열기")}</span>
+                  </a>
                 </div>
 
                 {/* Form enquiry */}
                 <div className="lg:col-span-8">
-                  <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-xs relative">
+                  <div id="contact-form" className="scroll-mt-28 bg-white p-6 sm:p-8 rounded-3xl border border-stone-200 shadow-xs relative">
                     <AnimatePresence mode="wait">
                       {isFormSubmitted ? (
                         <motion.div
@@ -4225,25 +4298,25 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shadow-xs">
                             <CheckCircle className="w-10 h-10 text-emerald-green" />
                           </div>
-                          <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900">Gửi Yêu Cầu Thành Công!</h3>
+                          <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900">{t("contact_form_success")}</h3>
                           
                           {/* Request received confirmation */}
                           <div className="bg-emerald-green/5 border border-emerald-green/20 rounded-2xl p-4 max-w-lg w-full text-left space-y-2">
                             <div className="flex items-center gap-2 text-emerald-green-dark font-bold text-xs uppercase tracking-wider">
                               <CheckCircle className="w-4 h-4 shrink-0" />
-                              <span>Đã tiếp nhận yêu cầu của bạn</span>
+                              <span>{L("Đã tiếp nhận yêu cầu của bạn", "We have received your request", "요청이 접수되었습니다")}</span>
                             </div>
                             <p className="text-stone-600 text-xs leading-relaxed">
-                              Hồ sơ đã được ghi nhận vào hệ thống. Chuyên viên Cosbuilt sẽ chủ động liên hệ qua số điện thoại{submittedEmail ? <> / email <strong className="text-stone-900 font-mono font-bold">{submittedEmail}</strong></> : null} của bạn.
+                              {L("Hồ sơ đã được ghi nhận vào hệ thống. Chuyên viên Cosbuilt sẽ chủ động liên hệ qua số điện thoại", "Your request has been recorded. A Cosbuilt specialist will contact you by phone", "요청이 시스템에 등록되었습니다. 코스빌트 담당자가 전화")}{submittedEmail ? <> / email <strong className="text-stone-900 font-mono font-bold">{submittedEmail}</strong></> : null}{L(" của bạn.", ".", "로 연락드립니다.")}
                             </p>
                             <div className="text-[11px] text-stone-500 font-light pt-1 border-t border-emerald-green/10 flex justify-between items-center">
-                              <span>Trạng thái: <span className="text-emerald-green font-bold">Đã ghi nhận</span></span>
-                              <span>Mã hồ sơ: <strong className="font-mono text-stone-800">CB-2026-{(Math.floor(Math.random() * 90000) + 10000)}</strong></span>
+                              <span>{L("Trạng thái:", "Status:", "상태:")} <span className="text-emerald-green font-bold">{L("Đã ghi nhận", "Received", "접수됨")}</span></span>
+                              {submittedCode && <span>{t("contact_profile_code")}: <strong className="font-mono text-stone-800">{submittedCode}</strong></span>}
                             </div>
                           </div>
 
                           <p className="text-stone-500 text-xs max-w-md mx-auto leading-relaxed">
-                            Cảm ơn quý khách đã tin tưởng thương hiệu <strong className="text-stone-800 font-bold">Cosbuilt</strong>. Chuyên viên của Cosbuilt sẽ liên hệ tư vấn trực tiếp và gửi mẫu vật lý trong vòng 2 giờ làm việc.
+                            {t("contact_form_success_desc")}
                           </p>
                         </motion.div>
                       ) : (
@@ -4254,24 +4327,26 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         >
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                              <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">Họ và tên của bạn *</label>
+                              <label htmlFor="cf-name" className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">{L("Họ và tên của bạn *", "Your full name *", "성함 *")}</label>
                               <input 
                                 type="text"
                                 required
                                 value={contactForm.name}
                                 onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                                placeholder="Ví dụ: Nguyễn Văn Đông"
+                                id="cf-name" autoComplete="name"
+                                placeholder={L("Ví dụ: Nguyễn Văn An", "e.g. Jane Nguyen", "예: 홍길동")}
                                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-green transition-all"
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">Số điện thoại / Zalo *</label>
+                              <label htmlFor="cf-phone" className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">{L("Số điện thoại / Zalo *", "Phone / Zalo *", "전화번호 / Zalo *")}</label>
                               <input 
                                 type="tel"
                                 required
                                 value={contactForm.phone}
                                 onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                                placeholder="Ví dụ: 0966373686"
+                                id="cf-phone" autoComplete="tel" inputMode="tel"
+                                placeholder={L("Ví dụ: 0901 234 567", "e.g. +84 901 234 567", "예: +84 901 234 567")}
                                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-green transition-all"
                               />
                             </div>
@@ -4279,23 +4354,25 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                              <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">Địa chỉ Email *</label>
+                              <label htmlFor="cf-email" className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">{L("Địa chỉ Email *", "Email address *", "이메일 주소 *")}</label>
                               <input 
                                 type="email"
                                 required
                                 value={contactForm.email}
                                 onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                                placeholder="Ví dụ: dong@gmail.com"
+                                id="cf-email" autoComplete="email"
+                                placeholder={L("Ví dụ: ten@congty.com", "e.g. name@company.com", "예: name@company.com")}
                                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-green transition-all"
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">Tên thương hiệu dự kiến (nếu có)</label>
+                              <label htmlFor="cf-brand" className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">{L("Tên thương hiệu dự kiến (nếu có)", "Planned brand name (optional)", "예정 브랜드명 (선택)")}</label>
                               <input 
                                 type="text"
                                 value={contactForm.brandName}
                                 onChange={(e) => setContactForm({ ...contactForm, brandName: e.target.value })}
-                                placeholder="Ví dụ: GlowSkin, HerbalHair..."
+                                id="cf-brand"
+                                placeholder={L("Ví dụ: GlowSkin, HerbalHair...", "e.g. GlowSkin, HerbalHair...", "예: GlowSkin, HerbalHair...")}
                                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-green transition-all"
                               />
                             </div>
@@ -4303,39 +4380,40 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                              <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">Danh mục cần gia công</label>
+                              <label htmlFor="cf-category" className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">{L("Danh mục cần gia công", "Product category", "제조 희망 카테고리")}</label>
                               <select 
                                 value={contactForm.category}
                                 onChange={(e) => setContactForm({ ...contactForm, category: e.target.value })}
                                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-green transition-all cursor-pointer"
                               >
-                                <option value="Chăm sóc da mặt">Chăm sóc da mặt (Serum, kem...)</option>
-                                <option value="Chăm sóc body">Chăm sóc body (Sữa tắm, lotion...)</option>
-                                <option value="Chăm sóc tóc">Chăm sóc tóc (Dầu gội bưởi...)</option>
-                                <option value="Trang điểm">Trang điểm (Son môi, phấn...)</option>
-                                <option value="Chăm sóc cá nhân">Chăm sóc cá nhân, dung dịch...</option>
+                                <option value="Chăm sóc da mặt">{L("Chăm sóc da mặt (Serum, kem...)", "Facial care (serums, creams...)", "페이셜 케어 (세럼, 크림...)")}</option>
+                                <option value="Chăm sóc body">{L("Chăm sóc body (Sữa tắm, lotion...)", "Body care (body wash, lotion...)", "바디 케어 (바디워시, 로션...)")}</option>
+                                <option value="Chăm sóc tóc">{L("Chăm sóc tóc (Dầu gội bưởi...)", "Hair care (shampoo...)", "헤어 케어 (샴푸...)")}</option>
+                                <option value="Trang điểm">{L("Trang điểm (Son môi, phấn...)", "Makeup (lipstick, powder...)", "메이크업 (립스틱, 파우더...)")}</option>
+                                <option value="Chăm sóc cá nhân">{L("Chăm sóc cá nhân, dung dịch...", "Personal care & hygiene...", "퍼스널 케어 & 위생용품...")}</option>
                               </select>
                             </div>
                             <div>
-                              <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">Sản lượng mong muốn</label>
+                              <label htmlFor="cf-moq" className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">{L("Sản lượng mong muốn", "Desired quantity", "희망 생산 수량")}</label>
                               <select 
                                 value={contactForm.moq}
                                 onChange={(e) => setContactForm({ ...contactForm, moq: e.target.value })}
                                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-green transition-all cursor-pointer"
                               >
-                                <option value="1000">Từ 1,000 sản phẩm (Thử nghiệm)</option>
-                                <option value="2000">Từ 2,000 sản phẩm (Chuẩn hóa)</option>
-                                <option value="5000">Từ 5,000 sản phẩm trở lên (Ưu đãi lớn)</option>
+                                <option value="1000">{L("Từ 1.000 sản phẩm (Thử nghiệm)", "From 1,000 units (trial)", "1,000개부터 (시범)")}</option>
+                                <option value="2000">{L("Từ 2.000 sản phẩm (Chuẩn hóa)", "From 2,000 units (standard)", "2,000개부터 (표준)")}</option>
+                                <option value="5000">{L("Từ 5.000 sản phẩm trở lên (Ưu đãi lớn)", "5,000+ units (best pricing)", "5,000개 이상 (최대 혜택)")}</option>
                               </select>
                             </div>
                           </div>
 
                           <div>
-                            <label className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">Lời nhắn / Yêu cầu đặc tính công thức</label>
+                            <label htmlFor="cf-message" className="block text-xs font-bold text-stone-700 tracking-wider uppercase mb-2">{L("Lời nhắn / Yêu cầu đặc tính công thức", "Message / formula requirements", "메시지 / 처방 요구사항")}</label>
                             <textarea 
                               value={contactForm.message}
                               onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                              placeholder="Mô tả cụ thể chất kem, công dụng chính bạn mong muốn hoặc các vướng mắc cần giải đáp pháp lý..."
+                              id="cf-message"
+                              placeholder={L("Mô tả cụ thể chất kem, công dụng chính bạn mong muốn hoặc các vướng mắc cần giải đáp pháp lý...", "Describe the texture, key benefits you want, or any regulatory questions...", "원하는 제형, 주요 효능 또는 인허가 관련 문의 사항을 적어 주세요...")}
                               rows={4}
                               className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-green transition-all resize-none"
                             />
@@ -4353,7 +4431,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-sm py-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
                           >
                             <Send className="w-4 h-4" />
-                            {isSubmittingContact ? "Đang gửi..." : "Gửi Yêu Cầu Thiết Kế & Nhận Mẫu Thử"}
+                            {isSubmittingContact ? L("Đang gửi...", "Sending...", "전송 중...") : L("Gửi Yêu Cầu Thiết Kế & Nhận Mẫu Thử", "Send request & get free samples", "요청 보내고 샘플 받기")}
                           </button>
                         </motion.form>
                       )}
@@ -4433,11 +4511,12 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <span className="font-serif font-black tracking-widest text-stone-950 text-sm">COSBUILT</span>
                     <span className="text-stone-300">|</span>
                     <span className="text-xs font-bold uppercase tracking-wider text-stone-800">
-                      MẪU THỬ B2B ({sampleCart.length})
+                      {L("MẪU THỬ B2B", "B2B SAMPLES", "B2B 샘플")} ({sampleCart.length})
                     </span>
                   </div>
                   <button 
                     onClick={handleToggleSampleCart}
+                    aria-label={L("Đóng", "Close", "닫기")}
                     className="p-1.5 rounded-full border border-stone-200 hover:border-stone-400 hover:bg-stone-50 transition-all text-stone-500 hover:text-stone-900 cursor-pointer"
                   >
                     <X className="w-4 h-4" />
@@ -4457,10 +4536,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       
                       <div className="space-y-2 max-w-sm">
                         <h3 className="font-serif font-black text-lg tracking-wider text-stone-900 uppercase">
-                          GIỎ MẪU THỬ TRỐNG
+                          {L("GIỎ MẪU THỬ TRỐNG", "YOUR SAMPLE CART IS EMPTY", "샘플 장바구니가 비어 있습니다")}
                         </h3>
                         <p className="text-xs text-stone-500 leading-relaxed font-light">
-                          Bạn chưa chọn mẫu công thức nào để yêu cầu test mẫu thử cGMP. Vui lòng bấm vào nút "Yêu cầu mẫu thử" ở trang sản phẩm.
+                          {L("Bạn chưa chọn mẫu công thức nào để yêu cầu test mẫu thử cGMP. Vui lòng bấm vào nút \"Yêu cầu mẫu thử\" ở trang sản phẩm.", "You haven't picked any formulas yet. Tap \"Request sample\" on a product page to add one.", "아직 선택한 처방이 없습니다. 제품 페이지에서 \"샘플 요청\" 버튼을 눌러 추가하세요.")}
                         </p>
                       </div>
 
@@ -4471,15 +4550,15 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         }}
                         className="bg-stone-900 hover:bg-stone-950 text-white text-xs px-8 py-3.5 font-bold rounded-lg cursor-pointer shadow-sm hover:shadow-md transition-all uppercase tracking-wider"
                       >
-                        Khám phá công thức
+                        {L("Khám phá công thức", "Explore formulas", "처방 둘러보기")}
                       </button>
                     </div>
                   ) : (
                     /* SAMPLE LIST STATE */
                     <div className="p-6 space-y-4">
                       <div className="space-y-1 text-left">
-                        <h3 className="font-bold text-xs text-stone-400 uppercase tracking-wider">Mẫu thử đã chọn</h3>
-                        <p className="text-[11px] text-stone-500">Các công thức dược mỹ phẩm bạn muốn nhận mẫu test vật lý miễn phí.</p>
+                        <h3 className="font-bold text-xs text-stone-400 uppercase tracking-wider">{L("Mẫu thử đã chọn", "Selected samples", "선택한 샘플")}</h3>
+                        <p className="text-[11px] text-stone-500">{L("Các công thức dược mỹ phẩm bạn muốn nhận mẫu test vật lý miễn phí.", "Formulas you want to receive free physical samples of.", "무료 실물 샘플을 받고 싶은 처방입니다.")}</p>
                       </div>
 
                       <div className="divide-y divide-stone-100">
@@ -4501,7 +4580,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             <button 
                               onClick={() => handleRemoveFromSampleCart(item)}
                               className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all cursor-pointer"
-                              title="Xóa khỏi giỏ"
+                              title={L("Xóa khỏi giỏ", "Remove", "삭제")}
+                              aria-label={L("Xóa khỏi giỏ", "Remove", "삭제")}
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -4517,12 +4597,12 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="p-6 border-t border-stone-150 bg-stone-50 space-y-4 text-left">
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs font-bold text-stone-800">
-                        <span>Tổng số mẫu thử:</span>
-                        <span className="text-emerald-green font-mono">{sampleCart.length} mẫu</span>
+                        <span>{L("Tổng số mẫu thử:", "Total samples:", "샘플 수:")}</span>
+                        <span className="text-emerald-green font-mono">{sampleCart.length} {L("mẫu", sampleCart.length === 1 ? "sample" : "samples", "개")}</span>
                       </div>
                       <div className="flex justify-between text-[11px] text-stone-500">
-                        <span>Chi phí R&D & Gửi mẫu:</span>
-                        <span className="text-rose-500 font-bold uppercase">Miễn phí 100%</span>
+                        <span>{L("Chi phí R&D & Gửi mẫu:", "R&D & shipping cost:", "R&D 및 배송비:")}</span>
+                        <span className="text-rose-500 font-bold uppercase">{L("Miễn phí 100%", "100% free", "100% 무료")}</span>
                       </div>
                     </div>
 
@@ -4537,7 +4617,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         setIsSampleCartOpen(false);
                         handleTabChange("contact");
                         setTimeout(() => {
-                          const contactSection = document.getElementById("contact");
+                          const contactSection = document.getElementById("contact-form");
                           if (contactSection) {
                             contactSection.scrollIntoView({ behavior: 'smooth' });
                           } else {
@@ -4548,10 +4628,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md uppercase tracking-wider"
                     >
                       <Sparkles className="w-4 h-4 text-white" />
-                      Nhận bộ mẫu thử miễn phí
+                      {L("Nhận bộ mẫu thử miễn phí", "Get free samples", "무료 샘플 받기")}
                     </button>
                     <p className="text-[10px] text-stone-400 text-center italic font-light">
-                      * Chuyên viên Cosbuilt sẽ liên hệ Zalo/SĐT để xác nhận thông tin nhận mẫu.
+                      {L("* Chuyên viên Cosbuilt sẽ liên hệ Zalo/SĐT để xác nhận thông tin nhận mẫu.", "* A Cosbuilt specialist will contact you via Zalo/phone to confirm delivery details.", "* 코스빌트 담당자가 Zalo/전화로 수령 정보를 확인합니다.")}
                     </p>
                   </div>
                 )}
