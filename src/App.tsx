@@ -369,29 +369,9 @@ export default function App() {
     },
     certifications: {
       title: t("about_certifications"),
-      subtitle: language === "en" ? "Absolute commitment to premium quality" : language === "ko" ? "최고의 품질과 글로벌 규격에 대한 타협 없는 약속" : ABOUT_SECTIONS.certifications.subtitle,
-      list: [
-        {
-          name: "CGMP ASEAN",
-          issuer: language === "en" ? "Drug Administration of Vietnam - Ministry of Health" : language === "ko" ? "베트남 보건부 의약품 관리국" : ABOUT_SECTIONS.certifications.list[0].issuer,
-          description: language === "en" ? "Good Manufacturing Practices for Cosmetics according to the standards of the Association of Southeast Asian Nations." : language === "ko" ? "동남아시아국가연합(ASEAN) 규격에 따른 우수 화장품 제조 및 품질 관리 기준 인증." : ABOUT_SECTIONS.certifications.list[0].description
-        },
-        {
-          name: "ISO 9001:2015",
-          issuer: "SGS Switzerland",
-          description: language === "en" ? "International quality management system standards applied to cosmetics research and production." : language === "ko" ? "화장품 연구 개발 및 생산 과정에 적용되는 국제 표준 품질 경영 시스템 인증." : ABOUT_SECTIONS.certifications.list[1].description
-        },
-        {
-          name: "ISO 22716",
-          issuer: "Intertek",
-          description: language === "en" ? "International standard guidelines for cosmetics good manufacturing practices, required for European markets." : language === "ko" ? "유럽 및 글로벌 시장 진출에 필수적인 화장품 우수 제조 관리 기준 국제 표준 가이드라인." : ABOUT_SECTIONS.certifications.list[2].description
-        },
-        {
-          name: "FDA Registered",
-          issuer: language === "en" ? "US Food and Drug Administration" : language === "ko" ? "미국 식품의약국" : ABOUT_SECTIONS.certifications.list[3].issuer,
-          description: language === "en" ? "Facility registration certifying qualification for exporting products to the United States market." : language === "ko" ? "미국 시장으로의 화장품 수출 자격 요건을 증명하는 미 FDA 제조 시설 등록 인증." : ABOUT_SECTIONS.certifications.list[3].description
-        }
-      ]
+      subtitle: language === "en" ? "International GMP certification, a recognised R&D centre and transparent corporate registration" : language === "ko" ? "국제 GMP 인증, 공인 연구개발전담부서, 투명한 사업자 등록" : ABOUT_SECTIONS.certifications.subtitle,
+      // Danh sách thật hiển thị từ dữ liệu admin (customCertifications); giữ đồng bộ với data.ts.
+      list: ABOUT_SECTIONS.certifications.list
     },
     rdTeam: {
       title: t("about_rd"),

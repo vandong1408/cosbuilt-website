@@ -75,7 +75,6 @@ export const ABOUT_SECTIONS = {
     description: "Cosbuilt vận hành 2 cơ sở sản xuất quy mô tại Incheon (Trụ sở chính: 35, Aenggogae-ro 449beon-gil, Namdong-gu, Incheon) và Gimpo. Hệ thống bồn khuấy Agi Mixer (20 tấn/ngày, 400 tấn/tháng), Agi Homo Mixer (12 tấn/ngày, 240 tấn/tháng) và Nước siêu tinh khiết Ultrapure Water (10 tấn/ngày) cùng dây chuyền chiết rót tự động khép kín đáp ứng công suất 24 triệu mặt nạ giấy/năm, 7.2 triệu sản phẩm Skin Care/năm và 5 triệu sản phẩm dạng tuýp/năm.",
     strengths: [
       "Đạt chứng nhận ISO 22716:2007 (KU0025-GMP) & Giấy chứng nhận Đơn vị Nghiên cứu R&D chính thức (Số 2025150295 do Bộ Khoa học & ICT Hàn Quốc cấp).",
-      "Đã đăng ký cơ sở sản xuất US MoCRA FDA Mỹ (Nhà máy 1) & Chứng nhận Vẫn cơ (Venture Business).",
       "Bồn khuấy đồng hóa Agi Mixer & Agi Homo Mixer thế hệ mới công suất 400 tấn/tháng.",
       "Hệ thống tự động chiết rót & hàn tuýp (Auto Tube Filling & Sealing 14,000 - 20,000 ea/ngày).",
       "Sản xuất & cung cấp dòng sản phẩm PB cho tập đoàn Watsons tại Đông Nam Á & Hong Kong."
@@ -83,31 +82,36 @@ export const ABOUT_SECTIONS = {
     image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
   },
   certifications: {
-    title: "CHỨNG NHẬN TIÊU CHUẨN & BẰNG SÁNG CHẾ",
-    subtitle: "Hệ thống quản lý chất lượng & nghiên cứu khoa học được công nhận quốc tế",
+    title: "CHỨNG NHẬN TIÊU CHUẨN & GIẤY TỜ PHÁP LÝ",
+    subtitle: "Chứng nhận GMP quốc tế, phòng R&D được công nhận và pháp lý doanh nghiệp minh bạch",
+    // 4 giấy tờ thật (ảnh trong R2 /uploads). Admin có thể sửa trong mục "Chứng nhận".
     list: [
       {
-        name: "ISO 22716:2007 (GMP)",
-        issuer: "UNI-CERT (Mã: KU0025-GMP)",
-        description: "Chứng nhận Thực hành tốt sản xuất mỹ phẩm theo tiêu chuẩn quốc tế ISO 22716 cấp cho Cosbuilt.",
+        name: "Chứng nhận ISO 22716:2007 (GMP mỹ phẩm)",
+        issuer: "UNI-CERT · Số chứng nhận KU0025-GMP",
+        description: "Chứng nhận Thực hành tốt sản xuất mỹ phẩm (GMP) theo tiêu chuẩn quốc tế ISO 22716:2007 cho nhà máy JBCOS (주식회사 제이비코스) tại Namdong-gu, Incheon, Hàn Quốc. Cấp lần đầu 22/04/2022, tái cấp 22/04/2025, hiệu lực đến 21/04/2028.",
+        image: "/uploads/chung-nhan-iso-22716-gmp-jbcos.webp",
         icon: "ShieldCheck"
       },
       {
-        name: "Đơn vị Nghiên cứu R&D (연구개발전담부서)",
-        issuer: "Bộ Khoa học & ICT / KOITA (Số 2025150295)",
-        description: "Giấy chứng nhận Phòng nghiên cứu phát triển sản phẩm chuyên trách được chính phủ Hàn Quốc cấp phép.",
+        name: "Chứng nhận Phòng Nghiên cứu & Phát triển (R&D) chuyên trách",
+        issuer: "KOITA – Hiệp hội Xúc tiến Công nghệ Công nghiệp Hàn Quốc · Số 2025150295",
+        description: "Công nhận bộ phận R&D chuyên trách (연구개발전담부서) của JBCOS theo Luật Hỗ trợ nghiên cứu cơ bản và phát triển công nghệ của Hàn Quốc, thuộc Bộ Khoa học & ICT. Công nhận ngày 22/01/2025.",
+        image: "/uploads/chung-nhan-phong-rd-koita-jbcos.webp",
         icon: "CheckCircle"
       },
       {
-        name: "US MoCRA FDA Registered",
-        issuer: "Cục Quản lý Thực phẩm và Dược phẩm Hoa Kỳ",
-        description: "Đăng ký cơ sở sản xuất đạt tiêu chuẩn đạo luật MoCRA đủ điều kiện xuất khẩu chính ngạch sang Mỹ.",
-        icon: "Award"
+        name: "Giấy chứng nhận đăng ký kinh doanh (bản tiếng Anh)",
+        issuer: "Cục Thuế Namdong – Tổng cục Thuế Quốc gia Hàn Quốc (NTS)",
+        description: "Certificate of Business Registration của JBCOS, mã số doanh nghiệp 310-88-02316. Ngành nghề: sản xuất nước hoa và mỹ phẩm. Thành lập 13/05/2021, cấp ngày 27/05/2024.",
+        image: "/uploads/giay-dang-ky-kinh-doanh-tieng-anh-jbcos.webp",
+        icon: "FileCheck"
       },
       {
-        name: "Bằng Sáng Chế & Doanh Nghiệp Khoa Học",
-        issuer: "Cục Sở Hữu Trí Tuệ / KOTRA",
-        description: "Bằng sáng chế Cleansing Balm (kết hợp 수용성 Cleansing Water & 유용성 Cleansing Oil) và Chứng nhận Doanh nghiệp Vẫn cơ.",
+        name: "Giấy đăng ký kinh doanh (bản tiếng Hàn)",
+        issuer: "Cục Thuế Namdong (남동세무서) – Hàn Quốc",
+        description: "사업자등록증 của pháp nhân JBCOS (주식회사 제이비코스), số đăng ký 310-88-02316. Ngành: sản xuất mỹ phẩm. Trụ sở: 35 Aenggogae-ro 449beon-gil, Namdong-gu, Incheon. Cấp ngày 05/02/2024.",
+        image: "/uploads/giay-dang-ky-kinh-doanh-tieng-han-jbcos.webp",
         icon: "FileCheck"
       }
     ]

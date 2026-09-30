@@ -57,8 +57,8 @@ export const DEFAULT_LANDING: LandingContent = {
       { title: "Sản xuất hàng loạt", desc: "Dây chuyền tự động chuẩn ISO 22716 / GMP" },
       { title: "QC & bàn giao", desc: "Kiểm tra từng lô, giao hàng, hậu mãi" },
     ],
-    trustTitle: "ISO 22716 · US FDA MoCRA",
-    trustDesc: "Nhà máy tại Incheon & Gimpo, Hàn Quốc",
+    trustTitle: "ISO 22716:2007 GMP · R&D KOITA",
+    trustDesc: "Chứng nhận UNI-CERT KU0025-GMP · Incheon, Hàn Quốc",
   },
   categories: {
     eyebrow: "Danh mục phát triển",
