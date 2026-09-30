@@ -79,7 +79,6 @@ export default function LandingPage() {
   const [certs, setCerts] = useState<Cert[]>(ABOUT_SECTIONS.certifications.list);
   const [researcherImage, setResearcherImage] = useState("");
   const [library, setLibrary] = useState<{ title: string; description?: string; image: string }[]>([]);
-  const [viewPhoto, setViewPhoto] = useState<number | null>(null);
   const [logos, setLogos] = useState({ dark: LOGO_DARK, white: LOGO_WHITE });
   const [activeCat, setActiveCat] = useState(0);
   const [viewCert, setViewCert] = useState<number | null>(null);
@@ -310,9 +309,10 @@ export default function LandingPage() {
             {factoryImages.length > 0 && (
               <div className="mt-8 -mx-4 px-4 md:mx-0 md:px-0 flex md:grid md:grid-cols-3 gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {factoryImages.map((g, i) => (
-                  <figure key={i} onClick={() => setViewPhoto(i)} className="snap-start shrink-0 w-[78%] sm:w-[45%] md:w-auto group overflow-hidden rounded-2xl bg-stone-800 cursor-zoom-in">
+                  <figure key={i} onContextMenu={(e) => e.preventDefault()} className="snap-start shrink-0 w-[78%] sm:w-[45%] md:w-auto overflow-hidden rounded-2xl bg-stone-800 select-none">
+                    {/* Ảnh khóa: không bấm xem, không kéo/lưu bằng chuột phải */}
                     <div className="aspect-[4/3] overflow-hidden">
-                      <img src={g.image} alt={g.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition duration-700" />
+                      <img src={g.image} alt={g.title} loading="lazy" draggable={false} className="pointer-events-none h-full w-full object-cover" />
                     </div>
                     <figcaption className="p-4">
                       <p className="text-sm font-semibold text-white">{g.title}</p>
@@ -563,7 +563,6 @@ export default function LandingPage() {
       )}
 
       <CertificateViewer docs={certs} index={viewCert} onClose={() => setViewCert(null)} onIndexChange={setViewCert} />
-      <CertificateViewer docs={factoryImages.map((g) => ({ name: g.title, issuer: g.description, image: g.image }))} index={viewPhoto} onClose={() => setViewPhoto(null)} onIndexChange={setViewPhoto} />
 
       <footer className="bg-stone-950 text-stone-400">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">

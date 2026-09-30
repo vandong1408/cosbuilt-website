@@ -1203,8 +1203,6 @@ export default function App() {
   const [submittedCode, setSubmittedCode] = useState("");
   // Giấy tờ đang mở trong khung xem (index trong customCertifications).
   const [viewCertIndex, setViewCertIndex] = useState<number | null>(null);
-  // Ảnh thư viện (nhà máy / R&D) đang mở trong khung xem.
-  const [viewGalleryIndex, setViewGalleryIndex] = useState<number | null>(null);
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
   const [contactError, setContactError] = useState("");
 
@@ -2188,6 +2186,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       </div>
                       <div className="lg:col-span-5 relative">
                         <img
+                          draggable={false}
+                          onContextMenu={(e) => e.preventDefault()}
                           src={customImages[0]?.image || localizedAboutSections.factory.image}
                           alt={customImages[0]?.title || "Cosbuilt"}
                           className="w-full h-80 object-cover rounded-2xl shadow-md border border-stone-100"
@@ -2202,15 +2202,16 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         <h3 className="text-left font-serif font-bold text-xl text-stone-900">{L("Hình ảnh nhà máy & phòng R&D", "Factory & R&D gallery", "공장 & R&D 갤러리")}</h3>
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
                           {customImages.map((g: any, idx: number) => g?.image && (
-                            <button key={idx} type="button" onClick={() => setViewGalleryIndex(idx)} className="group text-left bg-white rounded-2xl border border-stone-200 overflow-hidden hover:shadow-lg transition cursor-zoom-in">
-                              <div className="aspect-[4/3] overflow-hidden bg-stone-100">
-                                <img src={g.image} alt={g.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" referrerPolicy="no-referrer" />
+                            <div key={idx} onContextMenu={(e) => e.preventDefault()} className="text-left bg-white rounded-2xl border border-stone-200 overflow-hidden select-none">
+                              <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+                                {/* Ảnh khóa: không bấm xem, không kéo/lưu bằng chuột phải */}
+                                <img src={g.image} alt={g.title} loading="lazy" draggable={false} className="pointer-events-none w-full h-full object-cover" referrerPolicy="no-referrer" />
                               </div>
                               <div className="p-3 sm:p-4">
                                 <p className="font-bold text-xs sm:text-sm text-stone-900 line-clamp-2">{g.title}</p>
                                 {g.description && <p className="hidden sm:block mt-1 text-xs text-stone-500 font-light line-clamp-2">{g.description}</p>}
                               </div>
-                            </button>
+                            </div>
                           ))}
                         </div>
                       </section>
@@ -4647,7 +4648,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       </AnimatePresence>
 
       <CertificateViewer docs={customCertifications} index={viewCertIndex} onClose={() => setViewCertIndex(null)} onIndexChange={setViewCertIndex} />
-      <CertificateViewer docs={customImages.map((g: any) => ({ name: g.title, issuer: g.description, image: g.image }))} index={viewGalleryIndex} onClose={() => setViewGalleryIndex(null)} onIndexChange={setViewGalleryIndex} />
 
       {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={footerLogo} />}
       
