@@ -79,7 +79,7 @@ export const ABOUT_SECTIONS = {
       "Hệ thống tự động chiết rót & hàn tuýp (Auto Tube Filling & Sealing 14,000 - 20,000 ea/ngày).",
       "Sản xuất & cung cấp dòng sản phẩm PB cho tập đoàn Watsons tại Đông Nam Á & Hong Kong."
     ],
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
+    image: "https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?q=80&w=900"
   },
   certifications: {
     title: "CHỨNG NHẬN TIÊU CHUẨN & GIẤY TỜ PHÁP LÝ",
@@ -170,42 +170,43 @@ export const RESEARCHER_HUR = {
   ]
 };
 
+// Ảnh thư viện mặc định (đã xem trước, khớp tiêu đề). Admin quản lý trong "Thư viện ảnh".
 export const DEFAULT_GALLERY_IMAGES = [
   {
-    title: "Dây chuyền chiết rót mỹ phẩm tự động",
-    category: "nhà máy",
-    description: "Hệ thống chiết rót công nghệ tự động hóa khép kín nhập khẩu từ Đức và Hàn Quốc, chuẩn CGMP ASEAN.",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600"
-  },
-  {
-    title: "Phòng thí nghiệm nghiên cứu R&D vô trùng",
+    title: "Phòng thí nghiệm R&D",
     category: "R&D",
-    description: "Nơi đội ngũ tiến sĩ, thạc sĩ sinh hóa nghiên cứu, phát triển và thử nghiệm các công thức mỹ phẩm đột phá.",
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600"
+    description: "Đội ngũ nghiên cứu phát triển và tối ưu công thức độc quyền cho từng thương hiệu.",
+    image: "https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?q=80&w=900"
   },
   {
-    title: "Hệ thống bồn nhũ hóa hút chân không đồng hóa",
-    category: "nhà máy",
-    description: "Bồn khuấy trộn nhũ hóa siêu mịn giúp chất kem đạt độ đồng đều tối đa và giữ trạng thái ổn định lâu dài.",
-    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600"
-  },
-  {
-    title: "Thử nghiệm lâm sàng và kiểm tra kích ứng da",
+    title: "Nghiên cứu & thử nghiệm mẫu",
     category: "R&D",
-    description: "Các công thức mẫu thử được kiểm nghiệm lâm sàng nghiêm ngặt nhằm đảm bảo an toàn tuyệt đối trước khi công bố.",
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600"
+    description: "Mẫu thử được pha chế, đo lường chính xác trước khi gửi khách hàng duyệt.",
+    image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=900"
   },
   {
-    title: "Kho nguyên liệu thô nhập khẩu đạt chuẩn",
+    title: "Khu kiểm nghiệm chất lượng",
     category: "nhà máy",
-    description: "Nguồn nguyên liệu thô nhập khẩu chính ngạch trực tiếp từ Nhật Bản, Thụy Sĩ, Pháp, lưu giữ trong điều kiện tối ưu.",
-    image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=600"
+    description: "Kiểm tra độ ổn định lý hóa, vi sinh cho từng lô trước khi xuất xưởng.",
+    image: "https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=900"
   },
   {
-    title: "Quy trình đóng gói màng co vô trùng hoàn thiện",
+    title: "Phân tích & đánh giá công thức",
+    category: "R&D",
+    description: "Theo dõi độ ổn định trong nhiều điều kiện môi trường khắc nghiệt.",
+    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=900"
+  },
+  {
+    title: "Phát triển kết cấu & hoạt chất",
+    category: "R&D",
+    description: "Ứng dụng Liposome, Nano, Exosome và chiết xuất thiên nhiên.",
+    image: "https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=900"
+  },
+  {
+    title: "Hoàn thiện bao bì & đóng gói",
     category: "đóng gói",
-    description: "Sản phẩm được làm sạch bụi lọ, đóng màng co vô trùng và in hạn sử dụng tự động trước khi xuất xưởng.",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=600"
+    description: "Chiết rót, dán nhãn, đóng gói hoàn thiện theo nhận diện thương hiệu.",
+    image: "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?q=80&w=900"
   }
 ];
 

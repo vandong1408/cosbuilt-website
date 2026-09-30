@@ -2888,7 +2888,7 @@ export default function CRMDashboard({
                     {[
                       { id: "articles", label: "Bài viết", count: customBlogPosts.length, icon: BookOpen, desc: "Tin tức & Xu hướng" },
                       { id: "products", label: "Sản phẩm", count: customProducts.length, icon: Sparkles, desc: "Mẫu thử gia công" },
-                      { id: "images", label: "Thư viện ảnh", count: customImages.length + customProducts.length + customBlogPosts.length, icon: Image, desc: "Tất cả ảnh: gallery, sản phẩm, bài viết" },
+                      { id: "images", label: "Thư viện ảnh", count: customImages.length + customProducts.length + customBlogPosts.length + 1, icon: Image, desc: "Thư viện, sản phẩm, bài viết" },
                       { id: "partners", label: "Đối tác liên kết", count: customLogos.length, icon: Briefcase, desc: "Logo thương hiệu" },
                       { id: "certifications", label: "Chứng nhận", count: customCertifications.length, icon: ShieldCheck, desc: "Chứng nhận & giấy tờ" },
                       { id: "logo", label: "Cấu hình Logo", count: null, icon: Layers, desc: "Logo & Slogan chính" },
@@ -2902,13 +2902,13 @@ export default function CRMDashboard({
                           onClick={() => setCmsSubTab(subTab.id as any)}
                           className={`w-full text-left flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl transition-all cursor-pointer whitespace-nowrap shrink-0 lg:flex-none ${
                             isSelected
-                              ? "bg-emerald-green text-white font-bold shadow-md shadow-emerald-green/15 translate-x-0.5"
+                              ? "bg-emerald-green text-white font-bold shadow-md shadow-emerald-green/15"
                               : "bg-white border border-stone-150 hover:bg-stone-50 text-stone-700 font-medium"
                           }`}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
                             <Icon className={`w-4.5 h-4.5 shrink-0 ${isSelected ? "text-white" : "text-emerald-green"}`} />
-                            <div className="text-left">
+                            <div className="text-left min-w-0">
                               <div className="text-xs">{subTab.label}</div>
                               <div className={`text-[9px] font-normal block ${isSelected ? "text-emerald-100" : "text-stone-400"}`}>
                                 {subTab.desc}
@@ -2916,7 +2916,7 @@ export default function CRMDashboard({
                             </div>
                           </div>
                           {subTab.count !== null && (
-                            <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            <span className={`shrink-0 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
                               isSelected ? "bg-white/20 text-white" : "bg-emerald-green-light text-emerald-green-dark"
                             }`}>
                               {subTab.count}

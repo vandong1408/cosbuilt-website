@@ -78,6 +78,8 @@ export default function LandingPage() {
   const [content, setContent] = useState<LandingContent>(DEFAULT_LANDING);
   const [certs, setCerts] = useState<Cert[]>(ABOUT_SECTIONS.certifications.list);
   const [researcherImage, setResearcherImage] = useState("");
+  const [library, setLibrary] = useState<{ title: string; description?: string; image: string }[]>([]);
+  const [viewPhoto, setViewPhoto] = useState<number | null>(null);
   const [logos, setLogos] = useState({ dark: LOGO_DARK, white: LOGO_WHITE });
   const [activeCat, setActiveCat] = useState(0);
   const [viewCert, setViewCert] = useState<number | null>(null);
@@ -96,6 +98,7 @@ export default function LandingPage() {
         if (data.landingPage) setContent(mergeLanding(data.landingPage));
         if (Array.isArray(data.certifications) && data.certifications.length) setCerts(data.certifications);
         if (data.researcherImage) setResearcherImage(data.researcherImage);
+        if (Array.isArray(data.images)) setLibrary(data.images.filter((g: { image?: string }) => g?.image));
         setLogos({ dark: data.websiteLogo?.image || LOGO_DARK, white: data.footerLogo?.image || LOGO_WHITE });
       })
       .catch(() => {});
@@ -135,6 +138,9 @@ export default function LandingPage() {
       setFormError(err instanceof Error ? err.message : "Gửi thất bại, vui lòng thử lại hoặc gọi hotline.");
     }
   };
+
+  // Ảnh năng lực: riêng của landing nếu admin có nhập, không thì lấy "Thư viện ảnh".
+  const factoryImages = (factory.images.length ? factory.images : library).filter((g) => g.image);
 
   const catIndex = Math.min(activeCat, Math.max(categories.items.length - 1, 0));
   const cat = categories.items[catIndex];
@@ -301,10 +307,10 @@ export default function LandingPage() {
             )}
 
             {/* Ảnh: trượt ngang trên mobile, lưới trên desktop */}
-            {factory.images.length > 0 && (
+            {factoryImages.length > 0 && (
               <div className="mt-8 -mx-4 px-4 md:mx-0 md:px-0 flex md:grid md:grid-cols-3 gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {factory.images.filter((g) => g.image).map((g, i) => (
-                  <figure key={i} className="snap-start shrink-0 w-[78%] sm:w-[45%] md:w-auto group overflow-hidden rounded-2xl bg-stone-800">
+                {factoryImages.map((g, i) => (
+                  <figure key={i} onClick={() => setViewPhoto(i)} className="snap-start shrink-0 w-[78%] sm:w-[45%] md:w-auto group overflow-hidden rounded-2xl bg-stone-800 cursor-zoom-in">
                     <div className="aspect-[4/3] overflow-hidden">
                       <img src={g.image} alt={g.title} loading="lazy" className="h-full w-full object-cover group-hover:scale-105 transition duration-700" />
                     </div>
@@ -557,6 +563,7 @@ export default function LandingPage() {
       )}
 
       <CertificateViewer docs={certs} index={viewCert} onClose={() => setViewCert(null)} onIndexChange={setViewCert} />
+      <CertificateViewer docs={factoryImages.map((g) => ({ name: g.title, issuer: g.description, image: g.image }))} index={viewPhoto} onClose={() => setViewPhoto(null)} onIndexChange={setViewPhoto} />
 
       <footer className="bg-stone-950 text-stone-400">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">

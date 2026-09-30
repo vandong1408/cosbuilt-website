@@ -1203,6 +1203,8 @@ export default function App() {
   const [submittedCode, setSubmittedCode] = useState("");
   // Giấy tờ đang mở trong khung xem (index trong customCertifications).
   const [viewCertIndex, setViewCertIndex] = useState<number | null>(null);
+  // Ảnh thư viện (nhà máy / R&D) đang mở trong khung xem.
+  const [viewGalleryIndex, setViewGalleryIndex] = useState<number | null>(null);
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
   const [contactError, setContactError] = useState("");
 
@@ -1713,7 +1715,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               {/* Luxury Hero Banner (Styled beautifully like Image 2 "Avésa") */}
               <section id="hero-section" className="relative bg-stone-900 overflow-hidden min-h-[500px] md:min-h-[600px] flex items-center">
                 <div className="absolute inset-0 z-0">
-                  <img 
+                  <img
                     src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=1600" 
                     alt="Cosmetics Hero Banner" 
                     className="w-full h-full object-cover opacity-35 object-center scale-105"
@@ -1862,7 +1864,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   </div>
 
                   <div className="relative">
-                    <img 
+                    <img
                       src="https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800" 
                       alt="Cosmetics Laboratory" 
                       className="w-full h-[400px] object-cover rounded-3xl shadow-lg border border-stone-100"
@@ -1909,7 +1911,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <div key={cat.id} className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
                         <div>
                           <div className="h-48 relative overflow-hidden">
-                            <img 
+                            <img
                               src={cat.image} 
                               alt={cat.title} 
                               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
@@ -2010,7 +2012,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       onClick={() => handleSelectBlog(post)}
                       className="bg-white rounded-2xl border border-stone-150 overflow-hidden shadow-xs hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row"
                     >
-                      <img 
+                      <img
                         src={post.image} 
                         alt={post.title} 
                         className="w-full sm:w-48 h-48 object-cover shrink-0"
@@ -2185,14 +2187,34 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         </div>
                       </div>
                       <div className="lg:col-span-5 relative">
-                        <img 
-                          src={localizedAboutSections.factory.image} 
-                          alt="CGMP Production" 
+                        <img
+                          src={customImages[0]?.image || localizedAboutSections.factory.image}
+                          alt={customImages[0]?.title || "Cosbuilt"}
                           className="w-full h-80 object-cover rounded-2xl shadow-md border border-stone-100"
                           referrerPolicy="no-referrer"
                         />
                       </div>
                     </section>
+
+                    {/* Thư viện ảnh nhà máy & R&D — quản lý trong admin "Thư viện ảnh" */}
+                    {customImages.filter((g: any) => g?.image).length > 0 && (
+                      <section className="mt-8 space-y-5">
+                        <h3 className="text-left font-serif font-bold text-xl text-stone-900">{L("Hình ảnh nhà máy & phòng R&D", "Factory & R&D gallery", "공장 & R&D 갤러리")}</h3>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                          {customImages.map((g: any, idx: number) => g?.image && (
+                            <button key={idx} type="button" onClick={() => setViewGalleryIndex(idx)} className="group text-left bg-white rounded-2xl border border-stone-200 overflow-hidden hover:shadow-lg transition cursor-zoom-in">
+                              <div className="aspect-[4/3] overflow-hidden bg-stone-100">
+                                <img src={g.image} alt={g.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" referrerPolicy="no-referrer" />
+                              </div>
+                              <div className="p-3 sm:p-4">
+                                <p className="font-bold text-xs sm:text-sm text-stone-900 line-clamp-2">{g.title}</p>
+                                {g.description && <p className="hidden sm:block mt-1 text-xs text-stone-500 font-light line-clamp-2">{g.description}</p>}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </section>
+                    )}
                   </motion.div>
                 )}
 
@@ -2660,7 +2682,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         return (
                           <div className="lg:col-span-5 space-y-6">
                             <div className="aspect-square w-full rounded-2xl overflow-hidden relative border border-stone-150 shadow-2xs">
-                              <img 
+                              <img
                                 src={currentImage} 
                                 alt={selectedProductDetails.title} 
                                 className="w-full h-full object-cover"
@@ -2696,7 +2718,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                       }`}
                                     >
                                       <div className="aspect-square w-full rounded-lg overflow-hidden border border-stone-100 bg-stone-100">
-                                        <img 
+                                        <img
                                           src={pkg.image} 
                                           alt={pkg.name || "packaging"} 
                                           className="w-full h-full object-cover"
@@ -2885,7 +2907,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               >
                                 <div>
                                   <div className="h-40 overflow-hidden relative bg-stone-50 border-b border-stone-100">
-                                    <img 
+                                    <img
                                       src={prod.image} 
                                       alt={prod.title} 
                                       className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
@@ -3141,7 +3163,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                         {prod.badge}
                                       </div>
 
-                                      <img 
+                                      <img
                                         src={prod.image} 
                                         alt={prod.title} 
                                         className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
@@ -3924,7 +3946,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                     {/* Feature Image */}
                     <div className="aspect-[21/9] rounded-3xl overflow-hidden border border-stone-150 shadow-md">
-                      <img 
+                      <img
                         src={selectedBlog.image} 
                         alt={selectedBlog.title} 
                         className="w-full h-full object-cover"
@@ -4078,7 +4100,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                 className="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-2xs hover:shadow-sm transition-all cursor-pointer flex flex-col sm:flex-row group"
                               >
                                 <div className="w-full sm:w-48 h-56 sm:h-auto overflow-hidden shrink-0 relative">
-                                  <img 
+                                  <img
                                     src={post.image} 
                                     alt={post.title} 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
@@ -4625,6 +4647,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       </AnimatePresence>
 
       <CertificateViewer docs={customCertifications} index={viewCertIndex} onClose={() => setViewCertIndex(null)} onIndexChange={setViewCertIndex} />
+      <CertificateViewer docs={customImages.map((g: any) => ({ name: g.title, issuer: g.description, image: g.image }))} index={viewGalleryIndex} onClose={() => setViewGalleryIndex(null)} onIndexChange={setViewGalleryIndex} />
 
       {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={footerLogo} />}
       

@@ -23,7 +23,6 @@ export interface LandingContent {
   cta: { hidden?: boolean; titleBefore: string; titleHighlight: string; desc: string; button: string };
 }
 
-const u = (id: string) => `https://images.unsplash.com/photo-${id}?q=80&w=900`;
 const shortTitle = (t: string) => t.replace(/^Gia công /, "").replace(/\s*\(.*\)$/, "");
 
 export const DEFAULT_LANDING: LandingContent = {
@@ -78,14 +77,8 @@ export const DEFAULT_LANDING: LandingContent = {
       { value: "7.2M", unit: "sp/năm", label: "Dòng Skin Care" },
       { value: "5M", unit: "sp/năm", label: "Sản phẩm dạng tuýp" },
     ],
-    images: [
-      { title: "Phòng thí nghiệm R&D", description: "Đội ngũ nghiên cứu phát triển và tối ưu công thức độc quyền cho từng thương hiệu.", image: u("1581093450021-4a7360e9a6b5") },
-      { title: "Nghiên cứu & thử nghiệm mẫu", description: "Mẫu thử được pha chế, đo lường chính xác trước khi gửi khách hàng duyệt.", image: u("1532187863486-abf9dbad1b69") },
-      { title: "Khu kiểm nghiệm chất lượng", description: "Kiểm tra độ ổn định lý hóa, vi sinh cho từng lô trước khi xuất xưởng.", image: u("1579154204601-01588f351e67") },
-      { title: "Phân tích & đánh giá công thức", description: "Theo dõi độ ổn định trong nhiều điều kiện môi trường khắc nghiệt.", image: u("1582719471384-894fbb16e074") },
-      { title: "Phát triển kết cấu & hoạt chất", description: "Ứng dụng Liposome, Nano, Exosome và chiết xuất thiên nhiên.", image: u("1617897903246-719242758050") },
-      { title: "Hoàn thiện bao bì & đóng gói", description: "Chiết rót, dán nhãn, đóng gói hoàn thiện theo nhận diện thương hiệu.", image: u("1631729371254-42c2892f0e6e") },
-    ],
+    // Để trống = dùng ảnh trong "Thư viện ảnh" của admin (một nơi quản lý cho cả site).
+    images: [],
     strengths: [...ABOUT_SECTIONS.factory.strengths],
   },
   rnd: {

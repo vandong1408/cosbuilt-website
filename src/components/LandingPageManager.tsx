@@ -64,7 +64,7 @@ const SECTIONS: Section[] = [
       { key: "capacity", label: "Số liệu công suất", type: "list", itemLabel: "số liệu", titleKey: "label", fields: [
         { key: "value", label: "Con số", type: "text" }, { key: "unit", label: "Đơn vị", type: "text" }, { key: "label", label: "Mô tả", type: "text" },
       ] },
-      { key: "images", label: "Ảnh nhà máy / phòng lab", type: "list", itemLabel: "ảnh", titleKey: "title", hint: "Nên dùng ảnh thật của nhà máy. Hiển thị 3 cột trên máy tính, vuốt ngang trên điện thoại.", fields: [
+      { key: "images", label: "Ảnh nhà máy / phòng lab", type: "list", itemLabel: "ảnh", titleKey: "title", hint: "Để TRỐNG danh sách này để dùng ảnh trong mục \"Thư viện ảnh\" (khuyên dùng — sửa một nơi, cả trang chủ lẫn landing cùng đổi). Chỉ thêm ảnh ở đây nếu muốn landing có bộ ảnh riêng.", fields: [
         { key: "image", label: "Ảnh", type: "image" }, { key: "title", label: "Tiêu đề ảnh", type: "text" }, { key: "description", label: "Mô tả ngắn", type: "textarea" },
       ] },
       { key: "strengths", label: "Thế mạnh / chứng nhận nhà máy", type: "strings", itemLabel: "thế mạnh" },
