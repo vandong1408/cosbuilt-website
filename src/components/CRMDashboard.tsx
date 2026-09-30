@@ -4,6 +4,7 @@ import ArticleManagement from "./ArticleManagement";
 import ImageManagement from "./ImageManagement";
 import Sidebar from "./Sidebar";
 import RichTextEditor from "./RichTextEditor";
+import LandingPageManager from "./LandingPageManager";
 import { 
   Users, 
   Search, 
@@ -39,7 +40,8 @@ import {
   ArrowUpToLine,
   Upload,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  LayoutTemplate
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { authHeaders, setAdminToken, clearAdminToken, login as loginRequest, getStoredRole, setStoredRole, type AdminRole } from "../lib/adminAuth";
@@ -919,7 +921,7 @@ export default function CRMDashboard({
   };
 
   const [activeSubTab, setActiveSubTab] = useState<"leads" | "sheets" | "content" | "admin-settings">("leads");
-  const [cmsSubTab, setCmsSubTab] = useState<"articles" | "products" | "images" | "partners" | "certifications" | "logo">("articles");
+  const [cmsSubTab, setCmsSubTab] = useState<"articles" | "products" | "images" | "partners" | "certifications" | "logo" | "landing">("articles");
   const [cmsSearchTerm, setCmsSearchTerm] = useState("");
   const [cmsArticlesPage, setCmsArticlesPage] = useState(1);
   const [cmsProductsPage, setCmsProductsPage] = useState(1);
@@ -2890,6 +2892,7 @@ export default function CRMDashboard({
                       { id: "partners", label: "Đối tác liên kết", count: customLogos.length, icon: Briefcase, desc: "Logo thương hiệu" },
                       { id: "certifications", label: "Chứng nhận", count: customCertifications.length, icon: ShieldCheck, desc: "Chứng nhận & giấy tờ" },
                       { id: "logo", label: "Cấu hình Logo", count: null, icon: Layers, desc: "Logo & Slogan chính" },
+                      { id: "landing", label: "Landing page", count: null, icon: LayoutTemplate, desc: "Trang ẩn /catalogue" },
                     ].map((subTab) => {
                       const Icon = subTab.icon;
                       const isSelected = cmsSubTab === subTab.id;
@@ -2930,7 +2933,7 @@ export default function CRMDashboard({
               <div className="lg:col-span-3 space-y-6">
                 
                 {/* Embedded dynamic search and action header */}
-                {cmsSubTab !== "logo" && (
+                {cmsSubTab !== "logo" && cmsSubTab !== "landing" && (
                   <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-stone-50 p-4 rounded-3xl border border-stone-200">
                     <div className="relative w-full sm:max-w-md">
                       <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -3634,6 +3637,8 @@ export default function CRMDashboard({
                 })()}
 
                 {/* Sub-tab 5: General Website Logo Directory */}
+                {cmsSubTab === "landing" && <LandingPageManager onUpload={handleImageUpload} />}
+
                 {cmsSubTab === "logo" && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-stone-200 pb-2">

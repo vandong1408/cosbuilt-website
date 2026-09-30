@@ -14,6 +14,8 @@ export interface SheetsConfig {
   researcherImage?: string;
   // Certifications / quality standards managed from the admin.
   certifications?: any[];
+  // Nội dung trang landing ẩn /catalogue (xem src/lib/landingContent.ts).
+  landingPage?: Record<string, unknown> | null;
 }
 
 const KEY = "sheets_config";

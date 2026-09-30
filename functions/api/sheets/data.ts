@@ -12,7 +12,8 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
     footerLogo: config.footerLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
     researcherImage: config.researcherImage || "",
     certifications: config.certifications || [],
-    products: config.products || []
+    products: config.products || [],
+    landingPage: config.landingPage || null
   });
 };
 
@@ -22,7 +23,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   if (unauthorized) return unauthorized;
 
   try {
-    const { articles, images, logos, websiteLogo, footerLogo, researcherImage, certifications, products, actionInfo } = await request.json<any>();
+    const { articles, images, logos, websiteLogo, footerLogo, researcherImage, certifications, products, landingPage, actionInfo } = await request.json<any>();
     const config = await loadSheetsConfig(env.DB);
 
     if (articles !== undefined) config.articles = articles;
@@ -33,6 +34,16 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
     if (researcherImage !== undefined) config.researcherImage = researcherImage;
     if (certifications !== undefined) config.certifications = certifications;
     if (products !== undefined) config.products = products;
+    if (landingPage !== undefined) {
+      // Nội dung trang /catalogue — phải là object, giới hạn kích thước cho an toàn.
+      if (landingPage !== null && (typeof landingPage !== "object" || Array.isArray(landingPage))) {
+        return Response.json({ error: "Dữ liệu landing page không hợp lệ" }, { status: 400 });
+      }
+      if (JSON.stringify(landingPage).length > 200_000) {
+        return Response.json({ error: "Nội dung landing page quá lớn" }, { status: 413 });
+      }
+      config.landingPage = landingPage;
+    }
 
     await saveSheetsConfig(env.DB, config);
 
@@ -67,7 +78,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
         footerLogo: config.footerLogo || { name: "COSBUILT", slogan: "ESTD 1999" },
         researcherImage: config.researcherImage || "",
         certifications: config.certifications || [],
-        products: config.products || []
+        products: config.products || [],
+        landingPage: config.landingPage || null
       }
     });
   } catch (error: any) {
