@@ -2202,8 +2202,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         <h3 className="text-left font-serif font-bold text-xl text-stone-900">{L("Hình ảnh nhà máy & phòng R&D", "Factory & R&D gallery", "공장 & R&D 갤러리")}</h3>
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
                           {customImages.map((g: any, idx: number) => g?.image && (
-                            <div key={idx} onContextMenu={(e) => e.preventDefault()} className="text-left bg-white rounded-2xl border border-stone-200 overflow-hidden select-none">
-                              <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+                            <div key={idx} className="text-left bg-white rounded-2xl border border-stone-200 overflow-hidden">
+                              <div onContextMenu={(e) => e.preventDefault()} className="relative aspect-[4/3] overflow-hidden bg-stone-100 select-none">
                                 {/* Ảnh khóa: không bấm xem, không kéo/lưu bằng chuột phải */}
                                 <img src={g.image} alt={g.title} loading="lazy" draggable={false} className="pointer-events-none w-full h-full object-cover" referrerPolicy="no-referrer" />
                               </div>

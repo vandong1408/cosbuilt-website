@@ -309,9 +309,9 @@ export default function LandingPage() {
             {factoryImages.length > 0 && (
               <div className="mt-8 -mx-4 px-4 md:mx-0 md:px-0 flex md:grid md:grid-cols-3 gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {factoryImages.map((g, i) => (
-                  <figure key={i} onContextMenu={(e) => e.preventDefault()} className="snap-start shrink-0 w-[78%] sm:w-[45%] md:w-auto overflow-hidden rounded-2xl bg-stone-800 select-none">
+                  <figure key={i} className="snap-start shrink-0 w-[78%] sm:w-[45%] md:w-auto overflow-hidden rounded-2xl bg-stone-800">
                     {/* Ảnh khóa: không bấm xem, không kéo/lưu bằng chuột phải */}
-                    <div className="aspect-[4/3] overflow-hidden">
+                    <div onContextMenu={(e) => e.preventDefault()} className="aspect-[4/3] overflow-hidden select-none">
                       <img src={g.image} alt={g.title} loading="lazy" draggable={false} className="pointer-events-none h-full w-full object-cover" />
                     </div>
                     <figcaption className="p-4">
