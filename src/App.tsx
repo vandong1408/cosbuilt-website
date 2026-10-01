@@ -4276,17 +4276,31 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   </div>
 
                   {/* Clean Aesthetic Map placeholder with real design */}
-                  <a
-                    href="https://www.google.com/maps/search/?api=1&query=The+Prince+Residence+19-21+Nguy%E1%BB%85n+V%C4%83n+Tr%E1%BB%97i+Ph%C3%BA+Nhu%E1%BA%ADn+TP.HCM"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-stone-100 hover:bg-stone-50 border border-stone-250 rounded-2xl p-4 text-center text-xs text-stone-500 font-light space-y-2 relative overflow-hidden h-48 flex flex-col justify-center items-center transition-colors"
-                  >
-                    <MapPin className="w-8 h-8 text-emerald-green mb-1" />
-                    <span className="font-bold text-stone-800 block text-xs">{L("Bản đồ vị trí văn phòng Cosbuilt", "Cosbuilt office on the map", "코스빌트 사무소 지도")}</span>
-                    <span className="text-[11px]">The Prince Residence, 19-21 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM</span>
-                    <span className="text-[10px] bg-white border border-stone-200 text-stone-700 px-2.5 py-1 rounded-full shadow-2xs font-semibold uppercase tracking-wider">{L("Mở Google Maps", "Open Google Maps", "구글 지도 열기")}</span>
-                  </a>
+                  {/* Bản đồ Google Maps nhúng (không cần API key) */}
+                  <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-2xs">
+                    <iframe
+                      title={L("Bản đồ vị trí văn phòng Cosbuilt", "Cosbuilt office map", "코스빌트 사무소 지도")}
+                      src="https://www.google.com/maps?q=The+Prince+Residence,+19-21+Nguy%E1%BB%85n+V%C4%83n+Tr%E1%BB%97i,+Ph%C3%BA+Nhu%E1%BA%ADn,+H%E1%BB%93+Ch%C3%AD+Minh&z=16&output=embed"
+                      className="block w-full h-64 sm:h-72 border-0"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      allowFullScreen
+                    />
+                    <div className="flex items-center justify-between gap-3 px-4 py-3 text-xs">
+                      <span className="flex items-start gap-2 text-stone-600 min-w-0">
+                        <MapPin className="w-4 h-4 text-emerald-green shrink-0 mt-0.5" />
+                        <span>The Prince Residence, 19-21 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM</span>
+                      </span>
+                      <a
+                        href="https://www.google.com/maps/search/?api=1&query=The+Prince+Residence+19-21+Nguy%E1%BB%85n+V%C4%83n+Tr%E1%BB%97i+Ph%C3%BA+Nhu%E1%BA%ADn+TP.HCM"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 rounded-full bg-emerald-green px-3.5 py-2 text-[11px] font-bold text-white hover:bg-emerald-green-dark transition whitespace-nowrap"
+                      >
+                        {L("Chỉ đường", "Directions", "길찾기")}
+                      </a>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Form enquiry */}
