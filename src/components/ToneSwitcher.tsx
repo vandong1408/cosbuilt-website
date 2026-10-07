@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-// Hidden preview tool: open any page with ?tone=ivory|noir|maison|default to try a
+// Hidden preview tool: open any page with ?tone=pearl|porcelain|atelier|default to try a
 // background tone. Visitors without the query string never see it.
 const TONES = [
   { id: "default", label: "Hiện tại", sw: ["#F5EFE7", "#9C1C40", "#C9A24D"] },
-  { id: "ivory", label: "1 · Ivory & Bronze", sw: ["#FCFAF5", "#8C1D3E", "#B8925A"] },
-  { id: "noir", label: "2 · Noir & Gold", sw: ["#0F0D0B", "#C93460", "#D2AE6D"] },
-  { id: "maison", label: "3 · Maison Burgundy", sw: ["#FBF6F4", "#741A33", "#BE8A7F"] },
+  { id: "pearl", label: "1 · Pearl & Champagne", sw: ["#FDFCFA", "#8E1B3D", "#C9AE7C"] },
+  { id: "porcelain", label: "2 · Porcelain & Rose Gold", sw: ["#FAF9F8", "#8A2A47", "#C0847A"] },
+  { id: "atelier", label: "3 · Atelier White & Bronze", sw: ["#FEFEFD", "#8A6A34", "#C9A765"] },
 ];
 const KEY = "cb-tone-preview";
 
@@ -29,7 +29,7 @@ export default function ToneSwitcher() {
   if (!tone) return null;
 
   return (
-    <div className="fixed left-4 bottom-4 z-[80] bg-stone-950/95 text-white rounded-2xl border border-white/15 shadow-2xl p-3 w-[230px] backdrop-blur" style={{ colorScheme: "dark" }}>
+    <div className="fixed left-4 bottom-4 z-[80] bg-stone-950/95 text-white rounded-2xl border border-white/15 shadow-2xl p-3 w-[270px] backdrop-blur" style={{ colorScheme: "dark" }}>
       <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/60 px-1 pb-2">Xem thử tone nền</div>
       <div className="space-y-1">
         {TONES.map((t) => (

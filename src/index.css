@@ -197,58 +197,37 @@ input[role="combobox"]:focus-visible { outline: none; }
 
 
 /* =====================================================================
-   TONE PRESETS (preview) — apply with <html data-tone="ivory|noir|maison">
+   TONE PRESETS (preview) — apply with <html data-tone="pearl|porcelain|atelier">
    Tailwind v4 reads colours from these variables, so redefining the scale
    re-tones the whole site. Default (no data-tone) is the current look.
+   All three are bright, high-end light tones.
    ===================================================================== */
 
-/* 1 · Ivory & Bronze — clean Korean-lab luxury, taken from the JBCOS profile */
-:root[data-tone="ivory"] {
-  --color-emerald-green: #8C1D3E; --color-emerald-green-dark: #6A1230; --color-emerald-green-light: #F8EDEF; --color-emerald-green-bright: #A32449;
-  --color-satin-gold: #B8925A; --color-satin-gold-dark: #96743F; --color-satin-gold-light: #F3EAD9; --color-satin-gold-pale: #E9D5AE;
-  --color-white: #FFFEFB;
-  --color-stone-50: #FCFAF5; --color-stone-100: #F5EFE4; --color-stone-150: #ECE5D8; --color-stone-200: #E4DCCB; --color-stone-250: #D6CCB8;
-  --color-stone-300: #C6BAA2; --color-stone-350: #B2A58B; --color-stone-400: #968A72; --color-stone-500: #6F6556; --color-stone-600: #544C40;
-  --color-stone-700: #3E382F; --color-stone-750: #342F27; --color-stone-800: #2A261F; --color-stone-850: #221E18; --color-stone-900: #17140F; --color-stone-950: #110E0A;
+/* 1 · Pearl & Champagne — near-white gallery canvas, champagne gold, deep bordeaux accent */
+:root[data-tone="pearl"] {
+  --color-emerald-green: #8E1B3D; --color-emerald-green-dark: #6B1230; --color-emerald-green-light: #FAF0F2; --color-emerald-green-bright: #A42249;
+  --color-satin-gold: #C9AE7C; --color-satin-gold-dark: #A38A5B; --color-satin-gold-light: #F7F1E4; --color-satin-gold-pale: #EADCBC;
+  --color-stone-50: #FDFCFA; --color-stone-100: #F7F4EF; --color-stone-150: #F0ECE5; --color-stone-200: #E8E3DA; --color-stone-250: #D9D2C5;
+  --color-stone-300: #C9C0AE; --color-stone-350: #B3A892; --color-stone-400: #9A8F7B; --color-stone-500: #70675A; --color-stone-600: #544D42;
+  --color-stone-700: #3D372E; --color-stone-750: #332E27; --color-stone-800: #2A2621; --color-stone-850: #211E1A; --color-stone-900: #181613; --color-stone-950: #12100E;
 }
 
-/* 2 · Noir & Gold — dark, cinematic, jewellery-store feel */
-:root[data-tone="noir"] {
-  --color-emerald-green: #C93460; --color-emerald-green-dark: #A22548; --color-emerald-green-light: #2B1219; --color-emerald-green-bright: #D94070;
-  --color-satin-gold: #D2AE6D; --color-satin-gold-dark: #E2C185; --color-satin-gold-light: #2A2318; --color-satin-gold-pale: #F0DDB0;
-  --color-stone-50: #0F0D0B; --color-stone-100: #17130F; --color-stone-150: #241F19; --color-stone-200: #2E2820; --color-stone-250: #3A3228;
-  --color-stone-300: #4A4034; --color-stone-350: #6B5F4E; --color-stone-400: #8E8270; --color-stone-500: #AEA28D; --color-stone-600: #C3B8A3;
-  --color-stone-700: #D4CAB6; --color-stone-750: #DDD3C0; --color-stone-800: #E7DECC; --color-stone-850: #EFE7D6; --color-stone-900: #F6EFE0; --color-stone-950: #090807;
-  color-scheme: dark;
+/* 2 · Porcelain & Rose Gold — cool-neutral porcelain, rose-gold detailing, rosewood accent */
+:root[data-tone="porcelain"] {
+  --color-emerald-green: #8A2A47; --color-emerald-green-dark: #651D35; --color-emerald-green-light: #FAEFF2; --color-emerald-green-bright: #9F3354;
+  --color-satin-gold: #C0847A; --color-satin-gold-dark: #9E655C; --color-satin-gold-light: #F8EBE8; --color-satin-gold-pale: #EBCDC6;
+  --color-stone-50: #FAF9F8; --color-stone-100: #F3F1F0; --color-stone-150: #ECE9E7; --color-stone-200: #E3DFDC; --color-stone-250: #D3CECA;
+  --color-stone-300: #C0BAB5; --color-stone-350: #A9A29D; --color-stone-400: #8E8782; --color-stone-500: #6B6560; --color-stone-600: #504B47;
+  --color-stone-700: #3A3633; --color-stone-750: #302D2A; --color-stone-800: #272523; --color-stone-850: #1F1D1C; --color-stone-900: #171615; --color-stone-950: #100F0E;
 }
-:root[data-tone="noir"] .bg-white { background-color: #1B1713; }
-:root[data-tone="noir"] .bg-white\/95 { background-color: rgba(27,23,19,0.95); }
-:root[data-tone="noir"] .bg-white\/90 { background-color: rgba(15,13,11,0.9); }
-:root[data-tone="noir"] .bg-white\/70 { background-color: rgba(15,13,11,0.7); }
-:root[data-tone="noir"] .bg-stone-900, :root[data-tone="noir"] .bg-stone-800 { background-color: #2B251E; }
-:root[data-tone="noir"] .hover\:bg-stone-900:hover { background-color: #3A3228; }
-:root[data-tone="noir"] .from-stone-900 { --tw-gradient-from: #2B251E; }
-:root[data-tone="noir"] .via-stone-900 { --tw-gradient-via: #2B251E; }
-:root[data-tone="noir"] .to-stone-900 { --tw-gradient-to: #2B251E; }
-:root[data-tone="noir"] .via-stone-800 { --tw-gradient-via: #2B251E; }
-:root[data-tone="noir"] .text-stone-50 { color: #FBF6EC; }
-:root[data-tone="noir"] .text-stone-100 { color: #F3ECDD; }
-:root[data-tone="noir"] .text-stone-200 { color: #E4DAC6; }
-:root[data-tone="noir"] .text-stone-300 { color: #CFC4AE; }
-:root[data-tone="noir"] .from-stone-800 { --tw-gradient-from: #2B251E; }
-:root[data-tone="noir"] .to-stone-800 { --tw-gradient-to: #2B251E; }
-:root[data-tone="noir"] .text-stone-950 { color: #0B0907; }
-:root[data-tone="noir"] header .text-stone-950 { color: #F6EFE0; }
-:root[data-tone="noir"] header img, :root[data-tone="noir"] footer img[alt*="COSBUILT" i] { filter: brightness(0) invert(1); }
-:root[data-tone="noir"] .shadow-sm, :root[data-tone="noir"] .shadow-lg, :root[data-tone="noir"] .shadow-xl { box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 40px -22px rgba(0,0,0,0.9); }
-:root[data-tone="noir"] ::selection { background: rgba(210,174,109,0.3); color: #fff; }
 
-/* 3 · Maison Burgundy — wine, blush and rose-gold, boutique perfumery */
-:root[data-tone="maison"] {
-  --color-emerald-green: #741A33; --color-emerald-green-dark: #54101F; --color-emerald-green-light: #F8ECEE; --color-emerald-green-bright: #8A2140;
-  --color-satin-gold: #BE8A7F; --color-satin-gold-dark: #9C6358; --color-satin-gold-light: #F5E6E1; --color-satin-gold-pale: #EBCFC7;
-  --color-white: #FFFDFC;
-  --color-stone-50: #FBF6F4; --color-stone-100: #F4EBE8; --color-stone-150: #ECE0DD; --color-stone-200: #E4D5D2; --color-stone-250: #D6C3C0;
-  --color-stone-300: #C5AEAB; --color-stone-350: #B09896; --color-stone-400: #94797A; --color-stone-500: #75595D; --color-stone-600: #593F45;
-  --color-stone-700: #46323A; --color-stone-750: #3B2A32; --color-stone-800: #30212A; --color-stone-850: #271923; --color-stone-900: #1E1219; --color-stone-950: #170B11;
+/* 3 · Atelier — pure white with bronze-gold only (no crimson), the JBCOS black/white/gold palette */
+:root[data-tone="atelier"] {
+  --color-emerald-green: #8A6A34; --color-emerald-green-dark: #6B5128; --color-emerald-green-light: #F6EFE0; --color-emerald-green-bright: #A07F45;
+  --color-satin-gold: #C9A765; --color-satin-gold-dark: #A78441; --color-satin-gold-light: #F4ECDD; --color-satin-gold-pale: #E8D4A8;
+  --color-stone-50: #FEFEFD; --color-stone-100: #F6F5F3; --color-stone-150: #EEEDEA; --color-stone-200: #E6E4E0; --color-stone-250: #D6D3CD;
+  --color-stone-300: #C3BFB7; --color-stone-350: #A9A59C; --color-stone-400: #8C887F; --color-stone-500: #67635B; --color-stone-600: #4B4842;
+  --color-stone-700: #34312D; --color-stone-750: #2B2926; --color-stone-800: #232120; --color-stone-850: #1B1A18; --color-stone-900: #121110; --color-stone-950: #0B0A09;
 }
+/* Atelier hero/CTA glow in bronze instead of crimson */
+:root[data-tone="atelier"] .bg-\[radial-gradient\(60\%_80\%_at_85\%_20\%\,rgba\(156\,28\,64\,0\.28\)\,transparent_70\%\)\] { background-image: radial-gradient(60% 80% at 85% 20%, rgba(201,167,101,0.22), transparent 70%); }
