@@ -1798,18 +1798,19 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         {L("Nhà máy OEM / ODM · Hàn Quốc", "OEM / ODM factory · Korea", "OEM / ODM 공장 · 한국")}
                       </div>
 
-                      <h1 className="text-[2rem] min-[400px]:text-4xl sm:text-5xl lg:text-[3.1rem] xl:text-[3.3rem] font-serif font-semibold tracking-tight text-white leading-[1.15]">
-                        {L("Gia công mỹ phẩm trọn gói", "Turnkey cosmetics manufacturing", "화장품 OEM/ODM 원스톱 제조")} <br />
+                      <h1 className="text-[2rem] min-[400px]:text-4xl sm:text-5xl lg:text-[2.9rem] xl:text-[3.1rem] font-serif font-semibold tracking-tight text-white leading-[1.15]">
+                        {L("Sản xuất mỹ phẩm theo", "Cosmetics manufactured to", "브랜드만의")}{" "}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-satin-gold-pale via-satin-gold to-satin-gold-pale">
-                          {L("chuẩn ISO 22716 GMP", "to ISO 22716 GMP standard", "ISO 22716 GMP 기준")}
-                        </span>
+                          {L("định hướng riêng", "your own direction", "차별화된 방향의")}
+                        </span>{" "}
+                        {L("của thương hiệu", "for your brand", "화장품 제조")}
                       </h1>
 
                       <p className="text-stone-300 text-sm md:text-[1.05rem] leading-[1.8] max-w-xl">
                         {L(
-                          "Công thức độc quyền, bao bì, kiểm nghiệm & công bố, sản xuất hàng loạt – một đầu mối duy nhất cho thương hiệu của bạn. Sản xuất tại 2 nhà máy ở Incheon & Gimpo, Hàn Quốc.",
-                          "Exclusive formulas, packaging, testing & registration and mass production – one partner for your brand. Made in our two factories in Incheon & Gimpo, Korea.",
-                          "독점 처방, 용기, 시험·등록, 양산까지 – 브랜드를 위한 단 하나의 파트너. 한국 인천·김포 2개 공장에서 생산합니다."
+                          "Chọn trong 3.500+ công thức có sẵn hoặc phát triển độc quyền. Cosbuilt lo trọn gói – công thức, bao bì, kiểm nghiệm & công bố, sản xuất – tại nhà máy chuẩn ISO 22716 GMP ở Hàn Quốc.",
+                          "Choose from 3,500+ ready formulas or develop an exclusive one. Cosbuilt handles it all – formula, packaging, testing & registration, production – in ISO 22716 GMP factories in Korea.",
+                          "3,500개 이상의 기존 처방 중에서 선택하거나 독점 처방을 개발하세요. 처방, 용기, 시험·등록, 생산까지 한국 ISO 22716 GMP 공장에서 코스빌트가 책임집니다."
                         )}
                       </p>
 
@@ -1818,7 +1819,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           onClick={() => handleTabChange("contact")}
                           className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_color-mix(in_srgb,var(--color-emerald-green)_80%,transparent)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
                         >
-                          {L("Nhận báo giá & mẫu thử", "Get a quote & samples", "견적 및 샘플 받기")}
+                          {L("Nhận báo giá & test mẫu miễn phí", "Get a free quote & sample test", "무료 견적 및 샘플 테스트")}
                           <ArrowRight className="w-4 h-4" />
                         </button>
                         <button

@@ -391,19 +391,32 @@ export function MobileActionBar({ onQuote }: { onQuote: () => void }) {
 
 export const TrustChips = () => {
   const L = useL();
-  const chips = [
+  const benefits = [
+    L("Lô đầu chỉ từ 500 sản phẩm", "First batch from just 500 units", "첫 생산 500개부터"),
+    L("Có mẫu thử sau khoảng 1–2 tuần", "Samples in about 1–2 weeks", "약 1–2주 내 샘플 제공"),
+    L("Miễn phí thiết kế & test mẫu", "Free design & sample testing", "디자인 및 샘플 테스트 무료"),
+    L("Cosbuilt làm hồ sơ công bố cho bạn", "We prepare your product registration", "제품 등록 서류 대행"),
+    L("Bảo mật công thức theo hợp đồng", "Formulas protected by contract", "계약에 따른 처방 비밀 보장"),
+  ];
+  const proof = [
     L("ISO 22716 GMP", "ISO 22716 GMP", "ISO 22716 GMP"),
     L("Phòng R&D được KOITA công nhận", "R&D dept. recognised by KOITA", "KOITA 인정 R&D 연구소"),
-    L("MOQ linh hoạt từ 500", "Flexible MOQ from 500", "500개부터 유연한 MOQ"),
-    L("Bảo mật công thức", "Formula confidentiality", "처방 비밀 보장"),
+    L("Sản xuất dòng PB cho Watsons", "Private-brand lines for Watsons", "Watsons PB 라인 생산"),
   ];
   return (
-    <ul className="flex flex-wrap gap-x-5 gap-y-2 pt-1">
-      {chips.map((c) => (
-        <li key={c} className="flex items-center gap-1.5 text-xs text-stone-200">
-          <Check className="w-3.5 h-3.5 text-satin-gold" />{c}
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-4 pt-1">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5">
+        {benefits.map((c) => (
+          <li key={c} className="flex items-start gap-2 text-sm text-stone-100">
+            <Check className="w-4 h-4 mt-0.5 shrink-0 text-satin-gold" />{c}
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-white/15 pt-3 text-[11px] font-semibold tracking-wide text-satin-gold/90 uppercase">
+        {proof.map((c, i) => (
+          <span key={c} className="flex items-center gap-4">{i > 0 && <span className="w-1 h-1 rounded-full bg-satin-gold/60" />}{c}</span>
+        ))}
+      </div>
+    </div>
   );
 };
