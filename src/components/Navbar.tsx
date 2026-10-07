@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { 
   Phone, 
   ChevronDown, 
@@ -34,6 +34,16 @@ export default function Navbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [langOpen, setLangOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Header stays pinned; once the page scrolls, the utility bar folds away so
+  // the pinned header takes less room.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const { language, setLanguage, t } = useLanguage();
 
   const handleSearchSubmit = (e: FormEvent) => {
@@ -46,7 +56,7 @@ export default function Navbar({
   return (
     <header className="w-full bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-[0_1px_0_rgba(201,162,77,0.25),0_10px_30px_-18px_rgba(60,30,20,0.25)]">
       {/* Top Banner Bar */}
-      <div className="bg-stone-950 border-b border-satin-gold/20 text-stone-300 text-[11px] sm:text-xs py-2 px-4 sm:px-6 lg:px-8">
+      <div className={`bg-stone-950 border-b border-satin-gold/20 text-stone-300 text-[11px] sm:text-xs px-4 sm:px-6 lg:px-8 transition-all duration-300 ${scrolled && !langOpen ? "max-h-0 py-0 overflow-hidden border-b-0 opacity-0" : "max-h-24 py-2 opacity-100"}`}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-3">
             <a href="tel:+84966373686" className="whitespace-nowrap hover:text-satin-gold transition-colors">{t("hotline")}: <strong className="text-white">0966 373 686</strong></a>

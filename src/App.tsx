@@ -1663,7 +1663,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   }, [activeTab, selectedProductDetails, selectedBlog, language]);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-hidden">
+    <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-clip">
       {location.pathname !== "/admin" && (
         <Navbar 
           activeTab={activeTab} 
