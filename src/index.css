@@ -192,3 +192,6 @@ nav button[class*="tracking-wider"] { position: relative; }
 @media (prefers-reduced-motion: reduce) {
   main * { animation: none !important; }
 }
+
+/* The search pill already shows focus via its own ring */
+input[role="combobox"]:focus-visible { outline: none; }

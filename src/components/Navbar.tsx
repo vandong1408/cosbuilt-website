@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { 
   Phone, 
   ChevronDown, 
@@ -11,6 +11,8 @@ import {
   Globe
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import SearchBox from "./SearchBox";
+import type { SearchItem } from "../lib/siteSearch";
 
 interface NavbarProps {
   activeTab: string;
@@ -20,6 +22,8 @@ interface NavbarProps {
   onToggleSampleCart: () => void;
   websiteLogo?: { name: string; slogan?: string; image?: string };
   isAdminMode?: boolean;
+  searchItems?: SearchItem[];
+  onSelectSearchItem?: (item: SearchItem) => void;
 }
 
 export default function Navbar({ 
@@ -29,10 +33,11 @@ export default function Navbar({
   sampleCartCount,
   onToggleSampleCart,
   websiteLogo = { name: "COSBUILT" },
-  isAdminMode = false
+  isAdminMode = false,
+  searchItems = [],
+  onSelectSearchItem = () => {}
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [langOpen, setLangOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -45,13 +50,6 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   const { language, setLanguage, t } = useLanguage();
-
-  const handleSearchSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      onSearch(searchQuery);
-    }
-  };
 
   return (
     <header className="w-full bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-[0_1px_0_rgba(201,162,77,0.25),0_10px_30px_-18px_rgba(60,30,20,0.25)]">
@@ -177,25 +175,13 @@ export default function Navbar({
             )}
           </div>
 
-          {/* Luxury Search Bar (Matching image theme with satin gold highlight button) */}
-          <form 
-            onSubmit={handleSearchSubmit} 
-            className="hidden md:flex items-center flex-1 max-w-2xl bg-stone-50 border border-stone-250 focus-within:border-emerald-green focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(156,28,64,0.08)] rounded-full overflow-hidden transition-all"
-          >
-            <input 
-              type="text" 
-              placeholder={t("search_placeholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent pl-6 pr-3 py-3 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
-            />
-            <button 
-              type="submit"
-              className="bg-emerald-green hover:bg-emerald-green-dark text-white m-1 w-10 h-10 rounded-full transition-all flex items-center justify-center cursor-pointer shrink-0"
-            >
-              <Search className="w-4 h-4 text-white" />
-            </button>
-          </form>
+          {/* Site-wide search with live suggestions */}
+          <SearchBox
+            items={searchItems}
+            onSelect={onSelectSearchItem}
+            onSubmitQuery={onSearch}
+            onContact={() => onTabChange("contact")}
+          />
 
           {/* Shopping Bag Actions */}
           <div className="flex items-center gap-3">
@@ -388,18 +374,14 @@ export default function Navbar({
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-t border-stone-200 p-4 space-y-4 absolute w-full left-0 top-full shadow-lg z-50">
           {/* Mobile search bar */}
-          <form onSubmit={handleSearchSubmit} className="flex bg-stone-50 border border-stone-250 rounded-lg overflow-hidden">
-            <input 
-              type="text" 
-              placeholder={t("search_placeholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent pl-6 pr-3 py-3 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
-            />
-            <button type="submit" className="bg-emerald-green text-white px-4 py-2">
-              <Search className="w-3.5 h-3.5 text-white" />
-            </button>
-          </form>
+          <SearchBox
+            variant="mobile"
+            items={searchItems}
+            onSelect={onSelectSearchItem}
+            onSubmitQuery={onSearch}
+            onContact={() => onTabChange("contact")}
+            onDone={() => setMobileMenuOpen(false)}
+          />
 
           <div className="space-y-1 text-left">
             <button

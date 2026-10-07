@@ -62,11 +62,13 @@ import {
   PRICING_LIST, 
   BLOG_POSTS,
   FORMULA_PRODUCTS,
-  DEFAULT_GALLERY_IMAGES
+  DEFAULT_GALLERY_IMAGES,
+  RESEARCHER_HUR
 } from "./data";
 import { BlogPost, ManufacturingCategory, FormulaProduct, ProductPackaging } from "./types";
 import { slugify } from "./lib/slug";
 import { renderArticle } from "./lib/articleContent";
+import { SearchItem, prepare, stripHtml, collectText } from "./lib/siteSearch";
 
 // Bài nháp (status "draft") không hiển thị ngoài site.
 const isPublishedPost = (post: any) => (post?.status || "published") !== "draft";
@@ -1662,6 +1664,69 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     }
   }, [activeTab, selectedProductDetails, selectedBlog, language]);
 
+  // ---- Site-wide search index (products, articles, services, categories, About, pricing, pages) ----
+  const SERVICE_TAB_IDS = ["oem-odm", "formula-development", "packaging-print", "legal-service", "logistics", "cooperation-process", "cooperation-benefits"];
+  const searchItems = useMemo<SearchItem[]>(() => {
+    const items: SearchItem[] = [];
+    const add = (id: string, type: SearchItem["type"], title: string, summary: string, text: string, ref: unknown) =>
+      items.push(prepare({ id, type, title: title || "", summary: summary || "", text: (text || "").replace(/\s+/g, " ").trim(), ref }));
+
+    customProducts.forEach((p, i) =>
+      add(`prod-${p.id || i}`, "product", p.title, (p.description || "").slice(0, 140),
+        [p.description, p.ingredients, p.guidelines, p.badge, p.lab, p.category, (p.skinTypes || []).join(" ")].join(" "), p));
+
+    customBlogPosts.filter(isPublishedPost).forEach((a, i) =>
+      add(`art-${a.slug || i}`, "article", a.title, (a.summary || "").slice(0, 140),
+        [a.summary, stripHtml(a.content).slice(0, 5000), a.category, a.author].join(" "), a));
+
+    localizedServices.forEach((srv, i) =>
+      add(`srv-${i}`, "service", srv.title, (srv.description || "").slice(0, 140),
+        [srv.description, ...(srv.details || [])].join(" "), SERVICE_TAB_IDS[i] || "oem-odm"));
+
+    localizedCategories.forEach((cat) =>
+      add(`cat-${cat.id}`, "category", cat.title, (cat.description || "").slice(0, 140),
+        [cat.description, ...(cat.subCategories || []), ...(cat.features || [])].join(" "), cat.id));
+
+    const ab = localizedAboutSections as any;
+    add("about-us", "about", ab.intro.title || "Về Cosbuilt", (ab.intro.content || "").slice(0, 140), collectText(ab.intro), "about-us");
+    add("about-factory", "about", ab.factory.title, (ab.factory.subtitle || "").slice(0, 140), collectText(ab.factory), "factory-capacity");
+    add("about-cert", "about", ab.certifications.title, (ab.certifications.subtitle || "").slice(0, 140), collectText(customCertifications), "certifications");
+    customCertifications.forEach((c: any, i: number) =>
+      add(`cert-${i}`, "about", c.name, (c.issuer || "").slice(0, 140), collectText(c), "certifications"));
+    add("about-rd", "about", ab.rdTeam.title, (ab.rdTeam.subtitle || "").slice(0, 140), collectText(ab.rdTeam) + " " + collectText(RESEARCHER_HUR), "rd-team");
+    add("about-researcher", "about", RESEARCHER_HUR.name, RESEARCHER_HUR.role, collectText(RESEARCHER_HUR), "rd-team");
+    add("about-partners", "about", ab.partners.title, (ab.partners.subtitle || "").slice(0, 140), collectText(customLogos.length ? customLogos.map((l: any) => [l.name, l.type]) : ab.partners.logos), "partners");
+
+    localizedPricingList.forEach((pr: any, i: number) =>
+      add(`price-${i}`, "pricing", pr.productType, [pr.priceRange, pr.unit].filter(Boolean).join(" · "),
+        [pr.minOrder, pr.priceRange, pr.unit, pr.timeframe].join(" "), ["pricing"]));
+
+    const contactText = [t("footer_office_address"), t("footer_factory_address"), t("footer_working_hours"), "hotline 0966 373 686 +84 966 373 686 email info@cosbuilt.com zalo đăng ký báo giá mẫu thử liên hệ tư vấn"].join(" ");
+    add("page-home", "page", L("Trang chủ", "Home", "홈"), "", "Cosbuilt gia công mỹ phẩm OEM ODM trọn gói CGMP ISO 22716 Hàn Quốc", ["home"]);
+    add("page-ai", "page", L("Thiết kế công thức & báo giá bằng AI", "AI formula & quote advisor", "AI 처방 설계 및 견적"), L("Nhập ý tưởng sản phẩm để nhận công thức và dự toán", "Enter your idea to get a formula and estimate", "아이디어를 입력해 처방과 견적을 받아보세요"), "AI trợ lý lab nghiên cứu thiết kế công thức dự toán chi phí MOQ", ["home", "ai-advisor"]);
+    add("page-catalog", "page", L("Danh mục công thức mỹ phẩm", "Formula catalogue", "처방 카탈로그"), "", "bộ sưu tập công thức mỹ phẩm tiêu biểu mẫu thử sản phẩm", ["categories"]);
+    add("page-pricing", "page", L("Bảng giá & ước tính chi phí gia công", "Pricing & cost estimator", "가격표 및 비용 견적"), "", "ước tính ngân sách chi phí gia công MOQ số lượng đóng gói bao bì công bố", ["pricing"]);
+    add("page-news", "page", L("Tin tức & cẩm nang", "News & handbooks", "뉴스 및 가이드"), "", "tin tức cẩm nang xu hướng bài viết kiến thức thị trường", ["news"]);
+    add("page-contact", "page", L("Liên hệ & nhận báo giá", "Contact & get a quote", "문의 및 견적"), L("Hotline 0966 373 686 · info@cosbuilt.com", "Hotline +84 966 373 686 · info@cosbuilt.com", "핫라인 +84 966 373 686 · info@cosbuilt.com"), contactText, ["contact"]);
+    return items;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customProducts, customBlogPosts, customCertifications, customLogos, language]);
+
+  const handleSelectSearchItem = (item: SearchItem) => {
+    setSearchQuery("");
+    switch (item.type) {
+      case "product": return handleSelectProduct(item.ref as FormulaProduct);
+      case "article": return handleSelectBlog(item.ref as BlogPost);
+      case "service": return handleTabChange("services", item.ref as string);
+      case "category": return handleTabChange("categories", item.ref as string);
+      case "about": return handleTabChange("about", item.ref as string);
+      default: {
+        const [tab, sub] = item.ref as string[];
+        return handleTabChange(tab, sub);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-clip">
       {location.pathname !== "/admin" && (
@@ -1673,6 +1738,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
           onToggleSampleCart={handleToggleSampleCart}
           websiteLogo={websiteLogo}
           isAdminMode={isAdminMode}
+          searchItems={searchItems}
+          onSelectSearchItem={handleSelectSearchItem}
         />
       )}
 
