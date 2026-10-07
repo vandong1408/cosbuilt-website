@@ -21,7 +21,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
   const logoInitials = websiteLogo.name?.trim().slice(0, 2).toLowerCase() || "cb";
 
   return (
-    <footer className="relative bg-stone-950 text-stone-300 grain overflow-hidden">
+    <footer className="relative bg-stone-950 text-stone-300 grain overflow-hidden pb-20 md:pb-0">
       {/* Top Banner Accent */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-satin-gold to-transparent"></div>
       <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(50%_100%_at_50%_0%,color-mix(in_srgb,var(--color-emerald-green)_18%,transparent),transparent)] pointer-events-none"></div>

@@ -69,6 +69,7 @@ import { BlogPost, ManufacturingCategory, FormulaProduct, ProductPackaging } fro
 import { slugify } from "./lib/slug";
 import { renderArticle } from "./lib/articleContent";
 import { SearchItem, prepare, stripHtml, collectText } from "./lib/siteSearch";
+import { QuickLeadCard, TrustPillars, ServicesGrid, ProcessTimeline, CapacityBand, CertShowcase, PartnersBand, FaqSection, MobileActionBar, TrustChips } from "./components/HomeSections";
 
 // Bài nháp (status "draft") không hiển thị ngoài site.
 const isPublishedPost = (post: any) => (post?.status || "published") !== "draft";
@@ -1794,87 +1795,46 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                     <div className="lg:col-span-7 space-y-6 text-left">
                       <div className="inline-flex items-center gap-2 bg-white/5 text-satin-gold border border-satin-gold/40 px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-[0.22em] uppercase backdrop-blur-sm">
-{t("cgmp_factory")}
+                        {L("Nhà máy OEM / ODM · Hàn Quốc", "OEM / ODM factory · Korea", "OEM / ODM 공장 · 한국")}
                       </div>
-                      
+
                       <h1 className="text-[2rem] min-[400px]:text-4xl sm:text-5xl lg:text-[3.1rem] xl:text-[3.3rem] font-serif font-semibold tracking-tight text-white leading-[1.15]">
-                        {language === "vi" ? (
-                          <>
-                            Kiến Tạo <br />
-                            <span className="sm:whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-satin-gold-pale via-satin-gold to-satin-gold-pale">
-                              Thương Hiệu Triệu Đô
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-satin-gold-pale via-satin-gold to-satin-gold-pale">
-                            {t("creating_brands")}
-                          </span>
-                        )}
+                        {L("Gia công mỹ phẩm trọn gói", "Turnkey cosmetics manufacturing", "화장품 OEM/ODM 원스톱 제조")} <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-satin-gold-pale via-satin-gold to-satin-gold-pale">
+                          {L("chuẩn ISO 22716 GMP", "to ISO 22716 GMP standard", "ISO 22716 GMP 기준")}
+                        </span>
                       </h1>
-                      
+
                       <p className="text-stone-300 text-sm md:text-[1.05rem] leading-[1.8] max-w-xl">
-                        {t("hero_desc")}
+                        {L(
+                          "Công thức độc quyền, bao bì, kiểm nghiệm & công bố, sản xuất hàng loạt – một đầu mối duy nhất cho thương hiệu của bạn. Sản xuất tại 2 nhà máy ở Incheon & Gimpo, Hàn Quốc.",
+                          "Exclusive formulas, packaging, testing & registration and mass production – one partner for your brand. Made in our two factories in Incheon & Gimpo, Korea.",
+                          "독점 처방, 용기, 시험·등록, 양산까지 – 브랜드를 위한 단 하나의 파트너. 한국 인천·김포 2개 공장에서 생산합니다."
+                        )}
                       </p>
 
-                      {/* CTA Buttons */}
-                      <div className="flex flex-wrap gap-4 pt-4">
-                        <a 
-                          href="#ai-formula-advisor-container"
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <button
+                          onClick={() => handleTabChange("contact")}
                           className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_color-mix(in_srgb,var(--color-emerald-green)_80%,transparent)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
                         >
-
-                          {t("ai_design")}
-                        </a>
-                        <button 
-                          onClick={() => handleTabChange("pricing")}
+                          {L("Nhận báo giá & mẫu thử", "Get a quote & samples", "견적 및 샘플 받기")}
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleTabChange("about", "factory-capacity")}
                           className="bg-white/5 hover:bg-white/15 backdrop-blur-sm border border-white/30 hover:border-satin-gold/60 text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full transition-all flex items-center gap-2 cursor-pointer"
                         >
-                          <Calculator className="w-4 h-4" />
-                          {t("view_pricing")}
+                          {L("Xem năng lực nhà máy", "See factory capacity", "공장 생산 능력 보기")}
                         </button>
                       </div>
 
-                      {/* Bullet Highlights */}
-                      <div className="grid grid-cols-3 gap-6 pt-7 mt-2 border-t border-satin-gold/25 max-w-lg">
-                        <div className="text-left">
-                          <div className="text-satin-gold font-serif font-bold text-xl md:text-3xl">100%</div>
-                          <div className="text-stone-400 text-[10px] uppercase tracking-[0.16em] mt-1">{t("exclusive_formula")}</div>
-                        </div>
-                        <div className="text-left">
-                          <div className="text-satin-gold font-serif font-bold text-xl md:text-3xl">CGMP</div>
-                          <div className="text-stone-400 text-[10px] uppercase tracking-[0.16em] mt-1">{t("cgmp_factory")}</div>
-                        </div>
-                        <div className="text-left">
-                          <div className="text-satin-gold font-serif font-bold text-xl md:text-3xl">1,000+</div>
-                          <div className="text-stone-400 text-[10px] uppercase tracking-[0.16em] mt-1">{t("free_physical_samples")}</div>
-                        </div>
-                      </div>
+                      <TrustChips />
                     </div>
 
-                    {/* Secondary interactive promotional card on Hero */}
-                    <div className="lg:col-span-5 hidden lg:block">
-                      <div className="floaty bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-xl p-7 rounded-3xl border border-white/20 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)] relative overflow-hidden space-y-4">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-green/10 rounded-full blur-2xl"></div>
-                        <h3 className="font-bold text-[11px] uppercase tracking-[0.24em] text-satin-gold">{t("trend_2026")}</h3>
-                        <div className="space-y-3">
-                          <div className="p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
-                            <span className="bg-emerald-green text-white text-[10px] px-2 py-0.5 rounded-md font-bold uppercase mr-2">Hot R&D</span>
-                            <span className="text-xs font-semibold text-white">{t("hot_rd")}</span>
-                            <p className="text-[11px] text-stone-400 mt-1">{t("hot_rd_desc")}</p>
-                          </div>
-                          <div className="p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
-                            <span className="bg-satin-gold text-stone-950 text-[10px] px-2 py-0.5 rounded-md font-bold uppercase mr-2">Eco-friendly</span>
-                            <span className="text-xs font-semibold text-white">{t("vegan_eco")}</span>
-                            <p className="text-[11px] text-stone-400 mt-1">{t("vegan_eco_desc")}</p>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => handleTabChange("news")}
-                          className="w-full bg-white text-stone-900 font-bold text-xs py-3.5 rounded-xl hover:bg-satin-gold-light transition-all flex items-center justify-center gap-1 cursor-pointer"
-                        >
-                          {t("learn_trends")} <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
+                    {/* Quick lead form: the main conversion point of the page */}
+                    <div className="lg:col-span-5">
+                      <QuickLeadCard onMore={() => handleTabChange("contact")} />
                     </div>
                   </div>
                 </div>
@@ -1892,56 +1852,15 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 </div>
               </section>
 
-              {/* CORE EXCELLENCE CARDS (About introduction) */}
-              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                  <div className="space-y-6 text-left">
-                    <div className="eyebrow">
-                      {language === "en" ? "About our brand" : language === "ko" ? "우리 브랜드 소개" : "Về thương hiệu chúng tôi"}
-                    </div>
-                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 leading-tight">
-                      {language === "en" ? "Premium, Most Professional Cosmetics Contract Manufacturer" : language === "ko" ? "최고의 전문성을 가진 하이엔드 화장품 ODM/OEM 파트너" : "Đối tác gia công mỹ phẩm đẳng cấp, chuyên nghiệp nhất"}
-                    </h2>
-                    <p className="text-stone-600 text-sm leading-relaxed">
-                      {localizedAboutSections.intro.content}
-                    </p>
-                    <div className="space-y-3 text-xs font-medium text-stone-800">
-                      <div className="flex items-center gap-2.5">
-                        <Check className="w-4 h-4 text-emerald-green shrink-0 bg-emerald-green-light rounded-full p-0.5" />
-                        <span>{language === "en" ? "Own 2 large-scale international factories, 100% imported machinery" : language === "ko" ? "2개의 글로벌 대형 공장 보유, 100% 수입 기계 설비" : "Sở hữu 2 nhà máy quy mô lớn chuẩn quốc tế, máy móc nhập khẩu 100%"}</span>
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <Check className="w-4 h-4 text-emerald-green shrink-0 bg-emerald-green-light rounded-full p-0.5" />
-                        <span>{language === "en" ? "Absolute confidentiality of all exclusive formulas and brand data" : language === "ko" ? "모든 독점 처방 및 브랜드 정보의 철저한 비밀 유지 보장" : "Bảo mật tuyệt đối mọi công thức độc quyền và dữ liệu thương hiệu"}</span>
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <Check className="w-4 h-4 text-emerald-green shrink-0 bg-emerald-green-light rounded-full p-0.5" />
-                        <span>{language === "en" ? "Full legal support from intellectual property to MOH product notification" : language === "ko" ? "지식재산권 등록부터 보건부 화장품 품목 보고까지 완벽 대행" : "Hỗ trợ hồ sơ pháp lý từ sở hữu trí tuệ đến phiếu công bố lưu hành Bộ Y Tế"}</span>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => handleTabChange("about")}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-900 hover:text-emerald-green border-b border-stone-900 hover:border-emerald-green pb-1.5 transition-all cursor-pointer"
-                    >
-                      <span>{language === "en" ? "Explore our factory & capacity" : language === "ko" ? "공장 견학 및 생산 역량 알아보기" : "Khám phá nhà máy & năng lực sản xuất"}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
+              <TrustPillars onAbout={(sub) => handleTabChange("about", sub)} />
 
-                  <div className="relative">
-                    <img
-                      src="https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800" 
-                      alt="Cosmetics Laboratory" 
-                      className="w-full h-[400px] object-cover rounded-3xl shadow-lg border border-stone-100"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute -bottom-6 -left-6 bg-stone-950 p-6 rounded-2xl border border-stone-800 text-white space-y-1 shadow-xl hidden sm:block">
-                      <div className="text-xs text-stone-400 font-bold uppercase">{L("Chứng nhận tiêu chuẩn", "Certified standards", "인증 기준")}</div>
-                      <div className="text-base font-serif font-bold text-emerald-green">CGMP ASEAN / ISO 22716</div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+              <ServicesGrid services={localizedServices as any} onOpen={(id) => handleTabChange("services", id)} />
+
+              <ProcessTimeline steps={localizedServices[5].details} onContact={() => handleTabChange("contact")} />
+
+              <CapacityBand images={customImages} onFactory={() => handleTabChange("about", "factory-capacity")} />
+
+              <CertShowcase certs={customCertifications} onView={(i) => setViewCertIndex(i)} onAll={() => handleTabChange("about", "certifications")} />
 
               {/* LEAD RESEARCHER / FOUNDER PROFILE (Hur Beom-Chul) */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1953,11 +1872,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   </p>
                 </div>
                 <ResearcherProfile image={researcherImage} />
-              </section>
-
-              {/* CORE AI INTERACTIVE R&D ADVISOR PANEL */}
-              <section id="ai-advisor" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <AIFormulaAdvisor />
               </section>
 
               {/* INTERACTIVE MANUFACTURING CATEGORIES PREVIEW */}
@@ -2029,31 +1943,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 </div>
               </section>
 
-              {/* COOPERATION PROCESS 6-STEP ANIMATION */}
-              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-                <div className="text-center space-y-3">
-                  <span className="eyebrow">{t("process_title")}</span>
-                  <h2 className="text-3xl font-serif font-bold text-stone-900">{t("process_headline")}</h2>
-                  <p className="text-stone-500 text-xs md:text-sm max-w-xl mx-auto">
-                    {t("process_desc")}
-                  </p>
-                </div>
+              <PartnersBand partners={(customLogos.length ? customLogos : ABOUT_SECTIONS.partners.logos) as any} onAll={() => handleTabChange("about", "partners")} />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {localizedServices[5].details.map((step, idx) => {
-                    const [stepTitle, stepDesc] = step.split(": ");
-                    return (
-                      <div key={idx} className="bg-white p-6 rounded-2xl border border-stone-150 relative overflow-hidden text-left space-y-2">
-                        <div className="absolute top-0 right-0 w-12 h-12 bg-emerald-green/5 rounded-bl-3xl flex items-center justify-center font-serif text-emerald-green font-black text-sm">
-                          0{idx + 1}
-                        </div>
-                        <span className="bg-emerald-green-light text-emerald-green-dark text-[10px] font-bold px-2 py-0.5 rounded-md uppercase">Bước {idx + 1}</span>
-                        <p className="text-stone-500 text-xs leading-relaxed font-light pt-2">{stepDesc}</p>
-                      </div>
-                    );
-                  })}
-                </div>
+              {/* CORE AI INTERACTIVE R&D ADVISOR PANEL */}
+              <section id="ai-advisor" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <AIFormulaAdvisor />
               </section>
+
+              <FaqSection onContact={() => handleTabChange("contact")} />
 
               {/* LATEST INGREDIENT TRENDS BLOG POSTS */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -4730,8 +4627,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
       {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={footerLogo} />}
       
-      {/* Contact Buttons */}
-      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+      {location.pathname !== "/admin" && <MobileActionBar onQuote={() => handleTabChange("contact")} />}
+
+      {/* Contact Buttons (desktop; mobile uses the bottom action bar) */}
+      <div className="hidden md:flex fixed bottom-6 right-6 flex-col gap-3 z-50">
         <a 
           href="https://zalo.me/0966373686" 
           target="_blank" 
