@@ -53,7 +53,6 @@ import AIFormulaAdvisor from "./components/AIFormulaAdvisor";
 import CRMDashboard from "./components/CRMDashboard";
 import ResearcherProfile from "./components/ResearcherProfile";
 import CertificateViewer from "./components/CertificateViewer";
-import ToneSwitcher from "./components/ToneSwitcher";
 import { useLanguage } from "./contexts/LanguageContext";
 
 import { 
@@ -1730,7 +1729,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-clip">
-      {location.pathname !== "/admin" && <ToneSwitcher />}
       {location.pathname !== "/admin" && (
         <Navbar 
           activeTab={activeTab} 

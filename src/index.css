@@ -194,38 +194,3 @@ nav button[class*="tracking-wider"] { position: relative; }
 
 /* The search pill already shows focus via its own ring */
 input[role="combobox"]:focus-visible { outline: none; }
-
-
-/* =====================================================================
-   TONE PRESETS (preview) — apply with <html data-tone="emerald|navy|noirbronze">
-   Tailwind v4 reads colours from these variables, so redefining the scale
-   re-tones the whole site. Default (no data-tone) is the current look.
-   Bright, high-end light tones — none use the burgundy accent.
-   ===================================================================== */
-
-/* 1 · Ivory & Deep Emerald — pharma-lab trust + natural luxury, green-black ink, champagne gold */
-:root[data-tone="emerald"] {
-  --color-emerald-green: #17493C; --color-emerald-green-dark: #0F3329; --color-emerald-green-light: #EAF3EF; --color-emerald-green-bright: #226553;
-  --color-satin-gold: #B8975A; --color-satin-gold-dark: #957A42; --color-satin-gold-light: #F5EEDC; --color-satin-gold-pale: #E6D5A8;
-  --color-stone-50: #FBFBF7; --color-stone-100: #F4F5EF; --color-stone-150: #ECEEE6; --color-stone-200: #E3E6DE; --color-stone-250: #D6DBD3;
-  --color-stone-300: #C3CAC4; --color-stone-350: #A7B0AA; --color-stone-400: #8A958E; --color-stone-500: #66726B; --color-stone-600: #4A5750;
-  --color-stone-700: #34403A; --color-stone-750: #2B3631; --color-stone-800: #212C27; --color-stone-850: #19231F; --color-stone-900: #121B17; --color-stone-950: #0C1411;
-}
-
-/* 2 · Pearl & Midnight Navy — corporate trust, cool pearl canvas, soft champagne accents */
-:root[data-tone="navy"] {
-  --color-emerald-green: #1B2F55; --color-emerald-green-dark: #111F3B; --color-emerald-green-light: #EBEFF7; --color-emerald-green-bright: #2A4478;
-  --color-satin-gold: #C0A56F; --color-satin-gold-dark: #9C8350; --color-satin-gold-light: #F4EEDF; --color-satin-gold-pale: #E5D6AF;
-  --color-stone-50: #FAFBFC; --color-stone-100: #F2F4F7; --color-stone-150: #E9ECF1; --color-stone-200: #DFE3EA; --color-stone-250: #CDD3DD;
-  --color-stone-300: #B8C0CD; --color-stone-350: #9EA7B6; --color-stone-400: #828C9D; --color-stone-500: #5E6879; --color-stone-600: #465062;
-  --color-stone-700: #333B4B; --color-stone-750: #2B3241; --color-stone-800: #232938; --color-stone-850: #1B2030; --color-stone-900: #141824; --color-stone-950: #0D111B;
-}
-
-/* 3 · Warm White & Noir Bronze — gallery white, espresso-black actions, bronze-gold detail */
-:root[data-tone="noirbronze"] {
-  --color-emerald-green: #2B221B; --color-emerald-green-dark: #14100C; --color-emerald-green-light: #F5F1EA; --color-emerald-green-bright: #3F3228;
-  --color-satin-gold: #B08D57; --color-satin-gold-dark: #8C6D3F; --color-satin-gold-light: #F3EBDD; --color-satin-gold-pale: #E3CFA2;
-  --color-stone-50: #FCFBF9; --color-stone-100: #F5F3EF; --color-stone-150: #EDEAE4; --color-stone-200: #E4E0D8; --color-stone-250: #D3CEC3;
-  --color-stone-300: #C0BAAC; --color-stone-350: #A8A192; --color-stone-400: #8D8676; --color-stone-500: #6A6458; --color-stone-600: #504B41;
-  --color-stone-700: #3A362F; --color-stone-750: #312D27; --color-stone-800: #28251F; --color-stone-850: #1F1D18; --color-stone-900: #171512; --color-stone-950: #0F0D0B;
-}
