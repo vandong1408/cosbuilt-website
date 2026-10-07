@@ -1730,11 +1730,11 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 {t("cgmp_factory")}
                       </div>
                       
-                      <h1 className="text-4xl sm:text-5xl lg:text-[4.1rem] font-serif font-bold tracking-tight text-white leading-[1.08]">
+                      <h1 className="text-[2rem] min-[400px]:text-4xl sm:text-5xl lg:text-[3.1rem] xl:text-[3.3rem] font-serif font-semibold tracking-tight text-white leading-[1.15]">
                         {language === "vi" ? (
                           <>
                             Kiến Tạo <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F3D9A4] via-satin-gold to-[#E9C77E]">
+                            <span className="sm:whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#F3D9A4] via-satin-gold to-[#E9C77E]">
                               Thương Hiệu Triệu Đô
                             </span>
                           </>
