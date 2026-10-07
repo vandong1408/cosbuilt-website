@@ -21,11 +21,12 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
   const logoInitials = websiteLogo.name?.trim().slice(0, 2).toLowerCase() || "cb";
 
   return (
-    <footer className="bg-stone-950 text-stone-300 border-t border-stone-800">
+    <footer className="relative bg-stone-950 text-stone-300 grain overflow-hidden">
       {/* Top Banner Accent */}
-      <div className="bg-gradient-to-r from-satin-gold via-emerald-green to-emerald-green-dark py-1.5 w-full"></div>
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-satin-gold to-transparent"></div>
+      <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(50%_100%_at_50%_0%,rgba(156,28,64,0.18),transparent)] pointer-events-none"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           
           {/* Company Brief */}
@@ -53,7 +54,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
                 </>
               )}
             </div>
-            <p className="text-xs text-stone-400 leading-relaxed font-light">
+            <p className="text-xs text-stone-400 leading-relaxed ">
               {t("footer_intro_desc")}
             </p>
             <div className="space-y-2 pt-2 text-xs">
@@ -70,7 +71,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
 
           {/* Core Services Quick Links */}
           <div className="space-y-4 text-left">
-            <h4 className="text-white font-bold text-xs tracking-wider uppercase border-b border-stone-800 pb-2">
+            <h4 className="text-satin-gold font-semibold text-[11px] tracking-[0.22em] uppercase border-b border-white/10 pb-3">
               {t("footer_service_title")}
             </h4>
             <ul className="space-y-0.5 text-xs text-stone-400">
@@ -119,7 +120,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
 
           {/* Categories Quick Links */}
           <div className="space-y-4 text-left">
-            <h4 className="text-white font-bold text-xs tracking-wider uppercase border-b border-stone-800 pb-2">
+            <h4 className="text-satin-gold font-semibold text-[11px] tracking-[0.22em] uppercase border-b border-white/10 pb-3">
               {t("footer_cat_title")}
             </h4>
             <ul className="space-y-0.5 text-xs text-stone-400">
@@ -176,10 +177,10 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
 
           {/* Headquarters & Factories info */}
           <div className="space-y-4 text-left">
-            <h4 className="text-white font-bold text-xs tracking-wider uppercase border-b border-stone-800 pb-2">
+            <h4 className="text-satin-gold font-semibold text-[11px] tracking-[0.22em] uppercase border-b border-white/10 pb-3">
               {t("footer_office_title")}
             </h4>
-            <div className="space-y-3 text-xs text-stone-400 leading-relaxed font-light">
+            <div className="space-y-3 text-xs text-stone-400 leading-relaxed ">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-satin-gold shrink-0 mt-0.5" />
                 <div>
@@ -208,7 +209,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
         </div>
 
         {/* Bottom copyright and disclaimer */}
-        <div className="border-t border-stone-900 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-stone-500 text-[11px]">
+        <div className="border-t border-white/10 mt-14 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-stone-500 text-[11px]">
           <div 
             onDoubleClick={onToggleAdminMode}
             className="cursor-default select-none"

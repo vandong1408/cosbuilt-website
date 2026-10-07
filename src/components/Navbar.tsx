@@ -44,21 +44,21 @@ export default function Navbar({
   };
 
   return (
-    <header className="w-full bg-white sticky top-0 z-50 shadow-xs">
+    <header className="w-full bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-[0_1px_0_rgba(201,162,77,0.25),0_10px_30px_-18px_rgba(60,30,20,0.25)]">
       {/* Top Banner Bar */}
-      <div className="bg-white border-b border-stone-200 text-stone-600 text-[11px] sm:text-xs py-2 px-4 sm:px-6 lg:px-8">
+      <div className="bg-stone-950 border-b border-satin-gold/20 text-stone-300 text-[11px] sm:text-xs py-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-3">
-            <a href="tel:+84966373686" className="whitespace-nowrap hover:text-emerald-green">{t("hotline")}: <strong>0966 373 686</strong></a>
-            <span className="text-stone-300">|</span>
+            <a href="tel:+84966373686" className="whitespace-nowrap hover:text-satin-gold transition-colors">{t("hotline")}: <strong className="text-white">0966 373 686</strong></a>
+            <span className="text-white/20">|</span>
             {/* Custom Premium Dropdown Language Selector */}
             <div className="relative z-50 flex items-center">
               <button
                 type="button"
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-stone-200 bg-stone-50 hover:bg-stone-100 hover:border-stone-300 text-stone-700 hover:text-stone-900 font-bold text-[11px] transition-all cursor-pointer shadow-3xs"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-white/15 bg-white/5 hover:bg-white/10 hover:border-satin-gold/50 text-stone-200 font-bold text-[11px] transition-all cursor-pointer"
               >
-                <Globe className="w-3.5 h-3.5 text-emerald-green shrink-0" />
+                <Globe className="w-3.5 h-3.5 text-satin-gold shrink-0" />
                 <span className="tracking-wide">
                   {language === "vi" ? "Tiếng Việt" : language === "en" ? "English" : "한국어"}
                 </span>
@@ -123,10 +123,10 @@ export default function Navbar({
                 </>
               )}
             </div>
-            <span className="text-stone-300">|</span>
+            <span className="text-white/20">|</span>
             <span>VNĐ</span>
           </div>
-          <div className="hidden xl:block text-stone-700 font-medium text-[11px] sm:text-xs truncate">
+          <div className="hidden xl:block text-satin-gold font-medium tracking-wide text-[11px] sm:text-xs truncate">
             {t("accept_small_orders")}
           </div>
           <div className="flex items-center gap-3 text-[11px] sm:text-xs">
@@ -170,18 +170,18 @@ export default function Navbar({
           {/* Luxury Search Bar (Matching image theme with satin gold highlight button) */}
           <form 
             onSubmit={handleSearchSubmit} 
-            className="hidden md:flex items-center flex-1 max-w-2xl bg-white border-2 border-emerald-green rounded-lg overflow-hidden transition-all shadow-xs"
+            className="hidden md:flex items-center flex-1 max-w-2xl bg-stone-50 border border-stone-250 focus-within:border-emerald-green focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(156,28,64,0.08)] rounded-full overflow-hidden transition-all"
           >
             <input 
               type="text" 
               placeholder={t("search_placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent px-4 py-2.5 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
+              className="w-full bg-transparent pl-6 pr-3 py-3 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
             />
             <button 
               type="submit"
-              className="bg-emerald-green hover:bg-emerald-green-dark text-white px-5 py-3.5 transition-all flex items-center justify-center cursor-pointer shrink-0"
+              className="bg-emerald-green hover:bg-emerald-green-dark text-white m-1 w-10 h-10 rounded-full transition-all flex items-center justify-center cursor-pointer shrink-0"
             >
               <Search className="w-4 h-4 text-white" />
             </button>
@@ -214,7 +214,7 @@ export default function Navbar({
       </div>
 
       {/* Primary Navigation Bar */}
-      <nav className="hidden lg:block bg-white border-t border-b border-stone-200">
+      <nav className="hidden lg:block bg-white/70 border-t border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             
@@ -384,7 +384,7 @@ export default function Navbar({
               placeholder={t("search_placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent px-4 py-2.5 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
+              className="w-full bg-transparent pl-6 pr-3 py-3 text-xs text-stone-800 placeholder-stone-400 focus:outline-none"
             />
             <button type="submit" className="bg-emerald-green text-white px-4 py-2">
               <Search className="w-3.5 h-3.5 text-white" />

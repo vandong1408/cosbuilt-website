@@ -1708,44 +1708,45 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-16 pb-16"
+              className="space-y-16 md:space-y-24 pb-0"
             >
               {/* Luxury Hero Banner (Styled beautifully like Image 2 "Avésa") */}
-              <section id="hero-section" className="relative bg-stone-900 overflow-hidden min-h-[500px] md:min-h-[600px] flex items-center">
+              <section id="hero-section" className="relative bg-stone-950 overflow-hidden min-h-[560px] md:min-h-[680px] flex items-center grain">
                 <div className="absolute inset-0 z-0">
                   <img
                     src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=1600" 
                     alt="Cosmetics Hero Banner" 
-                    className="w-full h-full object-cover opacity-35 object-center scale-105"
+                    className="w-full h-full object-cover opacity-45 object-center kenburns"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/80 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-stone-50 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/85 to-stone-950/10"></div>
+                  <div className="absolute inset-0 bg-[radial-gradient(60%_80%_at_85%_20%,rgba(156,28,64,0.28),transparent_70%)]"></div>
+                  <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-satin-gold/60 to-transparent"></div>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                     <div className="lg:col-span-7 space-y-6 text-left">
-                      <div className="inline-flex items-center gap-2 bg-emerald-green/30 text-emerald-green-light border border-emerald-green/30 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase animate-pulse">
+                      <div className="inline-flex items-center gap-2 bg-white/5 text-satin-gold border border-satin-gold/40 px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-[0.22em] uppercase backdrop-blur-sm">
                         <Sparkles className="w-3.5 h-3.5" /> {t("cgmp_factory")}
                       </div>
                       
-                      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight text-white leading-[1.1]">
+                      <h1 className="text-4xl sm:text-5xl lg:text-[4.1rem] font-serif font-bold tracking-tight text-white leading-[1.08]">
                         {language === "vi" ? (
                           <>
                             Kiến Tạo <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-green via-amber-200 to-satin-gold">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F3D9A4] via-satin-gold to-[#E9C77E]">
                               Thương Hiệu Triệu Đô
                             </span>
                           </>
                         ) : (
-                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-green via-amber-200 to-satin-gold">
+                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F3D9A4] via-satin-gold to-[#E9C77E]">
                             {t("creating_brands")}
                           </span>
                         )}
                       </h1>
                       
-                      <p className="text-stone-300 text-sm md:text-base leading-relaxed max-w-xl font-light">
+                      <p className="text-stone-300 text-sm md:text-[1.05rem] leading-[1.8] max-w-xl">
                         {t("hero_desc")}
                       </p>
 
@@ -1753,14 +1754,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <div className="flex flex-wrap gap-4 pt-4">
                         <a 
                           href="#ai-formula-advisor-container"
-                          className="bg-emerald-green hover:bg-emerald-green-dark text-white font-semibold text-xs md:text-sm px-6 py-3.5 rounded-full shadow-lg hover:shadow-emerald-green/20 transition-all flex items-center gap-2 cursor-pointer"
+                          className="btn-sheen bg-gradient-to-b from-[#B02450] to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
                         >
-                          <Sparkles className="w-4 h-4 text-amber-200 fill-amber-200" />
+                          <Sparkles className="w-4 h-4 text-satin-gold fill-satin-gold" />
                           {t("ai_design")}
                         </a>
                         <button 
                           onClick={() => handleTabChange("pricing")}
-                          className="bg-transparent hover:bg-white/10 border border-white/30 text-white font-semibold text-xs md:text-sm px-6 py-3.5 rounded-full transition-all flex items-center gap-2 cursor-pointer"
+                          className="bg-white/5 hover:bg-white/15 backdrop-blur-sm border border-white/30 hover:border-satin-gold/60 text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full transition-all flex items-center gap-2 cursor-pointer"
                         >
                           <Calculator className="w-4 h-4" />
                           {t("view_pricing")}
@@ -1768,27 +1769,27 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       </div>
 
                       {/* Bullet Highlights */}
-                      <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-lg">
+                      <div className="grid grid-cols-3 gap-6 pt-7 mt-2 border-t border-satin-gold/25 max-w-lg">
                         <div className="text-left">
-                          <div className="text-white font-serif font-bold text-lg md:text-2xl">100%</div>
-                          <div className="text-stone-400 text-[10px] uppercase tracking-wider">{t("exclusive_formula")}</div>
+                          <div className="text-satin-gold font-serif font-bold text-xl md:text-3xl">100%</div>
+                          <div className="text-stone-400 text-[10px] uppercase tracking-[0.16em] mt-1">{t("exclusive_formula")}</div>
                         </div>
                         <div className="text-left">
-                          <div className="text-white font-serif font-bold text-lg md:text-2xl">CGMP</div>
-                          <div className="text-stone-400 text-[10px] uppercase tracking-wider">{t("cgmp_factory")}</div>
+                          <div className="text-satin-gold font-serif font-bold text-xl md:text-3xl">CGMP</div>
+                          <div className="text-stone-400 text-[10px] uppercase tracking-[0.16em] mt-1">{t("cgmp_factory")}</div>
                         </div>
                         <div className="text-left">
-                          <div className="text-white font-serif font-bold text-lg md:text-2xl">1,000+</div>
-                          <div className="text-stone-400 text-[10px] uppercase tracking-wider">{t("free_physical_samples")}</div>
+                          <div className="text-satin-gold font-serif font-bold text-xl md:text-3xl">1,000+</div>
+                          <div className="text-stone-400 text-[10px] uppercase tracking-[0.16em] mt-1">{t("free_physical_samples")}</div>
                         </div>
                       </div>
                     </div>
 
                     {/* Secondary interactive promotional card on Hero */}
                     <div className="lg:col-span-5 hidden lg:block">
-                      <div className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/15 shadow-2xl relative overflow-hidden space-y-4">
+                      <div className="floaty bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-xl p-7 rounded-3xl border border-white/20 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)] relative overflow-hidden space-y-4">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-green/10 rounded-full blur-2xl"></div>
-                        <h3 className="text-white font-bold text-xs uppercase tracking-widest text-emerald-green-light">{t("trend_2026")}</h3>
+                        <h3 className="font-bold text-[11px] uppercase tracking-[0.24em] text-satin-gold">{t("trend_2026")}</h3>
                         <div className="space-y-3">
                           <div className="p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
                             <span className="bg-emerald-green text-white text-[10px] px-2 py-0.5 rounded-md font-bold uppercase mr-2">Hot R&D</span>
@@ -1796,14 +1797,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             <p className="text-[11px] text-stone-400 mt-1">{t("hot_rd_desc")}</p>
                           </div>
                           <div className="p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
-                            <span className="bg-amber-500 text-stone-950 text-[10px] px-2 py-0.5 rounded-md font-bold uppercase mr-2">Eco-friendly</span>
+                            <span className="bg-satin-gold text-stone-950 text-[10px] px-2 py-0.5 rounded-md font-bold uppercase mr-2">Eco-friendly</span>
                             <span className="text-xs font-semibold text-white">{t("vegan_eco")}</span>
                             <p className="text-[11px] text-stone-400 mt-1">{t("vegan_eco_desc")}</p>
                           </div>
                         </div>
                         <button 
                           onClick={() => handleTabChange("news")}
-                          className="w-full bg-white text-stone-900 font-bold text-xs py-3 rounded-xl hover:bg-emerald-green-light transition-all flex items-center justify-center gap-1 cursor-pointer"
+                          className="w-full bg-white text-stone-900 font-bold text-xs py-3.5 rounded-xl hover:bg-satin-gold-light transition-all flex items-center justify-center gap-1 cursor-pointer"
                         >
                           {t("learn_trends")} <ChevronRight className="w-4 h-4" />
                         </button>
@@ -1814,12 +1815,12 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               </section>
 
               {/* STATS COUNTDOWN COUNTERS */}
-              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-white rounded-3xl border border-stone-150 p-8 shadow-sm grid grid-cols-2 lg:grid-cols-4 gap-8">
+              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-24">
+                <div className="bg-white/95 backdrop-blur rounded-3xl border border-stone-150 p-8 md:p-10 shadow-lift grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-stone-150">
                   {localizedAboutSections.intro.stats.map((stat, idx) => (
-                    <div key={idx} className="text-center space-y-1">
-                      <div className="text-3xl md:text-4xl font-serif font-black text-emerald-green">{stat.value}</div>
-                      <div className="text-xs text-stone-500 font-medium tracking-wider uppercase">{stat.label}</div>
+                    <div key={idx} className="text-center space-y-2">
+                      <div className="text-4xl md:text-5xl font-serif font-bold text-emerald-green">{stat.value}</div>
+                      <div className="text-[11px] text-stone-500 font-semibold tracking-[0.18em] uppercase">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -1829,7 +1830,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6 text-left">
-                    <div className="text-xs font-bold uppercase tracking-widest text-emerald-green">
+                    <div className="eyebrow">
                       {language === "en" ? "About our brand" : language === "ko" ? "우리 브랜드 소개" : "Về thương hiệu chúng tôi"}
                     </div>
                     <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 leading-tight">
@@ -1879,7 +1880,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               {/* LEAD RESEARCHER / FOUNDER PROFILE (Hur Beom-Chul) */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center space-y-3 mb-8">
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Đội ngũ nghiên cứu R&D", "R&D research team", "R&D 연구팀")}</span>
+                  <span className="eyebrow">{L("Đội ngũ nghiên cứu R&D", "R&D research team", "R&D 연구팀")}</span>
                   <h2 className="text-3xl font-serif font-bold text-stone-900">{L("Chuyên Gia Đứng Sau Những Công Thức Triệu Đô", "The Experts Behind Million-Dollar Formulas", "밀리언달러 처방을 만든 전문가")}</h2>
                   <p className="text-stone-500 text-xs md:text-sm max-w-2xl mx-auto">
                     {L("Cosbuilt được dẫn dắt bởi những chuyên gia R&D hàng đầu Hàn Quốc với hàng chục năm kinh nghiệm phát triển sản phẩm cho các tập đoàn mỹ phẩm lớn.", "Cosbuilt is led by top Korean R&D experts with decades of experience developing products for major cosmetics groups.", "코스빌트는 대형 화장품 그룹의 제품 개발 경력을 수십 년 쌓아 온 한국 최고의 R&D 전문가들이 이끌고 있습니다.")}
@@ -1897,7 +1898,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               <section className="bg-stone-100 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                   <div className="text-center space-y-3">
-                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{t("strength_title")}</span>
+                    <span className="eyebrow">{t("strength_title")}</span>
                     <h2 className="text-3xl font-serif font-bold text-stone-900">{t("strength_headline")}</h2>
                     <p className="text-stone-500 text-xs md:text-sm max-w-xl mx-auto">
                       {t("strength_desc")}
@@ -1965,7 +1966,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               {/* COOPERATION PROCESS 6-STEP ANIMATION */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                 <div className="text-center space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{t("process_title")}</span>
+                  <span className="eyebrow">{t("process_title")}</span>
                   <h2 className="text-3xl font-serif font-bold text-stone-900">{t("process_headline")}</h2>
                   <p className="text-stone-500 text-xs md:text-sm max-w-xl mx-auto">
                     {t("process_desc")}
@@ -1992,7 +1993,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-stone-200 pb-5">
                   <div className="text-left space-y-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Tin tức thị trường", "Market news", "시장 뉴스")}</span>
+                    <span className="eyebrow">{L("Tin tức thị trường", "Market news", "시장 뉴스")}</span>
                     <h2 className="text-3xl font-serif font-bold text-stone-900">{L("Cẩm Nang & Xu Hướng Hoạt Chất", "Guides & Ingredient Trends", "가이드 & 원료 트렌드")}</h2>
                   </div>
                   <button 
@@ -2039,32 +2040,30 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               </section>
 
               {/* INQUIRY QUICK CONTACT SECTION */}
-              <section className="bg-stone-950 text-white py-16 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950 to-emerald-green/10"></div>
-                <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-green/10 rounded-full blur-3xl"></div>
+              <section className="bg-stone-950 text-white py-20 md:py-28 relative overflow-hidden grain">
+                <div className="absolute inset-0 bg-[radial-gradient(60%_90%_at_50%_0%,rgba(156,28,64,0.45),transparent_70%)]"></div>
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-satin-gold/70 to-transparent"></div>
                 
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-white/10 rounded-2xl mb-2">
-                    <Briefcase className="w-6 h-6 text-emerald-green" />
-                  </div>
-                  <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-100">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-7">
+                  <div className="gold-rule"><i></i></div>
+                  <h2 className="text-3xl md:text-5xl font-serif font-bold text-white leading-tight">
                     {t("ready_brand")}
                   </h2>
-                  <p className="text-stone-300 text-sm max-w-xl mx-auto font-light leading-relaxed">
+                  <p className="text-stone-300 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
                     {t("ready_brand_desc")}
                   </p>
                   <div className="flex flex-wrap justify-center gap-4 pt-4">
                     <button 
                       onClick={() => handleTabChange("contact")}
-                      className="bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs md:text-sm px-8 py-3.5 rounded-full transition-all cursor-pointer"
+                      className="btn-sheen bg-gradient-to-b from-[#B02450] to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-9 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all cursor-pointer"
                     >
                       {t("contact_expert")}
                     </button>
                     <a 
                       href="tel:+84966373686"
-                      className="bg-white/15 hover:bg-white/20 text-white font-bold text-xs md:text-sm px-8 py-3.5 rounded-full transition-all flex items-center gap-2 border border-white/10"
+                      className="bg-white/5 hover:bg-white/15 backdrop-blur-sm text-white font-semibold text-xs md:text-sm px-9 py-4 rounded-full transition-all flex items-center gap-2 border border-white/25 hover:border-satin-gold/60"
                     >
-                      <Phone className="w-4 h-4 text-emerald-green" />
+                      <Phone className="w-4 h-4 text-satin-gold" />
                       {t("call_us")}: (+84) 966 373 686
                     </a>
                   </div>
@@ -2086,13 +2085,13 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
             >
               {/* Header */}
               <div className="text-center space-y-4 max-w-4xl mx-auto pb-4">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-green">
+                <span className="eyebrow">
                   {t("about_title")}
                 </span>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 leading-tight">
                   {t("about_headline")}
                 </h1>
-                <div className="w-16 h-1 bg-emerald-green mx-auto mt-4 mb-2"></div>
+                <div className="gold-rule"><i></i></div>
               </div>
 
               {/* Sub navigation for about section tabs */}
@@ -2315,7 +2314,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     {/* Detailed profile: lead researcher Hur Beom-Chul */}
                     <div className="mt-8 space-y-4">
                       <div className="text-left space-y-1.5 px-1">
-                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Chân dung nhà nghiên cứu", "Researcher profile", "연구원 프로필")}</span>
+                        <span className="eyebrow">{L("Chân dung nhà nghiên cứu", "Researcher profile", "연구원 프로필")}</span>
                         <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">{L("Nhà Nghiên Cứu Hur Beom-Chul", "Researcher Hur Beom-Chul", "허범철 연구원")}</h3>
                       </div>
                       <ResearcherProfile image={researcherImage} />
@@ -2447,13 +2446,13 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               >
                 {/* Header */}
                 <div className="text-center space-y-4 max-w-4xl mx-auto pb-4">
-                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-green">
+                  <span className="eyebrow">
                     {language === "en" ? "OUR PROFESSIONAL SERVICES" : language === "ko" ? "코스빌트 전문 서비스" : "DỊCH VỤ CHUYÊN NGHIỆP"}
                   </span>
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 leading-tight">
                     {language === "en" ? "End-to-End Cosmetic Manufacturing Solutions" : language === "ko" ? "화장품 기획부터 완제품 출하까지 원스톱 솔루션" : "Giải Pháp Toàn Diện Cho Thương Hiệu Mỹ Phẩm Của Bạn"}
                   </h1>
-                  <div className="w-16 h-1 bg-emerald-green mx-auto mt-4 mb-2"></div>
+                  <div className="gold-rule"><i></i></div>
                 </div>
 
                 {/* Horizontal Navigation Slider */}
@@ -2940,7 +2939,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <>
                     <div id="manufacturing-directory-top" className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-stone-200 pb-6 gap-4">
                       <div className="text-left space-y-1.5">
-                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">
+                        <span className="eyebrow">
                           {language === "en" ? "MANUFACTURING DIRECTORY" : language === "ko" ? "생산 제품 디렉토리" : "DANH MỤC GIA CÔNG"}
                         </span>
                         <h1 className="text-3xl sm:text-4xl font-serif font-black text-stone-900 leading-none">
@@ -3447,7 +3446,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               >
                 {/* Header */}
                 <div className="text-center space-y-3 max-w-3xl mx-auto mb-10">
-                  <span className="text-xs font-black uppercase tracking-widest text-emerald-green">
+                  <span className="eyebrow">
                     {language === "en" ? "MANUFACTURING INVESTMENT PRICING" : language === "ko" ? "화장품 제조 위탁 투자 단가표" : "BẢNG GIÁ ĐẦU TƯ GIA CÔNG"}
                   </span>
                   <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 leading-tight">
@@ -4021,7 +4020,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 <>
                   {/* Header */}
                   <div id="blog-directory-top" className="text-left space-y-3 max-w-3xl border-b border-stone-200 pb-6">
-                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">
+                    <span className="eyebrow">
                       {language === "en" ? "MARKET INTELLIGENCE & INSIGHTS" : language === "ko" ? "글로벌 마켓 인텔리전스 및 지식인" : "Thông tin thị trường & kiến thức"}
                     </span>
                     <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 leading-tight">
@@ -4230,7 +4229,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
             >
               {/* Header */}
               <div className="text-left space-y-3 max-w-3xl border-b border-stone-200 pb-6">
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-green">{L("Liên hệ Cosbuilt", "Contact Cosbuilt", "코스빌트 문의")}</span>
+                <span className="eyebrow">{L("Liên hệ Cosbuilt", "Contact Cosbuilt", "코스빌트 문의")}</span>
                 <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 leading-tight">
                   {t("contact_main_title")}
                 </h1>
