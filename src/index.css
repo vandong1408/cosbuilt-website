@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Montserrat", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
   
   --color-emerald-green: #9C1C40; /* Luxury Crimson Burgundy from screenshot */
   --color-emerald-green-dark: #7B1230; /* Deep Burgundy */
@@ -162,7 +162,7 @@ p { text-wrap: pretty; }
 .article-body pre, .article-body code { white-space: pre-wrap; background: #f5f5f4; border-radius: 0.5rem; padding: 0.1em 0.35em; font-size: 0.9em; }
 @media (max-width: 640px) { .article-body { font-size: 1rem; } .article-body h2 { font-size: 1.35rem; } }
 
-/* Body copy: Montserrat Light is too faint on cream — use regular weight */
+/* Body copy: Light weight is too faint on cream — use regular weight */
 .font-light { font-weight: 400; }
 .text-stone-500 { color: #6B625B; }
 .text-stone-400 { color: #968C83; }
