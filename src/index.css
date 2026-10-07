@@ -14,6 +14,10 @@
   --color-satin-gold-light: #F6ECD6; /* Soft champagne tint */
 
   /* Half-step warm neutrals referenced across the app (were undefined → rendered as black borders) */
+  --color-stone-100: #F5EFE7;
+  --color-stone-200: #E8E1D8;
+  --color-stone-400: #968C83;
+  --color-stone-500: #6B625B;
   --color-stone-150: #EFEBE6;
   --color-stone-250: #DEDAD4;
   --color-stone-350: #C4BFB8;
@@ -21,6 +25,8 @@
   --color-stone-850: #26221F;
 
   --color-ivory: #FBF8F3;
+  --color-emerald-green-bright: #B02450;
+  --color-satin-gold-pale: #F3D9A4;
   --color-ink: #1D1A18;
 
   --shadow-soft: 0 1px 2px rgba(60, 30, 20, 0.04), 0 8px 24px -12px rgba(60, 30, 20, 0.10);
@@ -47,8 +53,8 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-ivory); /* Warm ivory silk */
-  color: var(--color-ink);
+  background-color: var(--color-stone-50);
+  color: var(--color-stone-900);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -57,10 +63,10 @@ body {
 ::selection { background: rgba(156, 28, 64, 0.16); color: #4a0f22; }
 
 /* Slim, refined scrollbar */
-html { scrollbar-width: thin; scrollbar-color: #c9b9ab transparent; }
+html { scrollbar-width: thin; scrollbar-color: var(--color-stone-300) transparent; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: #d6c9bd; border-radius: 999px; border: 2px solid var(--color-ivory); }
-::-webkit-scrollbar-thumb:hover { background: #b8a595; }
+::-webkit-scrollbar-thumb { background: var(--color-stone-250); border-radius: 999px; border: 2px solid var(--color-stone-50); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-stone-350); }
 
 /* Keyboard focus that matches the brand */
 :focus-visible { outline: 2px solid var(--color-satin-gold); outline-offset: 2px; border-radius: 4px; }
@@ -71,9 +77,6 @@ h1, h2, h3 { text-wrap: balance; }
 p { text-wrap: pretty; }
 
 /* ---------- Luxury layer: shared surface language ---------- */
-/* Warm hairlines instead of cool grey */
-.border-stone-100 { border-color: #F1ECE5; }
-.border-stone-200 { border-color: #E8E1D8; }
 /* Layered, tinted shadows (never harsh black) */
 .shadow-xs { box-shadow: 0 1px 2px rgba(60, 30, 20, 0.05); }
 .shadow-sm { box-shadow: var(--shadow-soft); }
@@ -135,7 +138,7 @@ p { text-wrap: pretty; }
 
 /* Nội dung bài viết (tin tức) — chữ thuần hoặc HTML từ trình soạn thảo admin */
 .article-body {
-  color: #292524;
+  color: var(--color-stone-800);
   font-size: 1.0625rem;
   line-height: 1.85;
   font-weight: 400;
@@ -145,7 +148,7 @@ p { text-wrap: pretty; }
 .article-body h2, .article-body h3 {
   font-family: var(--font-serif);
   font-weight: 700;
-  color: #1c1917;
+  color: var(--color-stone-900);
   line-height: 1.3;
   scroll-margin-top: 110px;
 }
@@ -156,18 +159,14 @@ p { text-wrap: pretty; }
 .article-body ol { list-style: decimal; }
 .article-body li + li { margin-top: 0.35em; }
 .article-body a { color: var(--color-emerald-green); text-decoration: underline; text-underline-offset: 3px; }
-.article-body strong { font-weight: 700; color: #1c1917; }
-.article-body blockquote { border-left: 3px solid var(--color-emerald-green); padding-left: 1em; color: #57534e; font-style: italic; }
+.article-body strong { font-weight: 700; color: var(--color-stone-900); }
+.article-body blockquote { border-left: 3px solid var(--color-emerald-green); padding-left: 1em; color: var(--color-stone-600); font-style: italic; }
 .article-body img { max-width: 100%; height: auto; border-radius: 1rem; }
-.article-body pre, .article-body code { white-space: pre-wrap; background: #f5f5f4; border-radius: 0.5rem; padding: 0.1em 0.35em; font-size: 0.9em; }
+.article-body pre, .article-body code { white-space: pre-wrap; background: var(--color-stone-100); border-radius: 0.5rem; padding: 0.1em 0.35em; font-size: 0.9em; }
 @media (max-width: 640px) { .article-body { font-size: 1rem; } .article-body h2 { font-size: 1.35rem; } }
 
 /* Body copy: Light weight is too faint on cream — use regular weight */
 .font-light { font-weight: 400; }
-.text-stone-500 { color: #6B625B; }
-.text-stone-400 { color: #968C83; }
-/* Warm section band */
-.bg-stone-100 { background-color: #F5EFE7; }
 /* Cards lift on hover */
 .hover\:shadow-md:hover { transform: translateY(-4px); }
 /* Images inside cards zoom gently */
@@ -195,3 +194,61 @@ nav button[class*="tracking-wider"] { position: relative; }
 
 /* The search pill already shows focus via its own ring */
 input[role="combobox"]:focus-visible { outline: none; }
+
+
+/* =====================================================================
+   TONE PRESETS (preview) — apply with <html data-tone="ivory|noir|maison">
+   Tailwind v4 reads colours from these variables, so redefining the scale
+   re-tones the whole site. Default (no data-tone) is the current look.
+   ===================================================================== */
+
+/* 1 · Ivory & Bronze — clean Korean-lab luxury, taken from the JBCOS profile */
+:root[data-tone="ivory"] {
+  --color-emerald-green: #8C1D3E; --color-emerald-green-dark: #6A1230; --color-emerald-green-light: #F8EDEF; --color-emerald-green-bright: #A32449;
+  --color-satin-gold: #B8925A; --color-satin-gold-dark: #96743F; --color-satin-gold-light: #F3EAD9; --color-satin-gold-pale: #E9D5AE;
+  --color-white: #FFFEFB;
+  --color-stone-50: #FCFAF5; --color-stone-100: #F5EFE4; --color-stone-150: #ECE5D8; --color-stone-200: #E4DCCB; --color-stone-250: #D6CCB8;
+  --color-stone-300: #C6BAA2; --color-stone-350: #B2A58B; --color-stone-400: #968A72; --color-stone-500: #6F6556; --color-stone-600: #544C40;
+  --color-stone-700: #3E382F; --color-stone-750: #342F27; --color-stone-800: #2A261F; --color-stone-850: #221E18; --color-stone-900: #17140F; --color-stone-950: #110E0A;
+}
+
+/* 2 · Noir & Gold — dark, cinematic, jewellery-store feel */
+:root[data-tone="noir"] {
+  --color-emerald-green: #C93460; --color-emerald-green-dark: #A22548; --color-emerald-green-light: #2B1219; --color-emerald-green-bright: #D94070;
+  --color-satin-gold: #D2AE6D; --color-satin-gold-dark: #E2C185; --color-satin-gold-light: #2A2318; --color-satin-gold-pale: #F0DDB0;
+  --color-stone-50: #0F0D0B; --color-stone-100: #17130F; --color-stone-150: #241F19; --color-stone-200: #2E2820; --color-stone-250: #3A3228;
+  --color-stone-300: #4A4034; --color-stone-350: #6B5F4E; --color-stone-400: #8E8270; --color-stone-500: #AEA28D; --color-stone-600: #C3B8A3;
+  --color-stone-700: #D4CAB6; --color-stone-750: #DDD3C0; --color-stone-800: #E7DECC; --color-stone-850: #EFE7D6; --color-stone-900: #F6EFE0; --color-stone-950: #090807;
+  color-scheme: dark;
+}
+:root[data-tone="noir"] .bg-white { background-color: #1B1713; }
+:root[data-tone="noir"] .bg-white\/95 { background-color: rgba(27,23,19,0.95); }
+:root[data-tone="noir"] .bg-white\/90 { background-color: rgba(15,13,11,0.9); }
+:root[data-tone="noir"] .bg-white\/70 { background-color: rgba(15,13,11,0.7); }
+:root[data-tone="noir"] .bg-stone-900, :root[data-tone="noir"] .bg-stone-800 { background-color: #2B251E; }
+:root[data-tone="noir"] .hover\:bg-stone-900:hover { background-color: #3A3228; }
+:root[data-tone="noir"] .from-stone-900 { --tw-gradient-from: #2B251E; }
+:root[data-tone="noir"] .via-stone-900 { --tw-gradient-via: #2B251E; }
+:root[data-tone="noir"] .to-stone-900 { --tw-gradient-to: #2B251E; }
+:root[data-tone="noir"] .via-stone-800 { --tw-gradient-via: #2B251E; }
+:root[data-tone="noir"] .text-stone-50 { color: #FBF6EC; }
+:root[data-tone="noir"] .text-stone-100 { color: #F3ECDD; }
+:root[data-tone="noir"] .text-stone-200 { color: #E4DAC6; }
+:root[data-tone="noir"] .text-stone-300 { color: #CFC4AE; }
+:root[data-tone="noir"] .from-stone-800 { --tw-gradient-from: #2B251E; }
+:root[data-tone="noir"] .to-stone-800 { --tw-gradient-to: #2B251E; }
+:root[data-tone="noir"] .text-stone-950 { color: #0B0907; }
+:root[data-tone="noir"] header .text-stone-950 { color: #F6EFE0; }
+:root[data-tone="noir"] header img, :root[data-tone="noir"] footer img[alt*="COSBUILT" i] { filter: brightness(0) invert(1); }
+:root[data-tone="noir"] .shadow-sm, :root[data-tone="noir"] .shadow-lg, :root[data-tone="noir"] .shadow-xl { box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 40px -22px rgba(0,0,0,0.9); }
+:root[data-tone="noir"] ::selection { background: rgba(210,174,109,0.3); color: #fff; }
+
+/* 3 · Maison Burgundy — wine, blush and rose-gold, boutique perfumery */
+:root[data-tone="maison"] {
+  --color-emerald-green: #741A33; --color-emerald-green-dark: #54101F; --color-emerald-green-light: #F8ECEE; --color-emerald-green-bright: #8A2140;
+  --color-satin-gold: #BE8A7F; --color-satin-gold-dark: #9C6358; --color-satin-gold-light: #F5E6E1; --color-satin-gold-pale: #EBCFC7;
+  --color-white: #FFFDFC;
+  --color-stone-50: #FBF6F4; --color-stone-100: #F4EBE8; --color-stone-150: #ECE0DD; --color-stone-200: #E4D5D2; --color-stone-250: #D6C3C0;
+  --color-stone-300: #C5AEAB; --color-stone-350: #B09896; --color-stone-400: #94797A; --color-stone-500: #75595D; --color-stone-600: #593F45;
+  --color-stone-700: #46323A; --color-stone-750: #3B2A32; --color-stone-800: #30212A; --color-stone-850: #271923; --color-stone-900: #1E1219; --color-stone-950: #170B11;
+}

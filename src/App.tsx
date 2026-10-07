@@ -53,6 +53,7 @@ import AIFormulaAdvisor from "./components/AIFormulaAdvisor";
 import CRMDashboard from "./components/CRMDashboard";
 import ResearcherProfile from "./components/ResearcherProfile";
 import CertificateViewer from "./components/CertificateViewer";
+import ToneSwitcher from "./components/ToneSwitcher";
 import { useLanguage } from "./contexts/LanguageContext";
 
 import { 
@@ -1729,6 +1730,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-clip">
+      {location.pathname !== "/admin" && <ToneSwitcher />}
       {location.pathname !== "/admin" && (
         <Navbar 
           activeTab={activeTab} 
@@ -1801,12 +1803,12 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         {language === "vi" ? (
                           <>
                             Kiến Tạo <br />
-                            <span className="sm:whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#F3D9A4] via-satin-gold to-[#E9C77E]">
+                            <span className="sm:whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-satin-gold-pale via-satin-gold to-satin-gold-pale">
                               Thương Hiệu Triệu Đô
                             </span>
                           </>
                         ) : (
-                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F3D9A4] via-satin-gold to-[#E9C77E]">
+                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-satin-gold-pale via-satin-gold to-satin-gold-pale">
                             {t("creating_brands")}
                           </span>
                         )}
@@ -1820,7 +1822,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <div className="flex flex-wrap gap-4 pt-4">
                         <a 
                           href="#ai-formula-advisor-container"
-                          className="btn-sheen bg-gradient-to-b from-[#B02450] to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
+                          className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
                         >
 
                           {t("ai_design")}
@@ -2121,7 +2123,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="flex flex-wrap justify-center gap-4 pt-4">
                     <button 
                       onClick={() => handleTabChange("contact")}
-                      className="btn-sheen bg-gradient-to-b from-[#B02450] to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-9 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all cursor-pointer"
+                      className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-9 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all cursor-pointer"
                     >
                       {t("contact_expert")}
                     </button>
