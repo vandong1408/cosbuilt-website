@@ -239,9 +239,9 @@ export const translations: TranslationDictionary = {
     ko: "퍼스널 케어"
   },
   "cat_new_tech": {
-    vi: "Sản phẩm công nghệ mới ✨",
-    en: "New Tech Products ✨",
-    ko: "신기술 혁신 제품 ✨"
+    vi: "Sản phẩm công nghệ mới",
+    en: "New Tech Products",
+    ko: "신기술 혁신 제품"
   },
 
   // About stats

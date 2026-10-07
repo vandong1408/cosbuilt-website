@@ -10,7 +10,6 @@ import {
   Phone, 
   MapPin, 
   Award, 
-  Sparkles, 
   Boxes, 
   FlaskConical, 
   Palette, 
@@ -1728,7 +1727,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                     <div className="lg:col-span-7 space-y-6 text-left">
                       <div className="inline-flex items-center gap-2 bg-white/5 text-satin-gold border border-satin-gold/40 px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-[0.22em] uppercase backdrop-blur-sm">
-                        <Sparkles className="w-3.5 h-3.5" /> {t("cgmp_factory")}
+{t("cgmp_factory")}
                       </div>
                       
                       <h1 className="text-4xl sm:text-5xl lg:text-[4.1rem] font-serif font-bold tracking-tight text-white leading-[1.08]">
@@ -1756,7 +1755,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           href="#ai-formula-advisor-container"
                           className="btn-sheen bg-gradient-to-b from-[#B02450] to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
                         >
-                          <Sparkles className="w-4 h-4 text-satin-gold fill-satin-gold" />
+
                           {t("ai_design")}
                         </a>
                         <button 
@@ -2955,7 +2954,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <div className="bg-white border border-stone-200 rounded-3xl p-6 shadow-2xs text-left space-y-4">
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-5 rounded-full bg-emerald-green/10 flex items-center justify-center">
-                          <Sparkles className="w-3.5 h-3.5 text-emerald-green" />
+
                         </div>
                         <div>
                           <h3 className="text-xs font-bold text-stone-800 tracking-wider uppercase">
@@ -3886,7 +3885,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   </div>
                   <div className="space-y-1">
                     <span className="font-bold text-stone-800 flex items-center gap-1">
-                      <Sparkles className="w-4 h-4 text-satin-gold" /> 
+
                       {language === "en" ? "In-depth Expert Consultation" : language === "ko" ? "정밀 레시피 및 단독 용기 문의" : "Tư vấn báo giá chuyên sâu"}
                     </span>
                     <p className="text-stone-500 font-light leading-relaxed">
@@ -4646,7 +4645,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       }}
                       className="w-full bg-emerald-green hover:bg-emerald-green-dark text-white font-bold text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md uppercase tracking-wider"
                     >
-                      <Sparkles className="w-4 h-4 text-white" />
+
                       {L("Nhận bộ mẫu thử miễn phí", "Get free samples", "무료 샘플 받기")}
                     </button>
                     <p className="text-[10px] text-stone-400 text-center italic font-light">

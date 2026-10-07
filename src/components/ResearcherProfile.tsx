@@ -1,4 +1,4 @@
-import { Award, Briefcase, TrendingUp, Sparkles, CheckCircle } from "lucide-react";
+import { Award, Briefcase, TrendingUp, CheckCircle } from "lucide-react";
 import { RESEARCHER_HUR } from "../data";
 import { useLanguage } from "../contexts/LanguageContext";
 
@@ -78,7 +78,7 @@ export default function ResearcherProfile({
           <ul className="space-y-3">
             {profile.awards.map((award, idx) => (
               <li key={idx} className="flex gap-2 text-xs text-stone-600 leading-relaxed">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                <span className="w-1.5 h-1.5 rounded-full bg-satin-gold shrink-0 mt-1.5"></span>
                 <span className="font-light">{award}</span>
               </li>
             ))}

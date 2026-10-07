@@ -8,7 +8,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { motion } from "motion/react";
 import {
   ArrowRight, Award, Boxes, Check, CheckCircle2, ChevronDown, Clock, Factory, FileText, FlaskConical,
-  Gem, Lock, MapPin, MessageCircle, Palette, Phone, ShieldCheck, Sparkles, Truck,
+  Gem, Lock, MapPin, MessageCircle, Palette, Phone, ShieldCheck, Truck,
 } from "lucide-react";
 import { ABOUT_SECTIONS } from "../data";
 import CertificateViewer from "./CertificateViewer";
@@ -191,7 +191,7 @@ export default function LandingPage() {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             {hero.badge && (
               <span className="inline-flex items-center gap-2 rounded-full bg-emerald-green/20 border border-emerald-green/40 px-4 py-1.5 text-[11px] md:text-xs font-bold tracking-wider uppercase text-[#F4B8C8]">
-                <Sparkles className="w-3.5 h-3.5" /> {hero.badge}
+{hero.badge}
               </span>
             )}
             <h1 className="mt-6 font-serif font-bold text-white text-[36px] leading-[1.18] sm:text-5xl lg:text-[60px] lg:leading-[1.12] tracking-tight">

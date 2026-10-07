@@ -1,7 +1,6 @@
 import { useState, FormEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
-  Sparkles, 
   Calculator, 
   FlaskConical, 
   Box, 
@@ -86,7 +85,7 @@ export default function AIFormulaAdvisor() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 bg-emerald-green/20 text-satin-gold border border-emerald-green/30 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase mb-3">
-              <Sparkles className="w-3.5 h-3.5" /> {t("ai_lab_tag")}
+{t("ai_lab_tag")}
             </div>
             <h3 className="text-2xl md:text-3xl font-serif font-bold text-stone-100">
               {t("ai_lab_title")}
@@ -223,7 +222,7 @@ export default function AIFormulaAdvisor() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-amber-300 fill-amber-300" />
+
                   {t("ai_lab_btn")}
                 </>
               )}
