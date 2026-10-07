@@ -1788,7 +1788,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/85 to-stone-950/10"></div>
-                  <div className="absolute inset-0 bg-[radial-gradient(60%_80%_at_85%_20%,rgba(156,28,64,0.28),transparent_70%)]"></div>
+                  <div className="absolute inset-0 bg-[radial-gradient(60%_80%_at_85%_20%,color-mix(in_srgb,var(--color-emerald-green)_28%,transparent),transparent_70%)]"></div>
                   <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-satin-gold/60 to-transparent"></div>
                 </div>
 
@@ -1822,7 +1822,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <div className="flex flex-wrap gap-4 pt-4">
                         <a 
                           href="#ai-formula-advisor-container"
-                          className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
+                          className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-7 py-4 rounded-full shadow-[0_12px_30px_-10px_color-mix(in_srgb,var(--color-emerald-green)_80%,transparent)] ring-1 ring-white/10 transition-all flex items-center gap-2 cursor-pointer"
                         >
 
                           {t("ai_design")}
@@ -2109,7 +2109,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
               {/* INQUIRY QUICK CONTACT SECTION */}
               <section className="bg-stone-950 text-white py-20 md:py-28 relative overflow-hidden grain">
-                <div className="absolute inset-0 bg-[radial-gradient(60%_90%_at_50%_0%,rgba(156,28,64,0.45),transparent_70%)]"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(60%_90%_at_50%_0%,color-mix(in_srgb,var(--color-emerald-green)_45%,transparent),transparent_70%)]"></div>
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-satin-gold/70 to-transparent"></div>
                 
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-7">
@@ -2123,7 +2123,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="flex flex-wrap justify-center gap-4 pt-4">
                     <button 
                       onClick={() => handleTabChange("contact")}
-                      className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-9 py-4 rounded-full shadow-[0_12px_30px_-10px_rgba(156,28,64,0.8)] ring-1 ring-white/10 transition-all cursor-pointer"
+                      className="btn-sheen bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark hover:from-emerald-green hover:to-emerald-green-dark text-white font-semibold text-xs md:text-sm px-9 py-4 rounded-full shadow-[0_12px_30px_-10px_color-mix(in_srgb,var(--color-emerald-green)_80%,transparent)] ring-1 ring-white/10 transition-all cursor-pointer"
                     >
                       {t("contact_expert")}
                     </button>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-// Hidden preview tool: open any page with ?tone=pearl|porcelain|atelier|default to try a
+// Hidden preview tool: open any page with ?tone=emerald|navy|noirbronze|default to try a
 // background tone. Visitors without the query string never see it.
 const TONES = [
   { id: "default", label: "Hiện tại", sw: ["#F5EFE7", "#9C1C40", "#C9A24D"] },
-  { id: "pearl", label: "1 · Pearl & Champagne", sw: ["#FDFCFA", "#8E1B3D", "#C9AE7C"] },
-  { id: "porcelain", label: "2 · Porcelain & Rose Gold", sw: ["#FAF9F8", "#8A2A47", "#C0847A"] },
-  { id: "atelier", label: "3 · Atelier White & Bronze", sw: ["#FEFEFD", "#8A6A34", "#C9A765"] },
+  { id: "emerald", label: "1 · Ivory & Deep Emerald", sw: ["#FBFBF7", "#17493C", "#B8975A"] },
+  { id: "navy", label: "2 · Pearl & Midnight Navy", sw: ["#FAFBFC", "#1B2F55", "#C0A56F"] },
+  { id: "noirbronze", label: "3 · Warm White & Noir Bronze", sw: ["#FCFBF9", "#2B221B", "#B08D57"] },
 ];
 const KEY = "cb-tone-preview";
 

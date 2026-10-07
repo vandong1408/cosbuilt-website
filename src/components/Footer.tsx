@@ -24,7 +24,7 @@ export default function Footer({ onTabChange, onToggleAdminMode, websiteLogo = {
     <footer className="relative bg-stone-950 text-stone-300 grain overflow-hidden">
       {/* Top Banner Accent */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-satin-gold to-transparent"></div>
-      <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(50%_100%_at_50%_0%,rgba(156,28,64,0.18),transparent)] pointer-events-none"></div>
+      <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(50%_100%_at_50%_0%,color-mix(in_srgb,var(--color-emerald-green)_18%,transparent),transparent)] pointer-events-none"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">

@@ -101,7 +101,7 @@ export default function SearchBox({ items, onSelect, onSubmitQuery, onContact, v
         role="search"
         className={
           desktop
-            ? "flex items-center bg-stone-50 border border-stone-250 focus-within:border-emerald-green focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(156,28,64,0.08)] rounded-full overflow-hidden transition-all"
+            ? "flex items-center bg-stone-50 border border-stone-250 focus-within:border-emerald-green focus-within:bg-white focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-emerald-green)_8%,transparent)] rounded-full overflow-hidden transition-all"
             : "flex bg-stone-50 border border-stone-250 rounded-lg overflow-hidden"
         }
       >
