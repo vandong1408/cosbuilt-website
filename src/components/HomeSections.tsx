@@ -547,3 +547,64 @@ export function FeaturedFormulas({ products, onOpen, onAll }: { products: { id: 
     </section>
   );
 }
+
+/* ---------- Shared inner-page hero (dark, editorial) ---------- */
+export function PageHero({ eyebrow, title, desc, crumb, onHome }: { eyebrow: string; title: string; desc?: string; crumb: string; onHome: () => void }) {
+  const L = useL();
+  return (
+    <section className="relative bg-stone-950 text-white overflow-hidden grain">
+      <div className="absolute inset-0 bg-[radial-gradient(60%_120%_at_85%_0%,color-mix(in_srgb,var(--color-emerald-green)_32%,transparent),transparent_70%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-satin-gold/60 to-transparent" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+        <nav aria-label="breadcrumb" className="flex items-center gap-2 text-xs text-stone-400 mb-7">
+          <button onClick={onHome} className="hover:text-satin-gold transition-colors cursor-pointer">{L("Trang chủ", "Home", "홈")}</button>
+          <span className="text-stone-600">/</span>
+          <span className="text-stone-200">{crumb}</span>
+        </nav>
+        <div className="max-w-4xl space-y-5">
+          <span className="eyebrow !text-satin-gold">{eyebrow}</span>
+          <h1 className="text-4xl md:text-5xl lg:text-[3.4rem] font-serif font-semibold tracking-tight leading-[1.1]">{title}</h1>
+          {desc && <p className="text-stone-300 text-base md:text-lg leading-relaxed max-w-2xl">{desc}</p>}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Closing call-to-action shown at the foot of every inner page ---------- */
+export function ClosingCta({ onQuote }: { onQuote: () => void }) {
+  const L = useL();
+  const points = [
+    L("Tư vấn bước đầu miễn phí", "Free first consultation", "무료 초기 상담"),
+    L("Mẫu thử sau khoảng 1–2 tuần", "Samples in about 1–2 weeks", "약 1–2주 내 샘플"),
+    L("Bảo mật thông tin dự án & công thức", "Project & formula confidentiality", "프로젝트·처방 비밀 보장"),
+  ];
+  return (
+    <section className="bg-stone-100 border-t border-stone-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="lg:col-span-7 space-y-5">
+          <span className="eyebrow">{L("Bắt đầu cùng Cosbuilt", "Start with Cosbuilt", "코스빌트와 시작하기")}</span>
+          <h2 className="text-3xl md:text-4xl font-serif font-semibold tracking-tight text-stone-900 leading-tight">
+            {L("Bạn đang chuẩn bị ra mắt dòng mỹ phẩm riêng?", "Preparing to launch your own cosmetics line?", "나만의 화장품 라인을 준비 중이신가요?")}
+          </h2>
+          <ul className="space-y-2">
+            {points.map((p) => (
+              <li key={p} className="flex items-center gap-2.5 text-sm text-stone-700"><Check className="w-4 h-4 text-satin-gold-dark shrink-0" />{p}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col gap-3">
+          <button onClick={onQuote} className="btn-sheen flex items-center justify-center gap-2 bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark text-white font-semibold text-sm px-8 py-4 rounded-full shadow-lg cursor-pointer">
+            {L("Nhận báo giá & test mẫu miễn phí", "Get a free quote & sample test", "무료 견적 및 샘플 테스트")} <ArrowRight className="w-4 h-4" />
+          </button>
+          <a href="tel:+84966373686" className="flex items-center justify-center gap-2 border border-stone-300 hover:border-emerald-green bg-white text-stone-900 font-semibold text-sm px-8 py-4 rounded-full transition-colors">
+            <Phone className="w-4 h-4 text-emerald-green" />{HOTLINE}
+          </a>
+          <a href={ZALO} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 border border-stone-300 hover:border-emerald-green bg-white text-stone-900 font-semibold text-sm px-8 py-4 rounded-full transition-colors">
+            <MessageCircle className="w-4 h-4 text-emerald-green" />{L("Nhắn Zalo", "Message on Zalo", "Zalo 메시지")}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}

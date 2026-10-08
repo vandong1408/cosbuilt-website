@@ -69,7 +69,7 @@ import { BlogPost, ManufacturingCategory, FormulaProduct, ProductPackaging } fro
 import { slugify } from "./lib/slug";
 import { renderArticle } from "./lib/articleContent";
 import { SearchItem, prepare, stripHtml, collectText } from "./lib/siteSearch";
-import { QuickLeadCard, TrustPillars, Pathways, Capabilities, ServicesGrid, ProcessTimeline, CapacityBand, CertShowcase, FeaturedFormulas, PartnersBand, FaqSection, MobileActionBar, TrustChips } from "./components/HomeSections";
+import { QuickLeadCard, TrustPillars, Pathways, Capabilities, ServicesGrid, ProcessTimeline, CapacityBand, CertShowcase, FeaturedFormulas, PartnersBand, FaqSection, MobileActionBar, TrustChips, PageHero, ClosingCta } from "./components/HomeSections";
 
 // Bài nháp (status "draft") không hiển thị ngoài site.
 const isPublishedPost = (post: any) => (post?.status || "published") !== "draft";
@@ -1767,6 +1767,30 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
             </motion.div>
           )}
 
+          {/* Shared hero for inner pages (hidden on home, admin, product detail and article view) */}
+          {activeTab !== "home" && activeTab !== "crm" && !(activeTab === "categories" && selectedProductDetails) && !(activeTab === "news" && selectedBlog) && (() => {
+            const heroes: Record<string, { crumb: string; eyebrow: string; title: string; desc: string }> = {
+              about: { crumb: L("Giới thiệu", "About", "소개"), eyebrow: t("about_title"), title: t("about_headline"),
+                desc: L("Hai nhà máy chuẩn ISO 22716 GMP tại Hàn Quốc, phòng R&D được công nhận và đội ngũ nhà nghiên cứu giàu kinh nghiệm.", "Two ISO 22716 GMP factories in Korea, a recognised R&D department and an experienced research team.", "한국의 ISO 22716 GMP 공장 2곳, 인정받은 R&D 연구소, 풍부한 경력의 연구진.") },
+              services: { crumb: L("Dịch vụ", "Services", "서비스"), eyebrow: L("Dịch vụ chuyên nghiệp", "Professional services", "전문 서비스"),
+                title: L("Giải pháp toàn diện cho thương hiệu mỹ phẩm của bạn", "End-to-end cosmetic manufacturing solutions", "화장품 기획부터 완제품 출하까지 원스톱 솔루션"),
+                desc: L("Công thức, bao bì, kiểm nghiệm & công bố, sản xuất và vận chuyển – một đầu mối duy nhất.", "Formula, packaging, testing & registration, production and logistics – one partner.", "처방, 용기, 시험·등록, 생산, 물류를 한곳에서.") },
+              categories: { crumb: L("Danh mục gia công", "Catalogue", "카탈로그"), eyebrow: L("Danh mục gia công", "Manufacturing catalogue", "생산 제품 디렉토리"),
+                title: L("Bộ sưu tập công thức mỹ phẩm tiêu biểu", "Representative cosmetic formula collection", "대표 화장품 처방 컬렉션"),
+                desc: L("Duyệt các công thức mẫu, chọn dòng phù hợp thương hiệu và yêu cầu test mẫu.", "Browse sample formulas, pick what fits your brand and request a sample test.", "샘플 처방을 둘러보고 브랜드에 맞는 제품을 선택해 샘플 테스트를 요청하세요.") },
+              pricing: { crumb: L("Bảng giá", "Pricing", "가격표"), eyebrow: L("Bảng giá đầu tư gia công", "Manufacturing investment pricing", "제조 위탁 투자 단가표"),
+                title: L("Ước tính ngân sách gia công mỹ phẩm cGMP", "Estimate your cGMP cosmetics manufacturing budget", "cGMP 화장품 제조 예산 견적"),
+                desc: L("Điều chỉnh số lượng và quy cách bao bì để thấy ngay ngân sách khởi nghiệp dự kiến. Báo giá chính thức do chuyên viên xác nhận.", "Adjust quantity and packaging to see an indicative start-up budget. Official quotes are confirmed by our specialists.", "수량과 용기 사양을 조절해 예상 초기 예산을 확인하세요. 공식 견적은 담당자가 확정합니다.") },
+              news: { crumb: L("Tin tức", "News", "뉴스"), eyebrow: L("Thông tin thị trường & kiến thức", "Market intelligence & insights", "시장 인텔리전스"),
+                title: L("Cẩm nang gia công & xu hướng mỹ phẩm", "Cosmetics manufacturing handbooks & formulation trends", "OEM/ODM 화장품 가이드 및 원료 개발 트렌드"),
+                desc: L("Cập nhật pháp lý công bố mỹ phẩm và xu hướng nguyên liệu mới nhất.", "Stay current with registration rules and ingredient trends.", "최신 인허가 규정과 원료 트렌드를 확인하세요.") },
+              contact: { crumb: L("Liên hệ", "Contact", "문의"), eyebrow: L("Liên hệ Cosbuilt", "Contact Cosbuilt", "코스빌트 문의"),
+                title: t("contact_main_title"), desc: t("contact_main_desc") },
+            };
+            const h = heroes[activeTab];
+            return h ? <PageHero {...h} onHome={() => handleTabChange("home")} /> : null;
+          })()}
+
           {/* TRANG CHỦ / HOME PAGE */}
           {activeTab === "home" && (
             <motion.div
@@ -1995,17 +2019,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               transition={{ duration: 0.3 }}
               className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12"
             >
-              {/* Header */}
-              <div className="text-center space-y-4 max-w-4xl mx-auto pb-4">
-                <span className="eyebrow">
-                  {t("about_title")}
-                </span>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 leading-tight">
-                  {t("about_headline")}
-                </h1>
-                <div className="gold-rule"><i></i></div>
-              </div>
-
               {/* Sub navigation for about section tabs */}
               <div className="flex flex-wrap items-center justify-center border-b border-stone-200 overflow-x-auto scrollbar-none gap-2 sm:gap-6 md:gap-8 pb-0">
                 {[
@@ -2356,17 +2369,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 transition={{ duration: 0.3 }}
                 className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12"
               >
-                {/* Header */}
-                <div className="text-center space-y-4 max-w-4xl mx-auto pb-4">
-                  <span className="eyebrow">
-                    {language === "en" ? "OUR PROFESSIONAL SERVICES" : language === "ko" ? "코스빌트 전문 서비스" : "DỊCH VỤ CHUYÊN NGHIỆP"}
-                  </span>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 leading-tight">
-                    {language === "en" ? "End-to-End Cosmetic Manufacturing Solutions" : language === "ko" ? "화장품 기획부터 완제품 출하까지 원스톱 솔루션" : "Giải Pháp Toàn Diện Cho Thương Hiệu Mỹ Phẩm Của Bạn"}
-                  </h1>
-                  <div className="gold-rule"><i></i></div>
-                </div>
-
                 {/* Horizontal Navigation Slider */}
                 <div className="bg-stone-50 border border-stone-200 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2.5">
                   <div className="flex overflow-x-auto gap-2 p-1 scroll-smooth snap-x no-scrollbar" style={{ scrollbarWidth: "none" }}>
@@ -2849,15 +2851,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   </div>
                 ) : (
                   <>
-                    <div id="manufacturing-directory-top" className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-stone-200 pb-6 gap-4">
-                      <div className="text-left space-y-1.5">
-                        <span className="eyebrow">
-                          {language === "en" ? "MANUFACTURING DIRECTORY" : language === "ko" ? "생산 제품 디렉토리" : "DANH MỤC GIA CÔNG"}
-                        </span>
-                        <h1 className="text-3xl sm:text-4xl font-serif font-black text-stone-900 leading-none">
-                          {language === "en" ? "Representative Cosmetic Formula Collection" : language === "ko" ? "대표 화장품 처방 포뮬러 컬렉션" : "Bộ Sưu Tập Công Thức Mỹ Phẩm Tiêu Biểu"}
-                        </h1>
-                      </div>
+                    <div id="manufacturing-directory-top" className="flex justify-end">
                       <div className="text-stone-500 text-xs font-medium bg-stone-100 px-4 py-2 rounded-full border border-stone-200">
                         {language === "en" ? "Showing:" : language === "ko" ? "표시 중:" : "Đang hiển thị:"} <strong className="font-bold text-stone-900">{sortedProducts.length} {language === "en" ? "sample formulas" : language === "ko" ? "개 샘플 포뮬러" : "công thức mẫu thử"}</strong>
                       </div>
@@ -3356,19 +3350,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 transition={{ duration: 0.3 }}
                 className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12"
               >
-                {/* Header */}
-                <div className="text-center space-y-3 max-w-3xl mx-auto mb-10">
-                  <span className="eyebrow">
-                    {language === "en" ? "MANUFACTURING INVESTMENT PRICING" : language === "ko" ? "화장품 제조 위탁 투자 단가표" : "BẢNG GIÁ ĐẦU TƯ GIA CÔNG"}
-                  </span>
-                  <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 leading-tight">
-                    {language === "en" ? "Estimate your cGMP Cosmetics Manufacturing Budget" : language === "ko" ? "cGMP 화장품 우수 제조 생산 예산 견적" : "Ước Tính Ngân Sách Gia Công Mỹ Phẩm cGMP"}
-                  </h1>
-                  <p className="text-stone-500 text-xs sm:text-sm leading-relaxed max-w-2xl mx-auto font-light">
-                    {language === "en" ? "Tools supporting brands to quickly calculate complete start-up budgets. Adjust quantity and choose packaging specs to optimize your investment." : language === "ko" ? "신규 브랜드가 완제품 인도 기준 초기 예산을 직접 시뮬레이션할 수 있는 스마트 견적기입니다. 수량 및 용기 사양을 자유롭게 조절해 보세요." : "Công cụ hỗ trợ các nhãn hàng tính toán nhanh ngân sách khởi nghiệp hũ/chai mỹ phẩm trọn gói. Điều chỉnh số lượng và lựa chọn quy cách bao bì để tối ưu hóa đầu tư."}
-                  </p>
-                </div>
-
                 {/* TWO-COLUMN LAYOUT */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                   
@@ -3930,23 +3911,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 </div>
               ) : (
                 <>
-                  {/* Header */}
-                  <div id="blog-directory-top" className="text-left space-y-3 max-w-3xl border-b border-stone-200 pb-6">
-                    <span className="eyebrow">
-                      {language === "en" ? "MARKET INTELLIGENCE & INSIGHTS" : language === "ko" ? "글로벌 마켓 인텔리전스 및 지식인" : "Thông tin thị trường & kiến thức"}
-                    </span>
-                    <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 leading-tight">
-                      {language === "en" ? "Cosmetics Manufacturing Handbooks & Formulation Trends" : language === "ko" ? "OEM/ODM 화장품 가이드 및 원료 개발 트렌드" : "Cẩm nang gia công & Xu hướng mỹ phẩm"}
-                    </h1>
-                    <p className="text-stone-500 text-sm">
-                      {language === "en" 
-                        ? "Stay ahead of regulatory compliance updates and biotechnology active ingredient trends across the globe." 
-                        : language === "ko" 
-                          ? "보건부의 최신 위생 인허가 행정 규칙 및 글로벌 뷰티 박람회에서 주목받은 최첨단 유효 성분 트렌드 보고서입니다." 
-                          : "Cập nhật các phân tích pháp lý công bố mỹ phẩm mới nhất và các báo cáo xu hướng nguyên liệu đang bùng nổ trên thế giới."}
-                    </p>
-                  </div>
-
                   {/* Filters & Search sub-bar */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-stone-200 shadow-2xs">
                     <div className="flex gap-2">
@@ -4139,17 +4103,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               transition={{ duration: 0.3 }}
               className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12"
             >
-              {/* Header */}
-              <div className="text-left space-y-3 max-w-3xl border-b border-stone-200 pb-6">
-                <span className="eyebrow">{L("Liên hệ Cosbuilt", "Contact Cosbuilt", "코스빌트 문의")}</span>
-                <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 leading-tight">
-                  {t("contact_main_title")}
-                </h1>
-                <p className="text-stone-500 text-sm">
-                  {t("contact_main_desc")}
-                </p>
-              </div>
-
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
                 {/* Contact information details */}
@@ -4413,6 +4366,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
           )}
 
         </>
+      {activeTab !== "home" && activeTab !== "crm" && activeTab !== "contact" && <ClosingCta onQuote={() => handleTabChange("contact")} />}
       </main>
 
       {/* B2B SAMPLE CART DRAWER/SIDEBAR */}
