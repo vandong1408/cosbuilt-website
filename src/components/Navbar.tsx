@@ -52,7 +52,7 @@ export default function Navbar({
   }, []);
   const { language, setLanguage, t } = useLanguage();
   const { currency, rates } = useCurrency();
-  const fxTitle = currency === "VND" ? "" : `1 USD ≈ ${Math.round(rates.vndPerUsd).toLocaleString("en-US")} VND · 1 USD ≈ ${Math.round(rates.krwPerUsd).toLocaleString("en-US")} KRW${rates.updated !== "fallback" ? ` (${rates.updated})` : ""}`;
+  const fxTitle = currency === "VND" ? "" : `1 USD ≈ ${Math.round(rates.vndPerUsd).toLocaleString("en-US")} VND · 1 USD ≈ ${Math.round(rates.krwPerUsd).toLocaleString("en-US")} KRW${rates.updated !== "fallback" && !isNaN(new Date(rates.updated).getTime()) ? ` (${new Date(rates.updated).toISOString().slice(0, 10)})` : ""}`;
 
   return (
     <header className="w-full bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-[0_1px_0_rgba(201,162,77,0.25),0_10px_30px_-18px_rgba(60,30,20,0.25)]">

@@ -56,7 +56,8 @@ const RESPONSE_SCHEMA = {
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const { productType, targetEffect, budgetTier, volume, targetAudience, extraDemands } = await request.json<any>();
+    const { productType, targetEffect, budgetTier, volume, targetAudience, extraDemands, language } = await request.json<any>();
+    const outLang = language === "en" ? "English" : language === "ko" ? "Korean" : "Vietnamese";
 
     if (!env.GEMINI_API_KEY) {
       return Response.json({
@@ -82,6 +83,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       Thiết kế công thức chi tiết gồm: tên thương mại, mô tả ý tưởng, danh sách nguyên liệu (tên chuẩn INCI, tỷ lệ %, vai trò, xuất xứ),
       các bước quy trình gia công đạt chuẩn CGMP, đề xuất bao bì đóng gói, dự toán chi phí (nguyên liệu/bao bì/gia công/tổng/phí đăng ký/thời gian giao hàng),
       lời khuyên pháp lý về công bố mỹ phẩm, và nhận xét đề xuất từ chuyên gia R&D.
+
+      Ngôn ngữ trả lời: viết TOÀN BỘ các trường văn bản bằng ${outLang} (giữ nguyên tên INCI). Các trường chi phí phải là số thuần (chỉ chữ số, đơn vị VND), không kèm chữ.
     `;
 
     let lastError: any = null;

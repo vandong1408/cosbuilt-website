@@ -615,7 +615,8 @@ export function CurrencyNote({ className = "" }: { className?: string }) {
   const L = useL();
   const { currency, rates } = useCurrency();
   if (currency === "VND") return null;
-  const date = rates.updated === "fallback" ? "" : ` (${rates.updated.replace(/ \+0000$/, "")})`;
+  const d = new Date(rates.updated);
+  const date = rates.updated === "fallback" || isNaN(d.getTime()) ? "" : ` (${d.toISOString().slice(0, 10)})`;
   return (
     <p className={`text-xs leading-relaxed ${className}`}>
       {L("", `Prices are converted from VND (our base currency) at the international mid-market rate${date} and rounded; the official quote is issued in VND.`,
