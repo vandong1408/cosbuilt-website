@@ -1729,7 +1729,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-clip">
+    <div className={`min-h-screen flex flex-col font-sans bg-stone-50 text-stone-900 selection:bg-emerald-green-light selection:text-emerald-green-dark overflow-x-clip ${location.pathname !== "/admin" ? "public-site" : ""}`}>
       {location.pathname !== "/admin" && (
         <Navbar 
           activeTab={activeTab} 

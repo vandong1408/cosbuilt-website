@@ -194,3 +194,21 @@ nav button[class*="tracking-wider"] { position: relative; }
 
 /* The search pill already shows focus via its own ring */
 input[role="combobox"]:focus-visible { outline: none; }
+
+/* ---------- Vietnamese typography: room for stacked diacritics ----------
+   Be Vietnam Pro carries tall tone marks; tight leading made lines collide.
+   Scoped to .public-site so the admin dashboard keeps its compact layout. */
+.public-site { line-height: 1.7; letter-spacing: 0.005em; }
+.public-site :where(h1, h2) { line-height: 1.3; }
+.public-site :where(h3, h4, h5) { line-height: 1.4; }
+.public-site :where(p, li, dd, blockquote) { line-height: 1.8; }
+.public-site :where(main, footer) .text-xs { font-size: 0.875rem; line-height: 1.7; }
+.public-site :where(main, footer) .text-sm { font-size: 1rem; line-height: 1.75; }
+.public-site :where(main, footer) .text-base { line-height: 1.75; }
+.public-site :where(main, footer) .leading-none,
+.public-site :where(main, footer) .leading-tight,
+.public-site :where(main, footer) .leading-snug { line-height: 1.35; }
+.public-site :where(main) p + p { margin-top: 1rem; }
+.public-site :where(h1, h2, h3) + p { margin-top: 0.75rem; }
+/* A small label directly above a heading needs breathing room */
+.public-site :where(main) :where(span + h1, span + h2) { margin-top: 0.85rem; }
