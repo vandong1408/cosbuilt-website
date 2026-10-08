@@ -68,6 +68,7 @@ const handle: PagesFunction<Env> = async ({ request, env }) => {
       `do not add, remove or soften any fact; keep the same tone; if a text contains HTML, keep every tag and attribute unchanged and translate only the text between tags; keep ALL-CAPS headings in capitals; return ONLY a JSON array of the same length and order.\n\n` +
       JSON.stringify(uniqMiss);
     let out: string[] | null = null;
+    let lastErr = "";
     for (let attempt = 1; attempt <= 2 && !out; attempt++) {
       try {
         const resp = await ai.models.generateContent({
@@ -78,11 +79,12 @@ const handle: PagesFunction<Env> = async ({ request, env }) => {
         const parsed = JSON.parse((resp.text || "").trim());
         if (Array.isArray(parsed) && parsed.length === uniqMiss.length && parsed.every((x) => typeof x === "string")) out = parsed;
       } catch (e: any) {
-        console.error("translate attempt failed", e?.message);
+        lastErr = String(e?.message || e).slice(0, 300);
+        console.error("translate attempt failed", lastErr);
         await new Promise((r) => setTimeout(r, 600));
       }
     }
-    if (!out) return Response.json({ error: "translation failed" }, { status: 502 });
+    if (!out) return Response.json({ error: "translation failed", detail: lastErr }, { status: 500 });
 
     const byText = new Map(uniqMiss.map((s, i) => [s, out![i]]));
     const stmts: D1PreparedStatement[] = [];
