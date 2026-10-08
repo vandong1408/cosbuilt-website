@@ -16,7 +16,16 @@ async function sha(text: string): Promise<string> {
   return [...new Uint8Array(buf)].slice(0, 16).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const onRequestPost: PagesFunction<Env> = async (ctx) => {
+  try {
+    return await handle(ctx);
+  } catch (e: any) {
+    console.error("translate fatal", e?.message || e);
+    return Response.json({ error: "translate error", detail: String(e?.message || e).slice(0, 200) }, { status: 500 });
+  }
+};
+
+const handle: PagesFunction<Env> = async ({ request, env }) => {
   let body: { target?: string; strings?: unknown };
   try { body = await request.json(); } catch { return Response.json({ error: "bad json" }, { status: 400 }); }
   const target = String(body.target || "");
