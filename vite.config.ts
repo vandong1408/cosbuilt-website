@@ -17,6 +17,14 @@ export default defineConfig(() => {
       hmr: process.env.DISABLE_HMR !== 'true',
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      // Dev only: read the live public content (products, articles, images) so local
+      // previews look like production. Writes still need admin auth and local /api.
+      proxy: process.env.DEV_PROXY === 'off' ? undefined : {
+        '/uploads': { target: 'https://cosbuilt.vn', changeOrigin: true },
+        '/api/sheets/data': { target: 'https://cosbuilt.vn', changeOrigin: true },
+        '/api/rates': { target: 'https://cosbuilt.vn', changeOrigin: true },
+        '/api/translate': { target: 'https://cosbuilt.vn', changeOrigin: true },
+      },
     },
   };
 });

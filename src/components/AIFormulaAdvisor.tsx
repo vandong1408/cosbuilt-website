@@ -17,9 +17,11 @@ import {
 } from "lucide-react";
 import { AIFormulaResult } from "../types";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useCurrency } from "../contexts/CurrencyContext";
 
 export default function AIFormulaAdvisor() {
   const { t, language } = useLanguage();
+  const { fmt } = useCurrency();
   const [productType, setProductType] = useState("Chăm sóc da mặt");
   const [targetEffect, setTargetEffect] = useState("Dưỡng trắng, mờ thâm nám sạm");
   const [budgetTier, setBudgetTier] = useState("Trung cấp (Chất lượng spa/clinic)");
@@ -365,37 +367,37 @@ export default function AIFormulaAdvisor() {
                           <div className="flex justify-between py-1">
                             <span className="text-stone-600">{t("ai_lab_raw_cost")}:</span>
                             <span className="font-mono font-medium text-stone-800">
-                              {Number(result.pricingEstimation?.rawMaterialCostPerUnit || 0).toLocaleString("vi-VN")} đ
+                              {fmt(Number(result.pricingEstimation?.rawMaterialCostPerUnit || 0))}
                             </span>
                           </div>
                           <div className="flex justify-between py-1">
                             <span className="text-stone-600">{t("ai_lab_pack_cost")}:</span>
                             <span className="font-mono font-medium text-stone-800">
-                              {Number(result.pricingEstimation?.packagingCostPerUnit || 0).toLocaleString("vi-VN")} đ
+                              {fmt(Number(result.pricingEstimation?.packagingCostPerUnit || 0))}
                             </span>
                           </div>
                           <div className="flex justify-between py-1">
                             <span className="text-stone-600">{t("ai_lab_mfg_cost")}:</span>
                             <span className="font-mono font-medium text-stone-800">
-                              {Number(result.pricingEstimation?.manufacturingCostPerUnit || 0).toLocaleString("vi-VN")} đ
+                              {fmt(Number(result.pricingEstimation?.manufacturingCostPerUnit || 0))}
                             </span>
                           </div>
                           <div className="flex justify-between py-1 border-t border-dashed border-stone-200 pt-1.5 font-bold">
                             <span className="text-stone-900">{t("ai_lab_total_unit")}:</span>
                             <span className="font-mono text-emerald-green">
-                              {Number(result.pricingEstimation?.totalCostPerUnit || 0).toLocaleString("vi-VN")} đ
+                              {fmt(Number(result.pricingEstimation?.totalCostPerUnit || 0))}
                             </span>
                           </div>
                           <div className="flex justify-between py-1 border-t border-stone-200 pt-1.5">
                             <span className="text-stone-600 font-bold">{t("ai_lab_total_batch")} ({volume} {t("ai_lab_unit_val").toLowerCase()}):</span>
                             <span className="font-mono font-bold text-stone-950">
-                              {Number(result.pricingEstimation?.totalBatchCost || 0).toLocaleString("vi-VN")} đ
+                              {fmt(Number(result.pricingEstimation?.totalBatchCost || 0))}
                             </span>
                           </div>
                           <div className="flex justify-between py-1 text-[11px] text-stone-500">
                             <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> {t("ai_lab_reg_fee")}:</span>
                             <span className="font-mono">
-                              {Number(result.pricingEstimation?.registrationFee || 0).toLocaleString("vi-VN")} đ
+                              {fmt(Number(result.pricingEstimation?.registrationFee || 0))}
                             </span>
                           </div>
                           <div className="flex justify-between py-1 text-[11px] text-stone-500">

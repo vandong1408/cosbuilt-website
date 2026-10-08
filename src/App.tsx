@@ -54,6 +54,7 @@ import CRMDashboard from "./components/CRMDashboard";
 import ResearcherProfile from "./components/ResearcherProfile";
 import CertificateViewer from "./components/CertificateViewer";
 import { useLanguage } from "./contexts/LanguageContext";
+import { useCurrency } from "./contexts/CurrencyContext";
 
 import { 
   ABOUT_SECTIONS, 
@@ -69,7 +70,7 @@ import { BlogPost, ManufacturingCategory, FormulaProduct, ProductPackaging } fro
 import { slugify } from "./lib/slug";
 import { renderArticle } from "./lib/articleContent";
 import { SearchItem, prepare, stripHtml, collectText } from "./lib/siteSearch";
-import { QuickLeadCard, TrustPillars, Pathways, Capabilities, ServicesGrid, ProcessTimeline, CapacityBand, CertShowcase, FeaturedFormulas, PartnersBand, FaqSection, MobileActionBar, TrustChips, PageHero, ClosingCta } from "./components/HomeSections";
+import { QuickLeadCard, TrustPillars, Pathways, Capabilities, ServicesGrid, ProcessTimeline, CapacityBand, CertShowcase, FeaturedFormulas, PartnersBand, FaqSection, MobileActionBar, TrustChips, PageHero, ClosingCta, CurrencyNote } from "./components/HomeSections";
 
 // Bài nháp (status "draft") không hiển thị ngoài site.
 const isPublishedPost = (post: any) => (post?.status || "published") !== "draft";
@@ -191,17 +192,10 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   ];
 };
 
-export const getProductPriceRange = (prod: any, quantity = 1) => {
+// Sample-price bounds in VND (shown in the visitor's currency via useCurrency).
+export const getProductPriceBounds = (prod: any, quantity = 1): [number, number] => {
   const isMask = prod.title?.toLowerCase().includes("mặt nạ") || prod.id?.toLowerCase().includes("mask") || prod.category === "mask";
-  if (isMask) {
-    const min = 6000 * quantity;
-    const max = 16000 * quantity;
-    return `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
-  } else {
-    const min = 60000 * quantity;
-    const max = 160000 * quantity;
-    return `${min.toLocaleString("vi-VN")}đ - ${max.toLocaleString("vi-VN")}đ`;
-  }
+  return isMask ? [6000 * quantity, 16000 * quantity] : [60000 * quantity, 160000 * quantity];
 };
 
 // Map between the main content tabs and real URL paths so every section is
@@ -325,6 +319,7 @@ const blogPath = (post: { slug?: string; title: string }): string =>
 
 export default function App() {
   const { t, language } = useLanguage();
+  const { fmt, fmtRange, money, currency, rates } = useCurrency();
   // Chọn chuỗi theo ngôn ngữ đang dùng (vi / en / ko).
   const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);
   const location = useLocation();
@@ -2642,8 +2637,9 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                               <div className="border-y border-stone-200 py-6 space-y-2">
                                 <p className="text-xs font-semibold tracking-[0.16em] uppercase text-stone-500">{L("Giá mẫu thử tham khảo", "Indicative sample price", "샘플 참고 가격")}</p>
-                                <p className="font-serif font-semibold text-3xl text-stone-900">{getProductPriceRange(prod, detailsQuantity)}</p>
+                                <p className="font-serif font-semibold text-3xl text-stone-900">{fmtRange(...getProductPriceBounds(prod, detailsQuantity))}</p>
                                 <p className="text-sm text-stone-500">/ {detailsQuantity} {L("mẫu thử tiêu chuẩn", "standard samples", "표준 샘플")}. {L("Giá gia công theo lô do chuyên viên báo sau khi chốt công thức & bao bì.", "Batch manufacturing price is quoted by our specialist once formula and packaging are agreed.", "대량 생산 단가는 처방과 용기 확정 후 담당자가 안내합니다.")}</p>
+                                <CurrencyNote className="text-stone-400" />
                               </div>
 
                               <div className="space-y-3">
@@ -2707,7 +2703,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                     <div className="pt-4 space-y-1.5">
                                       <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-satin-gold-dark">{r.lab}</span>
                                       <h3 className="font-serif font-semibold text-base text-stone-900 leading-snug group-hover:text-emerald-green transition-colors line-clamp-2">{r.title.replace(/\s*\(Mẫu thử[^)]*\)/i, "")}</h3>
-                                      <span className="text-sm font-semibold text-stone-700">{getProductPriceRange(r)}</span>
+                                      <span className="text-sm font-semibold text-stone-700">{fmtRange(...getProductPriceBounds(r))}</span>
                                     </div>
                                   </button>
                                 ))}
@@ -2981,7 +2977,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                                       {/* Pricing */}
                                       <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
-                                        <span className="text-sm font-bold text-red-500">{getProductPriceRange(prod)}</span>
+                                        <span className="text-sm font-bold text-red-500">{fmtRange(...getProductPriceBounds(prod))}</span>
                                       </div>
 
                                       </div>
@@ -3266,17 +3262,17 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           { 
                             id: "standard", 
                             name: language === "en" ? "Standard PET Squeeze Tube / Bottle" : language === "ko" ? "기본 친환경 PET 용기 및 튜브" : "Hũ/Chai Nhựa PET Tiêu Chuẩn", 
-                            desc: language === "en" ? "~3,500đ / unit" : language === "ko" ? "~3,500원 / 개" : "~3.500đ / vỏ" 
+                            desc: `~${fmt(3500)} / ${L("vỏ", "unit", "개")}`
                           },
                           { 
                             id: "glass", 
                             name: language === "en" ? "Premium Frosted Glass Bottle with Gold/Silver Lid" : language === "ko" ? "고급 반투명 글라스 스포이드 용기 (골드/실버 캡)" : "Chai Thủy Tinh Mờ Nắp Mạ Vàng Cao Cấp", 
-                            desc: language === "en" ? "~6,500đ / unit" : language === "ko" ? "~6,500원 / 개" : "~6.500đ / vỏ" 
+                            desc: `~${fmt(6500)} / ${L("vỏ", "unit", "개")}`
                           },
                           { 
                             id: "acrylic", 
                             name: language === "en" ? "Unique Imported Double-Layer Acrylic Jar" : language === "ko" ? "수입 명품 이중 아크릴 크림 단지" : "Vỏ Acrylic Nhập Khẩu Độc Đáo", 
-                            desc: language === "en" ? "~10,000đ / unit" : language === "ko" ? "~10,000원 / 개" : "~10.000đ / vỏ" 
+                            desc: `~${fmt(10000)} / ${L("vỏ", "unit", "개")}`
                           }
                         ].map((pack) => {
                           const isActive = estPackagingType === pack.id;
@@ -3353,12 +3349,12 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           { 
                             id: "standard", 
                             name: language === "en" ? "Full MOH Notification Dossier (Recommended)" : language === "ko" ? "보건부(MOH) 화장 phẩm 신고 수리 및 대행 (적극 권장)" : "Công bố Sở Y Tế trọn gói (Khuyên dùng)", 
-                            desc: "+4.500.000đ" 
+                            desc: `+${fmt(4500000)}` 
                           },
                           { 
                             id: "full", 
                             name: language === "en" ? "Full-Bundle: Pasteur Test + MOH Approval + Barcode + Anti-Counterfeit" : language === "ko" ? "토탈 패키지: 임상 안전 시험 + 보건부 승인 + 국가 바코드 + 정품 스티커" : "Trọn gói: Pasteur Test + Công Bố + Mã vạch + Tem chống giả", 
-                            desc: "+8.500.000đ" 
+                            desc: `+${fmt(8500000)}` 
                           }
                         ].map((service) => {
                           const isActive = estLegalService === service.id;
@@ -3412,8 +3408,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             {language === "en" ? "ESTIMATED UNIT PRICE (PER COMPLETED PRODUCT)" : language === "ko" ? "예상 개당 완제품 단가 (벌크 및 용기 포함)" : "ĐƠN GIÁ DỰ KIẾN (MỖI SẢN PHẨM HOÀN THIỆN)"}
                           </span>
                           <div className="text-3xl font-black text-emerald-green">
-                            {unitPriceCompleted.toLocaleString("vi-VN")} <span className="text-sm font-bold text-stone-300">
-                              {language === "en" ? "VND / pcs" : language === "ko" ? "VND / 개" : "VNĐ / chai"}
+                            {fmt(unitPriceCompleted)} <span className="text-sm font-bold text-stone-300">
+                              {language === "en" ? "/ pcs" : language === "ko" ? "/ 개" : "/ chai"}
                             </span>
                           </div>
                           <p className="text-[10px] text-stone-500 font-medium leading-normal italic">
@@ -3432,7 +3428,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               {language === "en" ? "1. Formula Bulk & Liquid Cost:" : language === "ko" ? "1. 제형 처방 액티브 내용물 비용:" : "1. Chi phí nguyên liệu dung dịch:"}
                             </span>
                             <span className="font-mono font-bold text-white">
-                              {liquidTotalCost.toLocaleString("vi-VN")}đ
+                              {fmt(liquidTotalCost)}
                             </span>
                           </div>
                           <div className="flex justify-between text-stone-300">
@@ -3440,7 +3436,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               {language === "en" ? "2. Bottle / Jar Packaging Cost:" : language === "ko" ? "2. 용기 부자재 수량별 단가:" : "2. Chi phí hũ hột vỏ chai lọ:"}
                             </span>
                             <span className="font-mono font-bold text-white">
-                              {packagingTotalCost.toLocaleString("vi-VN")}đ
+                              {fmt(packagingTotalCost)}
                             </span>
                           </div>
                           <div className="flex justify-between text-stone-300">
@@ -3457,7 +3453,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             </span>
                             <span className="font-mono font-bold text-white">
                               {legalCost > 0 
-                                ? `${legalCost.toLocaleString("vi-VN")}đ` 
+                                ? fmt(legalCost) 
                                 : (language === "en" ? "Free" : language === "ko" ? "무료" : "Miễn phí")}
                             </span>
                           </div>
@@ -3472,8 +3468,9 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             {language === "en" ? "(Complete startup under cGMP standards)" : language === "ko" ? "(cGMP 아세안 기준 스타트업 토탈 패키지)" : "(Khởi nghiệp trọn gói đạt cGMP)"}
                           </p>
                           <div className="text-3xl font-black text-emerald-green">
-                            {totalInvestment.toLocaleString("vi-VN")} <span className="text-sm font-bold">đ</span>
+                            {fmt(totalInvestment)}
                           </div>
+                          <CurrencyNote className="text-stone-500 pt-2" />
                         </div>
                       </div>
 
@@ -3573,7 +3570,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               <tr key={idx} className="hover:bg-stone-50/80 transition-colors">
                                 <td className="py-4 px-6 font-bold text-stone-900">{item.productType}</td>
                                 <td className="py-4 px-6 text-stone-600">{item.minOrder}</td>
-                                <td className="py-4 px-6 text-emerald-green font-bold font-mono text-[13px]">{item.priceRange}</td>
+                                <td className="py-4 px-6 text-emerald-green font-bold font-mono text-[13px]">{money(item.priceRange)}</td>
                                 <td className="py-4 px-6 text-stone-500 font-light">{item.unit}</td>
                                 <td className="py-4 px-6 text-stone-700 text-center">{item.timeframe}</td>
                               </tr>

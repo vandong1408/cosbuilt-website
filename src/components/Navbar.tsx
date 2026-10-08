@@ -11,6 +11,7 @@ import {
   Globe
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useCurrency } from "../contexts/CurrencyContext";
 import SearchBox from "./SearchBox";
 import type { SearchItem } from "../lib/siteSearch";
 
@@ -50,6 +51,8 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   const { language, setLanguage, t } = useLanguage();
+  const { currency, rates } = useCurrency();
+  const fxTitle = currency === "VND" ? "" : `1 USD ≈ ${Math.round(rates.vndPerUsd).toLocaleString("en-US")} VND · 1 USD ≈ ${Math.round(rates.krwPerUsd).toLocaleString("en-US")} KRW${rates.updated !== "fallback" ? ` (${rates.updated})` : ""}`;
 
   return (
     <header className="w-full bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-[0_1px_0_rgba(201,162,77,0.25),0_10px_30px_-18px_rgba(60,30,20,0.25)]">
@@ -132,7 +135,7 @@ export default function Navbar({
               )}
             </div>
             <span className="text-white/20">|</span>
-            <span>VNĐ</span>
+            <span title={fxTitle} className="cursor-help">{currency === "VND" ? "VNĐ" : currency}</span>
           </div>
           <div className="hidden xl:block text-satin-gold font-medium tracking-wide text-[11px] sm:text-xs truncate">
             {t("accept_small_orders")}

@@ -4,6 +4,7 @@ import {
   Check, ChevronDown, Boxes, Palette, FileText, Truck, Award, Send, Loader2, CheckCircle2,
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useCurrency } from "../contexts/CurrencyContext";
 
 type Tr = (vi: string, en: string, ko: string) => string;
 const useL = (): Tr => {
@@ -606,5 +607,19 @@ export function ClosingCta({ onQuote }: { onQuote: () => void }) {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ---------- Note shown next to converted prices ---------- */
+export function CurrencyNote({ className = "" }: { className?: string }) {
+  const L = useL();
+  const { currency, rates } = useCurrency();
+  if (currency === "VND") return null;
+  const date = rates.updated === "fallback" ? "" : ` (${rates.updated.replace(/ \+0000$/, "")})`;
+  return (
+    <p className={`text-xs leading-relaxed ${className}`}>
+      {L("", `Prices are converted from VND (our base currency) at the international mid-market rate${date} and rounded; the official quote is issued in VND.`,
+        `표시 금액은 기준 통화인 VND를 국제 시장 환율${date}로 환산해 반올림한 참고용 금액이며, 공식 견적은 VND로 발행됩니다.`)}
+    </p>
   );
 }
