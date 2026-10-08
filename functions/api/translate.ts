@@ -9,7 +9,7 @@ const LANGS: Record<string, string> = { en: "English", ko: "Korean" };
 const MAX_STRINGS = 40;
 const MAX_CHARS = 8000;          // per string
 const MAX_TOTAL = 40000;         // per request
-const DAILY_LIMIT = 1500;        // uncached strings per IP per day
+const DAILY_LIMIT = 6000;        // uncached strings per IP per day
 
 async function sha(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));

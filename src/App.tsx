@@ -895,16 +895,8 @@ export default function App() {
     return prod;
   });
 
-  const localizedProducts = _localizedProductsBase.map((p, i) => ({
-    ...p,
-    _viTitle: customProducts[i]?.title,
-    title: tr(p.title),
-    badge: tr(p.badge || ""),
-    description: tr(p.description || ""),
-    ingredients: tr(p.ingredients || ""),
-    guidelines: tr(p.guidelines || ""),
-    packagings: p.packagings?.map((k) => ({ ...k, name: tr(k.name || ""), description: tr(k.description || "") })),
-  }));
+  // Texts are translated lazily at render time (tr) so only what a visitor sees is queued.
+  const localizedProducts = _localizedProductsBase.map((p, i) => ({ ...p, _viTitle: customProducts[i]?.title }));
 
   const _localizedBlogPostsBase = customBlogPosts.map((post, idx) => {
     // The built-in translations belong to the 4 seed articles only; match by title so a
@@ -1012,10 +1004,6 @@ export default function App() {
     ...post,
     // Machine-translated (cached) when the static dictionary has no entry; content is
     // translated lazily where an article is opened.
-    title: tr(post.title),
-    summary: tr(post.summary),
-    author: tr(post.author),
-    date: tr(post.date),
     slug: customBlogPosts[idx].slug || slugify(customBlogPosts[idx].title),
   }));
   const categoryLabel = (c: string) => (c === "cẩm nang" ? L("Cẩm nang", "Handbook", "가이드") : c === "xu hướng" ? L("Xu hướng", "Trends", "트렌드") : tr(c));
@@ -1933,7 +1921,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               </section>
 
               <FeaturedFormulas
-                products={customProducts.slice(0, 4) as any}
+                products={customProducts.slice(0, 4).map((p) => ({ ...p, title: tr(p.title).replace(/\s*\([^)]*(?:Mẫu thử|[Ss]ample|샘플)[^)]*\)/, ""), badge: tr(p.badge) })) as any}
                 onOpen={(id) => { const prod = customProducts.find((p) => p.id === id); if (prod) handleSelectProduct(prod); }}
                 onAll={() => handleTabChange("categories", "all")}
               />
@@ -1971,7 +1959,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     >
                       <img
                         src={post.image} 
-                        alt={post.title} 
+                        alt={tr(post.title)} 
                         className="w-full sm:w-48 h-48 object-cover shrink-0"
                         referrerPolicy="no-referrer"
                       />
@@ -1981,15 +1969,15 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                             {categoryLabel(post.category)}
                           </span>
                           <h4 className="font-serif font-bold text-sm text-stone-900 line-clamp-2 hover:text-emerald-green transition-colors">
-                            {post.title}
+                            {tr(post.title)}
                           </h4>
                           <p className="text-stone-500 text-xs line-clamp-2 font-light">
-                            {post.summary}
+                            {tr(post.summary)}
                           </p>
                         </div>
                         <div className="flex items-center justify-between text-[10px] text-stone-400 font-medium">
-                          <span>{post.author}</span>
-                          <span>{post.date}</span>
+                          <span>{tr(post.author)}</span>
+                          <span>{tr(post.date)}</span>
                         </div>
                       </div>
                     </div>
@@ -2599,13 +2587,14 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       });
                       const active: any = gallery[selectedPackagingIndex] || gallery[0];
                       const catName = (localizedCategories.find((c) => c.id === prod.category) || { title: "" }).title.replace(/^(Gia công|Manufacturing) /, "").replace(/\s*\(.*\)$/, "");
-                      const cleanTitle = prod.title.replace(/\s*\(Mẫu thử[^)]*\)/i, "");
+                      const SAMPLE_TAG = /\s*\([^)]*(?:Mẫu thử|[Ss]ample|샘플)[^)]*\)/;
+                      const cleanTitle = tr(prod.title).replace(SAMPLE_TAG, "");
                       const inCart = sampleCart.includes(prod.title);
                       const tabLabel = (tab: string) =>
                         tab === "mô tả" ? L("Mô tả công thức", "Formula description", "처방 설명")
                         : tab === "thành phần" ? L("Hoạt chất chính", "Key actives", "핵심 성분")
                         : L("Cảm quan & hướng dẫn", "Sensory & guidance", "사용감 및 가이드");
-                      const tabBody = activeDetailsTab === "mô tả" ? prod.description : activeDetailsTab === "thành phần" ? prod.ingredients : prod.guidelines;
+                      const tabBody = tr(activeDetailsTab === "mô tả" ? prod.description : activeDetailsTab === "thành phần" ? prod.ingredients : prod.guidelines);
                       const related = localizedProducts.filter((p) => p.category === prod.category && p.id !== prod.id).slice(0, 4);
                       const assurances = [
                         L("Mẫu thử do phòng R&D Cosbuilt điều chế", "Samples prepared by the Cosbuilt R&D lab", "코스빌트 R&D 연구소에서 직접 제조한 샘플"),
@@ -2629,7 +2618,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                               <div className="relative aspect-square w-full overflow-hidden rounded-sm bg-stone-100">
                                 <img src={active?.image || prod.image} alt={cleanTitle} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                                 {prod.badge && (
-                                  <span className="absolute left-0 top-6 bg-stone-950/90 text-satin-gold text-[11px] font-semibold tracking-[0.18em] uppercase px-5 py-2.5">{prod.badge}</span>
+                                  <span className="absolute left-0 top-6 bg-stone-950/90 text-satin-gold text-[11px] font-semibold tracking-[0.18em] uppercase px-5 py-2.5">{tr(prod.badge)}</span>
                                 )}
                               </div>
                               {gallery.length > 1 && (
@@ -2725,11 +2714,11 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                 {related.map((r) => (
                                   <button key={r.id} onClick={() => handleSelectProduct(r)} className="group text-left cursor-pointer">
                                     <div className="aspect-[4/5] overflow-hidden bg-stone-100 rounded-sm">
-                                      <img src={r.image} alt={r.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" referrerPolicy="no-referrer" />
+                                      <img src={r.image} alt={tr(r.title)} loading="lazy" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" referrerPolicy="no-referrer" />
                                     </div>
                                     <div className="pt-4 space-y-1.5">
                                       <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-satin-gold-dark">{r.lab}</span>
-                                      <h3 className="font-serif font-semibold text-base text-stone-900 leading-snug group-hover:text-emerald-green transition-colors line-clamp-2">{r.title.replace(/\s*\(Mẫu thử[^)]*\)/i, "")}</h3>
+                                      <h3 className="font-serif font-semibold text-base text-stone-900 leading-snug group-hover:text-emerald-green transition-colors line-clamp-2">{tr(r.title).replace(SAMPLE_TAG, "")}</h3>
                                       <span className="text-sm font-semibold text-stone-700">{fmtRange(...getProductPriceBounds(r))}</span>
                                     </div>
                                   </button>
@@ -2958,12 +2947,12 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                     <div className="h-52 relative overflow-hidden bg-stone-50 border-b border-stone-100">
                                       {/* Highlight tag/badge */}
                                       <div className="absolute top-3 left-0 bg-stone-900 text-white text-[9px] font-bold px-2.5 py-1 rounded-r-md z-10 uppercase tracking-widest">
-                                        {prod.badge}
+                                        {tr(prod.badge)}
                                       </div>
 
                                       <img
                                         src={prod.image} 
-                                        alt={prod.title} 
+                                        alt={tr(prod.title)} 
                                         className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                                         referrerPolicy="no-referrer"
                                       />
@@ -2999,7 +2988,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                         onClick={() => handleSelectProduct(prod)}
                                         className="font-serif font-bold text-xs sm:text-sm text-stone-900 hover:text-emerald-green transition-colors line-clamp-2 min-h-[3.5rem] leading-snug cursor-pointer"
                                       >
-                                        {prod.title}
+                                        {tr(prod.title)}
                                       </h3>
 
                                       {/* Pricing */}
@@ -3768,10 +3757,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       )}
                       {sidebarPosts.map((post, idx) => (
                         <button type="button" key={idx} onClick={() => { setArticleSearch(""); handleSelectBlog(post); }} className="w-full flex gap-4 items-start text-left group cursor-pointer">
-                          <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-lg shrink-0" referrerPolicy="no-referrer" />
+                          <img src={post.image} alt={tr(post.title)} className="w-20 h-20 object-cover rounded-lg shrink-0" referrerPolicy="no-referrer" />
                           <div className="space-y-1">
-                            <h4 className="font-bold text-sm text-stone-900 line-clamp-2 group-hover:text-emerald-green transition-colors">{post.title}</h4>
-                            <p className="text-[10px] text-stone-400">{post.date}</p>
+                            <h4 className="font-bold text-sm text-stone-900 line-clamp-2 group-hover:text-emerald-green transition-colors">{tr(post.title)}</h4>
+                            <p className="text-[10px] text-stone-400">{tr(post.date)}</p>
                             <span className="text-emerald-green text-[10px] font-bold">{language === "en" ? "Read more »" : language === "ko" ? "더 보기 »" : "Đọc thêm »"}</span>
                           </div>
                         </button>
@@ -3848,7 +3837,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                 <div className="w-full sm:w-48 h-56 sm:h-auto overflow-hidden shrink-0 relative">
                                   <img
                                     src={post.image} 
-                                    alt={post.title} 
+                                    alt={tr(post.title)} 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                                     referrerPolicy="no-referrer"
                                   />
@@ -3859,15 +3848,15 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                       {categoryLabel(post.category)}
                                     </span>
                                     <h3 className="font-serif font-bold text-base text-stone-900 line-clamp-2 hover:text-emerald-green transition-colors">
-                                      {post.title}
+                                      {tr(post.title)}
                                     </h3>
                                     <p className="text-stone-500 text-xs line-clamp-3 font-light leading-relaxed">
-                                      {post.summary}
+                                      {tr(post.summary)}
                                     </p>
                                   </div>
                                   <div className="flex items-center justify-between text-[10px] text-stone-400 border-t border-stone-50 pt-3">
-                                    <span className="font-semibold">{post.author}</span>
-                                    <span>{post.date}</span>
+                                    <span className="font-semibold">{tr(post.author)}</span>
+                                    <span>{tr(post.date)}</span>
                                   </div>
                                 </div>
                               </div>
@@ -4324,8 +4313,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                 {idx + 1}
                               </span>
                               <div className="min-w-0">
-                                <span className="font-semibold text-xs text-stone-800 block truncate" title={item}>
-                                  {item}
+                                <span className="font-semibold text-xs text-stone-800 block truncate" title={tr(item)}>
+                                  {tr(item)}
                                 </span>
                                 <span className="text-[10px] text-emerald-green font-medium block">
                                   Chuẩn cGMP · R&D Lab Free

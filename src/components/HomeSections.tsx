@@ -539,7 +539,7 @@ export function FeaturedFormulas({ products, onOpen, onAll }: { products: { id: 
             </div>
             <div className="pt-4 space-y-1.5">
               {p.badge && <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-satin-gold-dark">{p.badge}</span>}
-              <h3 className="font-serif font-semibold text-base text-stone-900 leading-snug group-hover:text-emerald-green transition-colors line-clamp-2">{p.title.replace(/\s*\(Mẫu thử[^)]*\)/i, "")}</h3>
+              <h3 className="font-serif font-semibold text-base text-stone-900 leading-snug group-hover:text-emerald-green transition-colors line-clamp-2">{p.title}</h3>
               <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-green">{L("Yêu cầu mẫu thử", "Request a sample", "샘플 요청")} <ArrowUpRight className="w-3.5 h-3.5" /></span>
             </div>
           </button>
