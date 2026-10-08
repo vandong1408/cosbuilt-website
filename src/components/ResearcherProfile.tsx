@@ -1,6 +1,7 @@
 import { Award, Briefcase, TrendingUp, CheckCircle } from "lucide-react";
 import { RESEARCHER_HUR } from "../data";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useTr } from "../contexts/TranslateContext";
 
 /**
  * Rich profile card for Cosbuilt's lead R&D researcher (Hur Beom-Chul).
@@ -9,13 +10,23 @@ import { useLanguage } from "../contexts/LanguageContext";
  * URL is set in `RESEARCHER_HUR.image`.
  */
 export default function ResearcherProfile({
-  profile = RESEARCHER_HUR,
+  profile: profileRaw = RESEARCHER_HUR,
   image
 }: {
   profile?: typeof RESEARCHER_HUR;
   /** Overrides the portrait (e.g. the admin-managed URL); falls back to profile.image. */
   image?: string;
 }) {
+  const tr = useTr();
+  const profile = {
+    ...profileRaw,
+    badge: tr(profileRaw.badge),
+    role: tr(profileRaw.role),
+    intro: tr(profileRaw.intro),
+    experience: profileRaw.experience.map((e) => ({ year: tr(e.year), detail: tr(e.detail) })),
+    awards: profileRaw.awards.map((a) => tr(a)),
+    achievements: profileRaw.achievements.map((a) => tr(a)),
+  };
   const portrait = image || profile.image;
   const { language } = useLanguage();
   const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);

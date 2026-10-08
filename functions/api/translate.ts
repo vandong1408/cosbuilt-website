@@ -65,7 +65,7 @@ const handle: PagesFunction<Env> = async ({ request, env }) => {
     const prompt =
       `Translate each Vietnamese text in this JSON array into natural, professional ${LANGS[target]} for the website of a Korean cosmetics OEM/ODM manufacturer (Cosbuilt).\n` +
       `Rules: keep brand names, product codes, INCI/ingredient names, numbers, percentages, units, currency amounts and line breaks (\\n) exactly as they are; ` +
-      `do not add, remove or soften any fact; keep the same tone; return ONLY a JSON array of the same length and order.\n\n` +
+      `do not add, remove or soften any fact; keep the same tone; if a text contains HTML, keep every tag and attribute unchanged and translate only the text between tags; keep ALL-CAPS headings in capitals; return ONLY a JSON array of the same length and order.\n\n` +
       JSON.stringify(uniqMiss);
     let out: string[] | null = null;
     for (let attempt = 1; attempt <= 2 && !out; attempt++) {

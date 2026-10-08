@@ -55,6 +55,7 @@ import ResearcherProfile from "./components/ResearcherProfile";
 import CertificateViewer from "./components/CertificateViewer";
 import { useLanguage } from "./contexts/LanguageContext";
 import { useCurrency } from "./contexts/CurrencyContext";
+import { useTr } from "./contexts/TranslateContext";
 
 import { 
   ABOUT_SECTIONS, 
@@ -81,7 +82,8 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   }
 
   // Deterministic seed so each product keeps the same suggestions.
-  const combined = (prod.id || "") + (prod.title || "");
+  const baseTitle: string = prod._viTitle || prod.title || "";
+  const combined = (prod.id || "") + baseTitle;
   let seed = 0;
   for (let i = 0; i < combined.length; i++) {
     seed = combined.charCodeAt(i) + ((seed << 5) - seed);
@@ -114,7 +116,7 @@ export const getPackagingsForProduct = (prod: any): ProductPackaging[] => {
   const P = (type: string, name: string, pool: string[], off: number, description: string): ProductPackaging =>
     ({ type: type as any, name, image: img(pool, off), description });
 
-  const t = (prod.title || "").toLowerCase();
+  const t = baseTitle.toLowerCase();
   const cat = prod.category;
   const has = (...keys: string[]) => keys.some((k) => t.includes(k));
 
@@ -320,6 +322,7 @@ const blogPath = (post: { slug?: string; title: string }): string =>
 export default function App() {
   const { t, language } = useLanguage();
   const { fmt, fmtRange, money, currency, rates } = useCurrency();
+  const tr = useTr();
   // Chọn chuỗi theo ngôn ngữ đang dùng (vi / en / ko).
   const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);
   const location = useLocation();
@@ -788,7 +791,7 @@ export default function App() {
     { id: "xu hướng", label: language === "en" ? "Ingredient Trends" : language === "ko" ? "원료 트렌드" : "Xu hướng nguyên liệu" }
   ];
 
-  const localizedProducts = customProducts.map((prod) => {
+  const _localizedProductsBase = customProducts.map((prod) => {
     if (language === "en") {
       const enProductDetails: Record<string, Partial<FormulaProduct>> = {
         "lip-tint": {
@@ -892,8 +895,21 @@ export default function App() {
     return prod;
   });
 
+  const localizedProducts = _localizedProductsBase.map((p, i) => ({
+    ...p,
+    _viTitle: customProducts[i]?.title,
+    title: tr(p.title),
+    badge: tr(p.badge || ""),
+    description: tr(p.description || ""),
+    ingredients: tr(p.ingredients || ""),
+    guidelines: tr(p.guidelines || ""),
+    packagings: p.packagings?.map((k) => ({ ...k, name: tr(k.name || ""), description: tr(k.description || "") })),
+  }));
+
   const _localizedBlogPostsBase = customBlogPosts.map((post, idx) => {
-    if (idx < 4) {
+    // The built-in translations belong to the 4 seed articles only; match by title so a
+    // reordered/edited list never gets another article's translation.
+    if (idx < 4 && BLOG_POSTS[idx]?.title === post.title) {
       if (language === "en") {
         const enTitles = [
           "Guide to Regulatory Compliance and MOH Cosmetics Registration in 2026",
@@ -994,8 +1010,19 @@ export default function App() {
   // title) so each article keeps the same URL regardless of the UI language.
   const localizedBlogPosts = _localizedBlogPostsBase.map((post, idx) => ({
     ...post,
+    // Machine-translated (cached) when the static dictionary has no entry; content is
+    // translated lazily where an article is opened.
+    title: tr(post.title),
+    summary: tr(post.summary),
+    author: tr(post.author),
+    date: tr(post.date),
     slug: customBlogPosts[idx].slug || slugify(customBlogPosts[idx].title),
   }));
+  const categoryLabel = (c: string) => (c === "cẩm nang" ? L("Cẩm nang", "Handbook", "가이드") : c === "xu hướng" ? L("Xu hướng", "Trends", "트렌드") : tr(c));
+  // Certificates, gallery and partners come from admin data (Vietnamese) → translate for display.
+  const certsL = customCertifications.map((c: any) => ({ ...c, name: tr(c.name), issuer: tr(c.issuer || ""), description: tr(c.description || "") }));
+  const imagesL = customImages.map((g: any) => ({ ...g, title: tr(g.title || ""), description: tr(g.description || "") }));
+  const logosL = (customLogos.length ? customLogos : ABOUT_SECTIONS.partners.logos).map((l: any) => ({ ...l, name: tr(l.name || ""), type: tr(l.type || "") }));
   // Initialise the tab straight from the URL so a deep link / refresh renders the
   // right tab on the FIRST paint. Starting at "home" and switching in an effect
   // made AnimatePresence (mode="wait") deadlock on the home→target flash, leaving
@@ -1409,7 +1436,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
   // Article view: nội dung đã chuẩn hoá + mục lục, ô tìm kiếm ở sidebar.
   const [tocOpen, setTocOpen] = useState(true);
   const [articleSearch, setArticleSearch] = useState("");
-  const articleView = useMemo(() => renderArticle(selectedBlog?.content), [selectedBlog]);
+  const articleView = useMemo(() => renderArticle(selectedBlog?.content ? tr(selectedBlog.content) : selectedBlog?.content), [selectedBlog, tr]);
   const sidebarPosts = useMemo(() => {
     const others = customBlogPosts.filter((p) => isPublishedPost(p) && p !== selectedBlog && p.title !== selectedBlog?.title);
     const q = articleSearch.trim().toLowerCase();
@@ -1889,9 +1916,9 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
               <ProcessTimeline steps={localizedServices[5].details} onContact={() => handleTabChange("contact")} />
 
-              <CapacityBand images={customImages} onFactory={() => handleTabChange("about", "factory-capacity")} />
+              <CapacityBand images={imagesL} onFactory={() => handleTabChange("about", "factory-capacity")} />
 
-              <CertShowcase certs={customCertifications} onView={(i) => setViewCertIndex(i)} onAll={() => handleTabChange("about", "certifications")} />
+              <CertShowcase certs={certsL} onView={(i) => setViewCertIndex(i)} onAll={() => handleTabChange("about", "certifications")} />
 
               {/* LEAD RESEARCHER / FOUNDER PROFILE (Hur Beom-Chul) */}
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1911,7 +1938,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 onAll={() => handleTabChange("categories", "all")}
               />
 
-              <PartnersBand partners={(customLogos.length ? customLogos : ABOUT_SECTIONS.partners.logos) as any} onAll={() => handleTabChange("about", "partners")} />
+              <PartnersBand partners={logosL as any} onAll={() => handleTabChange("about", "partners")} />
 
               {/* CORE AI INTERACTIVE R&D ADVISOR PANEL */}
               <section id="ai-advisor" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1951,7 +1978,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <div className="p-5 space-y-3 flex flex-col justify-between">
                         <div className="space-y-2">
                           <span className="bg-emerald-green-light text-emerald-green-dark text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
-                            {post.category}
+                            {categoryLabel(post.category)}
                           </span>
                           <h4 className="font-serif font-bold text-sm text-stone-900 line-clamp-2 hover:text-emerald-green transition-colors">
                             {post.title}
@@ -2108,7 +2135,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           draggable={false}
                           onContextMenu={(e) => e.preventDefault()}
                           src={customImages[0]?.image || localizedAboutSections.factory.image}
-                          alt={customImages[0]?.title || "Cosbuilt"}
+                          alt={imagesL[0]?.title || "Cosbuilt"}
                           className="w-full h-80 object-cover rounded-2xl shadow-md border border-stone-100"
                           referrerPolicy="no-referrer"
                         />
@@ -2120,7 +2147,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <section className="mt-8 space-y-5">
                         <h3 className="text-left font-serif font-bold text-xl text-stone-900">{L("Hình ảnh nhà máy & phòng R&D", "Factory & R&D gallery", "공장 & R&D 갤러리")}</h3>
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-                          {customImages.map((g: any, idx: number) => g?.image && (
+                          {imagesL.map((g: any, idx: number) => g?.image && (
                             <div key={idx} className="text-left bg-white rounded-2xl border border-stone-200 overflow-hidden">
                               <div onContextMenu={(e) => e.preventDefault()} className="relative aspect-[4/3] overflow-hidden bg-stone-100 select-none">
                                 {/* Ảnh khóa: không bấm xem, không kéo/lưu bằng chuột phải */}
@@ -2154,7 +2181,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         <h2 className="text-2xl font-serif font-bold text-stone-900">{localizedAboutSections.certifications.subtitle}</h2>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {customCertifications.map((cert, idx) => (
+                        {certsL.map((cert: any, idx: number) => (
                           <div key={idx} className="group bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-2xs hover:shadow-lg hover:border-emerald-green/30 transition-all duration-300 flex flex-col text-left">
                             {/* Certificate document preview */}
                             <div className="relative aspect-[4/3] bg-stone-50 border-b border-stone-100 overflow-hidden">
@@ -2280,7 +2307,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                       {/* Partner logo wall */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-                        {customLogos.map((logo, idx) => {
+                        {logosL.map((logo: any, idx: number) => {
                           const initials = (logo.name || "?")
                             .replace(/\([^)]*\)/g, " ")
                             .split(/\s+/)
@@ -2571,7 +2598,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                         return true;
                       });
                       const active: any = gallery[selectedPackagingIndex] || gallery[0];
-                      const catName = (MANUFACTURING_CATEGORIES.find((c) => c.id === prod.category) || { title: "" }).title.replace(/^Gia công /, "").replace(/\s*\(.*\)$/, "");
+                      const catName = (localizedCategories.find((c) => c.id === prod.category) || { title: "" }).title.replace(/^(Gia công|Manufacturing) /, "").replace(/\s*\(.*\)$/, "");
                       const cleanTitle = prod.title.replace(/\s*\(Mẫu thử[^)]*\)/i, "");
                       const inCart = sampleCart.includes(prod.title);
                       const tabLabel = (tab: string) =>
@@ -2616,7 +2643,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                       </button>
                                     ))}
                                   </div>
-                                  {active?.name && active.type !== "product" && <p className="mt-3 text-sm text-stone-600">{active.name}{active.description ? ` – ${active.description}` : ""}</p>}
+                                  {active?.name && active.type !== "product" && <p className="mt-3 text-sm text-stone-600">{tr(active.name)}{active.description ? ` – ${tr(active.description)}` : ""}</p>}
                                 </div>
                               )}
                             </div>
@@ -2629,7 +2656,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                 {prod.skinTypes?.length > 0 && (
                                   <div className="flex flex-wrap gap-2 pt-1">
                                     {prod.skinTypes.map((skin: string, idx: number) => (
-                                      <span key={idx} className="text-xs font-semibold text-stone-700 border border-stone-300 rounded-full px-3.5 py-1.5">{skin}</span>
+                                      <span key={idx} className="text-xs font-semibold text-stone-700 border border-stone-300 rounded-full px-3.5 py-1.5">{tr(skin)}</span>
                                     ))}
                                   </div>
                                 )}
@@ -3665,18 +3692,18 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
                         <span className="bg-emerald-green/10 text-emerald-green text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">
-                          {selectedBlog.category}
+                          {categoryLabel(selectedBlog.category)}
                         </span>
                         <span className="text-[11px] text-stone-400 font-bold tracking-wide">
-                          {language === "en" ? "Published:" : language === "ko" ? "등록일:" : "Đăng ngày:"} {selectedBlog.date}
+                          {language === "en" ? "Published:" : language === "ko" ? "등록일:" : "Đăng ngày:"} {tr(selectedBlog.date)}
                         </span>
                       </div>
                       <h1 className="font-serif font-extrabold text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight">
-                        {selectedBlog.title}
+                        {tr(selectedBlog.title)}
                       </h1>
                       <div className="flex items-center gap-2.5 text-xs text-stone-500 font-bold border-b border-stone-200 pb-5">
                         <User className="w-4 h-4 text-emerald-green" />
-                        <span>{language === "en" ? "Author:" : language === "ko" ? "작성자:" : "Tác giả:"} {selectedBlog.author}</span>
+                        <span>{language === "en" ? "Author:" : language === "ko" ? "작성자:" : "Tác giả:"} {tr(selectedBlog.author)}</span>
                       </div>
                     </div>
 
@@ -3684,7 +3711,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <div className="aspect-[21/9] rounded-3xl overflow-hidden border border-stone-150 shadow-md">
                       <img
                         src={selectedBlog.image} 
-                        alt={selectedBlog.title} 
+                        alt={tr(selectedBlog.title)} 
                         className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
                       />
@@ -3829,7 +3856,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                 <div className="p-6 space-y-4 flex flex-col justify-between flex-1">
                                   <div className="space-y-2.5">
                                     <span className="bg-emerald-green/10 text-emerald-green text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider inline-block">
-                                      {post.category}
+                                      {categoryLabel(post.category)}
                                     </span>
                                     <h3 className="font-serif font-bold text-base text-stone-900 line-clamp-2 hover:text-emerald-green transition-colors">
                                       {post.title}
@@ -4369,7 +4396,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
         )}
       </AnimatePresence>
 
-      <CertificateViewer docs={customCertifications} index={viewCertIndex} onClose={() => setViewCertIndex(null)} onIndexChange={setViewCertIndex} />
+      <CertificateViewer docs={certsL} index={viewCertIndex} onClose={() => setViewCertIndex(null)} onIndexChange={setViewCertIndex} />
 
       {location.pathname !== "/admin" && <Footer onTabChange={handleTabChange} onToggleAdminMode={handleToggleAdminMode} websiteLogo={footerLogo} />}
       
