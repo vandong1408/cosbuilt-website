@@ -69,7 +69,7 @@ import { BlogPost, ManufacturingCategory, FormulaProduct, ProductPackaging } fro
 import { slugify } from "./lib/slug";
 import { renderArticle } from "./lib/articleContent";
 import { SearchItem, prepare, stripHtml, collectText } from "./lib/siteSearch";
-import { QuickLeadCard, TrustPillars, ServicesGrid, ProcessTimeline, CapacityBand, CertShowcase, PartnersBand, FaqSection, MobileActionBar, TrustChips } from "./components/HomeSections";
+import { QuickLeadCard, TrustPillars, Pathways, Capabilities, ServicesGrid, ProcessTimeline, CapacityBand, CertShowcase, FeaturedFormulas, PartnersBand, FaqSection, MobileActionBar, TrustChips } from "./components/HomeSections";
 
 // Bài nháp (status "draft") không hiển thị ngoài site.
 const isPublishedPost = (post: any) => (post?.status || "published") !== "draft";
@@ -1775,10 +1775,10 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-16 md:space-y-24 pb-0"
+              className="space-y-24 md:space-y-32 pb-0"
             >
               {/* Luxury Hero Banner (Styled beautifully like Image 2 "Avésa") */}
-              <section id="hero-section" className="relative bg-stone-950 overflow-hidden min-h-[560px] md:min-h-[680px] flex items-center grain">
+              <section id="hero-section" className="relative bg-stone-950 overflow-hidden min-h-[640px] lg:min-h-[calc(100vh-190px)] flex flex-col grain">
                 <div className="absolute inset-0 z-0">
                   <img
                     src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=1600" 
@@ -1791,8 +1791,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-satin-gold/60 to-transparent"></div>
                 </div>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-16 relative z-10 w-full flex-1 flex items-center">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
                     <div className="lg:col-span-7 space-y-6 text-left">
                       <div className="inline-flex items-center gap-2 bg-white/5 text-satin-gold border border-satin-gold/40 px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-[0.22em] uppercase backdrop-blur-sm">
                         {L("Nhà máy OEM / ODM · Hàn Quốc", "OEM / ODM factory · Korea", "OEM / ODM 공장 · 한국")}
@@ -1839,21 +1839,32 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     </div>
                   </div>
                 </div>
-              </section>
-
-              {/* STATS COUNTDOWN COUNTERS */}
-              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-24">
-                <div className="bg-white/95 backdrop-blur rounded-3xl border border-stone-150 p-8 md:p-10 shadow-lift grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-stone-150">
-                  {localizedAboutSections.intro.stats.map((stat, idx) => (
-                    <div key={idx} className="text-center space-y-2">
-                      <div className="text-4xl md:text-5xl font-serif font-bold text-emerald-green">{stat.value}</div>
-                      <div className="text-[11px] text-stone-500 font-semibold tracking-[0.18em] uppercase">{stat.label}</div>
-                    </div>
-                  ))}
+              
+                {/* Key numbers ribbon */}
+                <div className="relative z-10 border-t border-white/15 bg-stone-950/60 backdrop-blur-sm">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/10">
+                    {localizedAboutSections.intro.stats.map((stat, idx) => (
+                      <div key={idx} className="px-4 sm:px-6 py-5 first:pl-0">
+                        <div className="font-serif text-3xl md:text-4xl font-semibold text-satin-gold leading-none">{stat.value}</div>
+                        <div className="mt-2 text-[10px] md:text-[11px] tracking-[0.16em] uppercase text-stone-300">{stat.label}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </section>
 
               <TrustPillars onAbout={(sub) => handleTabChange("about", sub)} />
+
+              <Pathways onContact={() => handleTabChange("contact")} onCatalogue={() => handleTabChange("categories", "all")} />
+
+              <Capabilities
+                images={{
+                  skin: localizedCategories[0]?.image || "",
+                  mask: (customProducts.find((p) => /mặt nạ/i.test(p.title)) || customProducts[0])?.image || "",
+                  nano: (customImages.find((g: any) => g?.image && /hoạt chất|kết cấu|nano/i.test(g.title + (g.description || "")))?.image) || DEFAULT_GALLERY_IMAGES[4].image,
+                }}
+                onContact={() => handleTabChange("contact")}
+              />
 
               <ServicesGrid services={localizedServices as any} onOpen={(id) => handleTabChange("services", id)} />
 
@@ -1875,74 +1886,11 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                 <ResearcherProfile image={researcherImage} />
               </section>
 
-              {/* INTERACTIVE MANUFACTURING CATEGORIES PREVIEW */}
-              <section className="bg-stone-100 py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-                  <div className="text-center space-y-3">
-                    <span className="eyebrow">{t("strength_title")}</span>
-                    <h2 className="text-3xl font-serif font-bold text-stone-900">{t("strength_headline")}</h2>
-                    <p className="text-stone-500 text-xs md:text-sm max-w-xl mx-auto">
-                      {t("strength_desc")}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {localizedCategories.slice(0, 3).map((cat) => (
-                      <div key={cat.id} className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
-                        <div>
-                          <div className="h-48 relative overflow-hidden">
-                            <img
-                              src={cat.image} 
-                              alt={cat.title} 
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                              referrerPolicy="no-referrer"
-                            />
-                            <div className="absolute top-3 left-3 bg-stone-950/80 backdrop-blur-xs text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">
-                              {language === "en" ? "Exclusive R&D" : language === "ko" ? "독점 R&D" : "Độc quyền R&D"}
-                            </div>
-                          </div>
-                          <div className="p-5 text-left space-y-3">
-                            <h4 className="font-serif font-bold text-base text-stone-900">{cat.title}</h4>
-                            <p className="text-stone-500 text-xs leading-relaxed font-light">{cat.description}</p>
-                            
-                            <div className="space-y-1.5 pt-2">
-                              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
-                                {language === "en" ? "Featured Products" : language === "ko" ? "대표 생산 품목" : "Sản phẩm nổi bật"}
-                              </span>
-                              {cat.subCategories.slice(0, 3).map((sub, idx) => (
-                                <div key={idx} className="flex gap-1.5 items-start text-xs text-stone-700 font-medium">
-                                  <span className="text-emerald-green font-bold">•</span>
-                                  <span>{sub}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="p-5 pt-0 text-left">
-                          <button 
-                            onClick={() => {
-                              handleTabChange("categories", cat.id);
-                            }}
-                            className="w-full text-center bg-stone-50 hover:bg-stone-900 hover:text-white border border-stone-200 hover:border-stone-900 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
-                          >
-                            {language === "en" ? "Manufacturing Capacity Details" : language === "ko" ? "자세한 생산 능력 보기" : "Chi tiết năng lực sản xuất"}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="text-center pt-2">
-                    <button 
-                      onClick={() => handleTabChange("categories", "all")}
-                      className="bg-stone-900 hover:bg-stone-850 text-white font-bold text-xs px-6 py-3.5 rounded-xl shadow-sm transition-all cursor-pointer"
-                    >
-                      {language === "en" ? "View All Manufacturing Categories" : language === "ko" ? "모든 생산 카테고리 보기" : "Xem tất cả danh mục gia công"}
-                    </button>
-                  </div>
-                </div>
-              </section>
+              <FeaturedFormulas
+                products={customProducts.slice(0, 4) as any}
+                onOpen={(id) => { const prod = customProducts.find((p) => p.id === id); if (prod) handleSelectProduct(prod); }}
+                onAll={() => handleTabChange("categories", "all")}
+              />
 
               <PartnersBand partners={(customLogos.length ? customLogos : ABOUT_SECTIONS.partners.logos) as any} onAll={() => handleTabChange("about", "partners")} />
 
