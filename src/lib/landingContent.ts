@@ -72,7 +72,7 @@ export const DEFAULT_LANDING: LandingContent = {
     title: "Không gian sản xuất chuyên nghiệp dành cho thương hiệu",
     desc: "Nhà máy 1 (Gimpo) và Nhà máy 2 (Incheon) vận hành bồn khuấy Agi Mixer, Agi Homo Mixer, hệ thống nước siêu tinh khiết Ultrapure cùng dây chuyền chiết rót tự động khép kín.",
     capacity: [
-      { value: "400", unit: "tấn/tháng", label: "Bồn khuấy Agi Mixer" },
+      { value: "400", unit: "tấn/tháng", label: "Tổng công suất bồn khuấy (Agi + Homo Mixer)" },
       { value: "24M", unit: "sp/năm", label: "Mặt nạ giấy" },
       { value: "7.2M", unit: "sp/năm", label: "Dòng Skin Care" },
       { value: "5M", unit: "sp/năm", label: "Sản phẩm dạng tuýp" },

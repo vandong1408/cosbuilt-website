@@ -2560,294 +2560,163 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               >
                 {selectedProductDetails ? (
                   /* Premium Inline Product Detail Page View */
-                  <div className="max-w-6xl mx-auto space-y-10 text-left animate-in fade-in duration-300">
-                    {/* Back button */}
-                    <button 
-                      onClick={handleBackToProducts}
-                      className="flex items-center gap-2 text-stone-500 hover:text-emerald-green font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      {language === "en" ? "Back to Catalog" : language === "ko" ? "목록으로 돌아가기" : "Quay lại danh sách công thức"}
-                    </button>
+                  <div className="max-w-7xl mx-auto space-y-16 text-left animate-in fade-in duration-300">
+                    {(() => {
+                      const prod = selectedProductDetails;
+                      const packagings = getPackagingsForProduct(prod);
+                      // The product's own photo comes first; packaging suggestions follow
+                      // (de-duplicated so the same photo never appears twice).
+                      const seen = new Set<string>();
+                      const gallery = [
+                        { type: "product", name: L("Sản phẩm", "Product", "제품"), image: prod.image, description: "" },
+                        ...packagings,
+                      ].filter((it: any) => {
+                        if (!it.image || seen.has(it.image)) return false;
+                        seen.add(it.image);
+                        return true;
+                      });
+                      const active: any = gallery[selectedPackagingIndex] || gallery[0];
+                      const catName = (MANUFACTURING_CATEGORIES.find((c) => c.id === prod.category) || { title: "" }).title.replace(/^Gia công /, "").replace(/\s*\(.*\)$/, "");
+                      const cleanTitle = prod.title.replace(/\s*\(Mẫu thử[^)]*\)/i, "");
+                      const inCart = sampleCart.includes(prod.title);
+                      const tabLabel = (tab: string) =>
+                        tab === "mô tả" ? L("Mô tả công thức", "Formula description", "처방 설명")
+                        : tab === "thành phần" ? L("Hoạt chất chính", "Key actives", "핵심 성분")
+                        : L("Cảm quan & hướng dẫn", "Sensory & guidance", "사용감 및 가이드");
+                      const tabBody = activeDetailsTab === "mô tả" ? prod.description : activeDetailsTab === "thành phần" ? prod.ingredients : prod.guidelines;
+                      const related = localizedProducts.filter((p) => p.category === prod.category && p.id !== prod.id).slice(0, 4);
+                      const assurances = [
+                        L("Mẫu thử do phòng R&D Cosbuilt điều chế", "Samples prepared by the Cosbuilt R&D lab", "코스빌트 R&D 연구소에서 직접 제조한 샘플"),
+                        L("Miễn phí thiết kế & test mẫu", "Free design & sample testing", "디자인 및 샘플 테스트 무료"),
+                        L("Lô gia công đầu chỉ từ khoảng 500 sản phẩm", "First production batch from about 500 units", "첫 생산 약 500개부터"),
+                        L("Bảo mật thông tin dự án & công thức", "Project and formula confidentiality", "프로젝트·처방 비밀 보장"),
+                      ];
+                      return (
+                        <>
+                          {/* Breadcrumb */}
+                          <nav aria-label="breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-stone-500">
+                            <button onClick={() => handleTabChange("home")} className="hover:text-emerald-green transition-colors cursor-pointer">{L("Trang chủ", "Home", "홈")}</button>
+                            <span className="text-stone-300">/</span>
+                            <button onClick={handleBackToProducts} className="hover:text-emerald-green transition-colors cursor-pointer">{L("Danh mục gia công", "Catalogue", "카탈로그")}</button>
+                            {catName && (<><span className="text-stone-300">/</span><span>{catName}</span></>)}
+                          </nav>
 
-                    {/* Main content grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white border border-stone-200 rounded-3xl p-6 sm:p-10 shadow-sm">
-                      {/* Left side: Image and specs info */}
-                      {(() => {
-                        // The product's own image is always first, so the main image on
-                        // the detail page matches the card the user clicked. Packaging
-                        // suggestions follow as additional, switchable thumbnails.
-                        const packagings = getPackagingsForProduct(selectedProductDetails);
-                        // Product image first, then packaging suggestions - de-duplicated
-                        // so the same photo never appears twice (e.g. when a suggestion
-                        // happens to reuse the product's own image).
-                        const seenImages = new Set<string>();
-                        const displayImages = [
-                          { type: "product", name: "Ảnh sản phẩm", image: selectedProductDetails.image, description: "" },
-                          ...packagings,
-                        ].filter((it) => {
-                          if (!it.image || seenImages.has(it.image)) return false;
-                          seenImages.add(it.image);
-                          return true;
-                        });
-                        const activePackaging = displayImages[selectedPackagingIndex] || displayImages[0];
-                        const currentImage = activePackaging ? activePackaging.image : selectedProductDetails.image;
-
-                        return (
-                          <div className="lg:col-span-5 space-y-6">
-                            <div className="aspect-square w-full rounded-2xl overflow-hidden relative border border-stone-150 shadow-2xs">
-                              <img
-                                src={currentImage} 
-                                alt={selectedProductDetails.title} 
-                                className="w-full h-full object-cover"
-                                referrerPolicy="no-referrer"
-                              />
-                              <div className="absolute top-4 left-4 bg-stone-900 text-white text-[9px] font-bold px-3 py-1 rounded-md uppercase tracking-widest z-10 shadow-3xs">
-                                {selectedProductDetails.badge}
+                          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 -mt-6">
+                            {/* Gallery */}
+                            <div className="lg:col-span-7 space-y-4 lg:sticky lg:top-40 self-start">
+                              <div className="relative aspect-square w-full overflow-hidden rounded-sm bg-stone-100">
+                                <img src={active?.image || prod.image} alt={cleanTitle} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                {prod.badge && (
+                                  <span className="absolute left-0 top-6 bg-stone-950/90 text-satin-gold text-[11px] font-semibold tracking-[0.18em] uppercase px-5 py-2.5">{prod.badge}</span>
+                                )}
                               </div>
+                              {gallery.length > 1 && (
+                                <div>
+                                  <p className="text-xs font-semibold tracking-[0.16em] uppercase text-stone-500 mb-3">{L("Bao bì đề xuất cho mẫu thử", "Suggested packaging", "제안 용기")}</p>
+                                  <div className="grid grid-cols-5 gap-3">
+                                    {gallery.map((pkg: any, idx: number) => (
+                                      <button key={idx} onClick={() => setSelectedPackagingIndex(idx)} aria-label={pkg.name || "packaging"}
+                                        className={`aspect-square overflow-hidden rounded-sm border-2 transition-all cursor-pointer ${selectedPackagingIndex === idx ? "border-emerald-green" : "border-transparent opacity-70 hover:opacity-100"}`}>
+                                        <img src={pkg.image} alt={pkg.name || "packaging"} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                      </button>
+                                    ))}
+                                  </div>
+                                  {active?.name && active.type !== "product" && <p className="mt-3 text-sm text-stone-600">{active.name}{active.description ? ` – ${active.description}` : ""}</p>}
+                                </div>
+                              )}
                             </div>
 
-                            {/* Packaging Selection */}
-                            <div className="space-y-3">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-stone-500 font-bold uppercase tracking-widest">
-                                  {language === "en" ? "PROPOSED PACKAGING VISUAL" : language === "ko" ? "제안용 용기/포장재 스타일" : "BAO BÌ ĐỀ XUẤT CHO MẪU THỬ"}
-                                </span>
-                                <span className="text-[9px] bg-emerald-green/10 text-emerald-green font-bold px-2 py-0.5 rounded-full uppercase">
-                                  {language === "en" ? "Interactive" : language === "ko" ? "대화형" : "Đa dạng vỏ chai"}
-                                </span>
+                            {/* Info + actions */}
+                            <div className="lg:col-span-5 space-y-8">
+                              <div className="space-y-4">
+                                <span className="eyebrow">{prod.lab}</span>
+                                <h1 className="font-serif font-semibold text-3xl md:text-4xl text-stone-900 tracking-tight leading-[1.25]">{cleanTitle}</h1>
+                                {prod.skinTypes?.length > 0 && (
+                                  <div className="flex flex-wrap gap-2 pt-1">
+                                    {prod.skinTypes.map((skin: string, idx: number) => (
+                                      <span key={idx} className="text-xs font-semibold text-stone-700 border border-stone-300 rounded-full px-3.5 py-1.5">{skin}</span>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                              
-                              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                                {displayImages.map((pkg, idx) => {
-                                  const isActive = selectedPackagingIndex === idx;
-                                  return (
-                                    <button
-                                      key={idx}
-                                      onClick={() => setSelectedPackagingIndex(idx)}
-                                      className={`border rounded-xl p-1 transition-all cursor-pointer ${
-                                        isActive
-                                          ? "border-emerald-green bg-emerald-green/5 shadow-2xs"
-                                          : "border-stone-200 bg-white hover:border-stone-350 hover:bg-stone-50"
-                                      }`}
-                                    >
-                                      <div className="aspect-square w-full rounded-lg overflow-hidden border border-stone-100 bg-stone-100">
-                                        <img
-                                          src={pkg.image} 
-                                          alt={pkg.name || "packaging"} 
-                                          className="w-full h-full object-cover"
-                                          referrerPolicy="no-referrer"
-                                        />
-                                      </div>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
 
-                            <div className="bg-stone-50 rounded-2xl p-5 border border-stone-150 space-y-4">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-emerald-green uppercase tracking-widest">{selectedProductDetails.lab}</span>
-                                <span className="text-stone-400 text-[10px] font-bold uppercase tracking-wider">ID: {selectedProductDetails.id.toUpperCase()}</span>
+                              <div className="border-y border-stone-200 py-6 space-y-2">
+                                <p className="text-xs font-semibold tracking-[0.16em] uppercase text-stone-500">{L("Giá mẫu thử tham khảo", "Indicative sample price", "샘플 참고 가격")}</p>
+                                <p className="font-serif font-semibold text-3xl text-stone-900">{getProductPriceRange(prod, detailsQuantity)}</p>
+                                <p className="text-sm text-stone-500">/ {detailsQuantity} {L("mẫu thử tiêu chuẩn", "standard samples", "표준 샘플")}. {L("Giá gia công theo lô do chuyên viên báo sau khi chốt công thức & bao bì.", "Batch manufacturing price is quoted by our specialist once formula and packaging are agreed.", "대량 생산 단가는 처방과 용기 확정 후 담당자가 안내합니다.")}</p>
                               </div>
-                              
-                              <div className="border-t border-stone-200 pt-3 space-y-2">
-                                <span className="text-[10px] text-stone-400 font-bold uppercase tracking-wider block">
-                                  {language === "en" ? "TARGET SKIN TYPE ORIENTATION" : language === "ko" ? "피부 권장 타입" : "ĐỊNH HƯỚNG SỬ DỤNG"}
-                                </span>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {selectedProductDetails.skinTypes.map((skin, idx) => (
-                                    <span key={idx} className="bg-white text-stone-750 border border-stone-200 rounded-lg px-2.5 py-1 text-[10px] font-bold shadow-3xs">
-                                      {skin}
-                                    </span>
-                                  ))}
+
+                              <div className="space-y-3">
+                                <div className="flex items-stretch gap-3">
+                                  <div className="flex items-center justify-between border border-stone-300 rounded-full px-4 w-32 shrink-0">
+                                    <button onClick={() => setDetailsQuantity((q) => Math.max(1, q - 1))} aria-label="-" className="text-stone-500 hover:text-stone-900 font-semibold text-lg px-1 cursor-pointer select-none">−</button>
+                                    <span className="font-semibold text-sm text-stone-900">{detailsQuantity}</span>
+                                    <button onClick={() => setDetailsQuantity((q) => q + 1)} aria-label="+" className="text-stone-500 hover:text-stone-900 font-semibold text-lg px-1 cursor-pointer select-none">+</button>
+                                  </div>
+                                  <button
+                                    onClick={() => (inCart ? handleRemoveFromSampleCart(prod.title) : handleAddToSampleCart(prod.title))}
+                                    className={`btn-sheen flex-1 flex items-center justify-center gap-2 font-semibold text-sm py-4 rounded-full shadow-lg transition-all cursor-pointer ${inCart ? "bg-emerald-green text-white" : "bg-gradient-to-b from-emerald-green-bright to-emerald-green-dark text-white"}`}
+                                  >
+                                    <ShoppingBag className="w-4 h-4" />
+                                    {inCart ? L("Đã chọn mẫu thử", "Sample selected", "샘플 선택됨") : L("Yêu cầu mẫu thử", "Request samples", "샘플 요청")}
+                                  </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <button onClick={() => handleTabChange("contact")} className="flex items-center justify-center gap-2 border border-stone-300 hover:border-emerald-green text-stone-900 font-semibold text-sm py-3.5 rounded-full transition-colors cursor-pointer">
+                                    {L("Nhận báo giá gia công", "Get a quote", "견적 받기")}
+                                  </button>
+                                  <a href="https://zalo.me/0966373686" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 border border-stone-300 hover:border-emerald-green text-stone-900 font-semibold text-sm py-3.5 rounded-full transition-colors">
+                                    {L("Tư vấn qua Zalo", "Chat on Zalo", "Zalo 상담")}
+                                  </a>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        );
-                      })()}
 
-                      {/* Right side: title, prices, tabs and actions */}
-                      <div className="lg:col-span-7 flex flex-col justify-between space-y-8">
-                        <div className="space-y-6">
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-1.5 text-amber-400">
-                              <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                              <ul className="space-y-2.5">
+                                {assurances.map((t) => (
+                                  <li key={t} className="flex items-start gap-3 text-sm text-stone-700"><Check className="w-4 h-4 mt-1 text-satin-gold-dark shrink-0" />{t}</li>
                                 ))}
-                              </div>
-                              <span className="text-[11px] text-stone-400 font-bold">
-                                ({selectedProductDetails.reviewsCount} {language === "en" ? "clinical reviews" : language === "ko" ? "임상 평가" : "đánh giá lâm sàng"})
-                              </span>
-                            </div>
-                            
-                            <h1 className="font-serif font-black text-2xl sm:text-3xl text-stone-900 leading-tight">
-                              {selectedProductDetails.title}
-                            </h1>
-
-                            <div className="flex items-center gap-4 bg-stone-50 border border-stone-150 rounded-xl px-4 py-3 max-w-sm">
-                              <div className="space-y-1 w-full">
-                                <div className="flex justify-between text-[10px] text-stone-500 font-bold">
-                                  <span>{language === "en" ? "Stability Tested:" : language === "ko" ? "안정성 테스트 완료:" : "Đã test lâm sàng:"} <strong className="font-black text-stone-850">{selectedProductDetails.testedCount} {language === "en" ? "vials" : language === "ko" ? "회" : "mẫu"}</strong></span>
-                                  <span className="text-emerald-green font-black">Hot {selectedProductDetails.hotPercent}%</span>
-                                </div>
-                                <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
-                                  <div className="bg-emerald-green h-full rounded-full" style={{ width: `${selectedProductDetails.hotPercent}%` }}></div>
-                                </div>
-                              </div>
+                              </ul>
                             </div>
                           </div>
 
-                          <div className="space-y-2 border-y border-stone-150 py-4">
-                            <div className="flex items-baseline gap-3">
-                              <span className="text-xl sm:text-2xl font-serif font-black text-red-500">
-                                {getProductPriceRange(selectedProductDetails, detailsQuantity)}
-                              </span>
-                              <span className="text-xs text-stone-500 font-bold">
-                                / {detailsQuantity} {language === "en" ? "sample vials" : language === "ko" ? "개 샘플" : "mẫu thử tiêu chuẩn"}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-stone-400 font-medium">
-                              {language === "en" ? "* Standard sample vials are prepared in the R&D lab with high-potency concentrates." : language === "ko" ? "* 모든 샘플은 부자재를 매칭하여 고농축 원액 상태로 연구소에서 직접 포장해 드립니다." : "* Mẫu thử nghiệm được điều chế chất lượng cao chuẩn nồng độ hoạt chất lâm sàng thực tế."}
-                            </p>
-                          </div>
-
-                          <div className="space-y-4">
-                            <div className="flex border-b border-stone-200 text-xs">
+                          {/* Details */}
+                          <div className="space-y-8">
+                            <div className="flex gap-8 border-b border-stone-200 overflow-x-auto">
                               {(["mô tả", "thành phần", "cảm quan"] as const).map((tab) => (
-                                <button
-                                  key={tab}
-                                  onClick={() => setActiveDetailsTab(tab)}
-                                  className={`pb-3 px-4 font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-                                    activeDetailsTab === tab
-                                      ? "border-emerald-green text-emerald-green"
-                                      : "border-transparent text-stone-400 hover:text-stone-700"
-                                  }`}
-                                >
-                                  {tab === "mô tả" 
-                                    ? (language === "en" ? "Formula Specs" : language === "ko" ? "샘플 처방 설명" : "Mô tả công thức") 
-                                    : tab === "thành phần" 
-                                      ? (language === "en" ? "Active Ingredients" : language === "ko" ? "핵심성분" : "Hoạt chất chính") 
-                                      : (language === "en" ? "Sensory & Testing" : language === "ko" ? "성상 및 사용감" : "Cảm quan & Test")}
+                                <button key={tab} onClick={() => setActiveDetailsTab(tab)}
+                                  className={`pb-4 text-sm font-semibold tracking-wide whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer ${activeDetailsTab === tab ? "border-emerald-green text-emerald-green" : "border-transparent text-stone-500 hover:text-stone-900"}`}>
+                                  {tabLabel(tab)}
                                 </button>
                               ))}
                             </div>
-
-                            <div className="text-xs text-stone-600 leading-relaxed font-light bg-stone-50 p-5 rounded-2xl border border-stone-150 space-y-2 min-h-[120px]">
-                              {activeDetailsTab === "mô tả" && (
-                                <div className="space-y-2">
-                                  <strong className="font-bold text-stone-850 block text-[11px] uppercase tracking-wider">
-                                    {language === "en" ? "Formulation Specifications" : language === "ko" ? "포뮬러 규격 상세" : "Thông số công thức:"}
-                                  </strong>
-                                  <p className="leading-relaxed font-medium text-stone-600 whitespace-pre-line">{selectedProductDetails.description}</p>
-                                </div>
-                              )}
-                              {activeDetailsTab === "thành phần" && (
-                                <div className="space-y-2">
-                                  <strong className="font-bold text-stone-850 block text-[11px] uppercase tracking-wider">
-                                    {language === "en" ? "Key Cosmeceutical Actives" : language === "ko" ? "코스메슈티컬 핵심 활성 성분" : "Hoạt chất dược mỹ phẩm chính:"}
-                                  </strong>
-                                  <p className="leading-relaxed font-medium text-stone-600 whitespace-pre-line">{selectedProductDetails.ingredients}</p>
-                                </div>
-                              )}
-                              {activeDetailsTab === "cảm quan" && (
-                                <div className="space-y-2">
-                                  <strong className="font-bold text-stone-850 block text-[11px] uppercase tracking-wider">
-                                    {language === "en" ? "Lab Evaluation Guidelines" : language === "ko" ? "연구실 자체 사용감 감정 가이드" : "Hướng dẫn thẩm định tại phòng Lab:"}
-                                  </strong>
-                                  <p className="leading-relaxed font-medium text-stone-600 whitespace-pre-line">{selectedProductDetails.guidelines}</p>
-                                </div>
-                              )}
+                            <div className="max-w-3xl">
+                              <p className="text-stone-700 text-base md:text-lg leading-[1.9] whitespace-pre-line">{tabBody}</p>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-6 border-t border-stone-150">
-                          <div className="flex items-center justify-between border border-stone-200 rounded-xl px-4 py-2.5 w-full sm:w-36 shrink-0 bg-stone-50">
-                            <button 
-                              onClick={() => setDetailsQuantity(prev => Math.max(1, prev - 1))}
-                              className="text-stone-500 hover:text-stone-900 font-bold px-2 text-sm cursor-pointer select-none"
-                            >
-                              -
-                            </button>
-                            <span className="font-mono text-xs font-bold text-stone-850">{detailsQuantity}</span>
-                            <button 
-                              onClick={() => setDetailsQuantity(prev => prev + 1)}
-                              className="text-stone-500 hover:text-stone-900 font-bold px-2 text-sm cursor-pointer select-none"
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          <button
-                            onClick={() => {
-                              const isAdded = sampleCart.includes(selectedProductDetails.title);
-                              isAdded ? handleRemoveFromSampleCart(selectedProductDetails.title) : handleAddToSampleCart(selectedProductDetails.title);
-                            }}
-                            className={`flex-1 font-bold text-xs uppercase tracking-wider py-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
-                              sampleCart.includes(selectedProductDetails.title)
-                                ? "bg-emerald-green hover:bg-emerald-green-dark text-white" 
-                                : "bg-stone-900 hover:bg-stone-950 text-white"
-                            }`}
-                          >
-                            <ShoppingBag className="w-4 h-4 text-white" />
-                            {sampleCart.includes(selectedProductDetails.title)
-                              ? (language === "en" ? "✓ Selected in Cart" : language === "ko" ? "✓ 카트에 선택됨" : "✓ Đã chọn mẫu thử")
-                              : (language === "en" ? "Request Physics Samples" : language === "ko" ? "연구실 실물 샘플 신청" : "Yêu Cầu Mẫu Thử Nghiệm")
-                            }
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Related Products block */}
-                    {localizedProducts.filter(p => p.category === selectedProductDetails.category && p.id !== selectedProductDetails.id).length > 0 && (
-                      <div className="space-y-6 pt-6">
-                        <h3 className="font-serif font-bold text-lg sm:text-xl text-stone-900 text-left border-b border-stone-200 pb-3">
-                          {language === "en" ? "Suggested Formulas in This Category" : language === "ko" ? "동일 카테고리 추천 포뮬러" : "Các công thức cùng chuyên mục đề xuất"}
-                        </h3>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          {localizedProducts
-                            .filter(p => p.category === selectedProductDetails.category && p.id !== selectedProductDetails.id)
-                            .slice(0, 3)
-                            .map((prod) => (
-                              <div 
-                                key={prod.id}
-                                onClick={() => handleSelectProduct(prod)}
-                                className="bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-md transition-all cursor-pointer text-left flex flex-col justify-between h-full group"
-                              >
-                                <div>
-                                  <div className="h-40 overflow-hidden relative bg-stone-50 border-b border-stone-100">
-                                    <img
-                                      src={prod.image} 
-                                      alt={prod.title} 
-                                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-                                      referrerPolicy="no-referrer"
-                                    />
-                                  </div>
-                                  <div className="p-4 space-y-1.5">
-                                    <span className="text-[9px] font-black text-emerald-green uppercase tracking-wider block">{prod.lab}</span>
-                                    <h4 className="font-serif font-bold text-xs sm:text-sm text-stone-900 group-hover:text-emerald-green transition-colors line-clamp-2 leading-snug">
-                                      {prod.title}
-                                    </h4>
-                                  </div>
-                                </div>
-
-                                <div className="p-4 pt-0 flex justify-between items-center border-t border-stone-50 mt-2">
-                                  <span className="text-xs font-bold text-red-500">{getProductPriceRange(prod)}</span>
-                                  <span className="text-[10px] font-bold text-emerald-green hover:underline flex items-center gap-1">
-                                    {language === "en" ? "View Specs" : language === "ko" ? "상세 보기" : "Xem chi tiết"}
-                                    <ArrowRight className="w-3 h-3" />
-                                  </span>
-                                </div>
+                          {/* Related */}
+                          {related.length > 0 && (
+                            <div className="space-y-8 pb-4">
+                              <h2 className="font-serif font-semibold text-2xl md:text-3xl text-stone-900">{L("Công thức cùng chuyên mục", "More in this category", "같은 카테고리 처방")}</h2>
+                              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
+                                {related.map((r) => (
+                                  <button key={r.id} onClick={() => handleSelectProduct(r)} className="group text-left cursor-pointer">
+                                    <div className="aspect-[4/5] overflow-hidden bg-stone-100 rounded-sm">
+                                      <img src={r.image} alt={r.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" referrerPolicy="no-referrer" />
+                                    </div>
+                                    <div className="pt-4 space-y-1.5">
+                                      <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-satin-gold-dark">{r.lab}</span>
+                                      <h3 className="font-serif font-semibold text-base text-stone-900 leading-snug group-hover:text-emerald-green transition-colors line-clamp-2">{r.title.replace(/\s*\(Mẫu thử[^)]*\)/i, "")}</h3>
+                                      <span className="text-sm font-semibold text-stone-700">{getProductPriceRange(r)}</span>
+                                    </div>
+                                  </button>
+                                ))}
                               </div>
-                            ))}
-                        </div>
-                      </div>
-                    )}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 ) : (
                   <>
@@ -3097,16 +2966,6 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
 
                                     {/* Content Part */}
                                     <div className="p-5 text-left space-y-2.5">
-                                      {/* Stars rating */}
-                                      <div className="flex items-center gap-1 text-amber-400">
-                                        <div className="flex">
-                                          {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                                          ))}
-                                        </div>
-                                        <span className="text-[10px] text-stone-400 font-bold">({prod.reviewsCount})</span>
-                                      </div>
-
                                       {/* Lab tag */}
                                       <span className="text-[9px] font-black text-emerald-green tracking-widest uppercase block">
                                         {prod.lab}
@@ -3115,7 +2974,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                       {/* Title */}
                                       <h3 
                                         onClick={() => handleSelectProduct(prod)}
-                                        className="font-serif font-bold text-xs sm:text-sm text-stone-900 hover:text-emerald-green transition-colors line-clamp-2 h-10 leading-tight cursor-pointer"
+                                        className="font-serif font-bold text-xs sm:text-sm text-stone-900 hover:text-emerald-green transition-colors line-clamp-2 min-h-[3.5rem] leading-snug cursor-pointer"
                                       >
                                         {prod.title}
                                       </h3>
@@ -3125,20 +2984,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                         <span className="text-sm font-bold text-red-500">{getProductPriceRange(prod)}</span>
                                       </div>
 
-                                      {/* Progress bar matching screenshots exactly */}
-                                      <div className="space-y-1 pt-1.5 border-t border-stone-50">
-                                        <div className="flex justify-between text-[10px] text-stone-500 font-medium">
-                                          <span>{language === "en" ? "Tested:" : language === "ko" ? "테스트 완료:" : "Đã test:"} <strong className="font-bold text-stone-800">{prod.testedCount} {language === "en" ? "samples" : language === "ko" ? "샘플" : "mẫu"}</strong></span>
-                                          <span className="text-emerald-green font-bold">Hot {prod.hotPercent}%</span>
-                                        </div>
-                                        <div className="w-full bg-stone-150 h-1.5 rounded-full overflow-hidden">
-                                          <div 
-                                            className="bg-emerald-green h-full rounded-full"
-                                            style={{ width: `${prod.hotPercent}%` }}
-                                          ></div>
-                                        </div>
                                       </div>
-                                    </div>
                                   </div>
 
                                   {/* Bottom Action Button */}

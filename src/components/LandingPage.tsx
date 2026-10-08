@@ -29,7 +29,7 @@ type Cert = { name: string; issuer?: string; description?: string; image?: strin
 const pad = (n: number) => String(n).padStart(2, "0");
 
 // Gradient chữ giống tiêu đề hero của website chính.
-const GOLD_TEXT = "text-transparent bg-clip-text bg-gradient-to-r from-[#E8A0B4] via-amber-200 to-satin-gold";
+const GOLD_TEXT = "text-transparent bg-clip-text bg-gradient-to-r from-satin-gold-pale via-satin-gold to-satin-gold-pale";
 
 function useLandingMeta() {
   useEffect(() => {
@@ -65,9 +65,9 @@ function Reveal({ children, className = "", delay = 0 }: RevealProps) {
 function SectionHead({ eyebrow, title, desc, light, center = true }: { eyebrow: string; title: ReactNode; desc?: string; light?: boolean; center?: boolean }) {
   return (
     <Reveal className={`max-w-3xl ${center ? "mx-auto text-center" : ""}`}>
-      {eyebrow && <span className={`text-[11px] md:text-xs font-bold tracking-[0.18em] uppercase ${light ? "text-satin-gold" : "text-emerald-green"}`}>{eyebrow}</span>}
-      <h2 className={`font-serif font-bold text-[28px] leading-[1.25] md:text-[40px] md:leading-[1.2] mt-3 ${light ? "text-white" : "text-stone-900"}`}>{title}</h2>
-      {desc && <p className={`mt-4 text-[15px] leading-relaxed ${light ? "text-stone-300" : "text-stone-600"}`}>{desc}</p>}
+      {eyebrow && <span className={`eyebrow ${light ? "!text-satin-gold" : ""}`}>{eyebrow}</span>}
+      <h2 className={`font-serif font-semibold tracking-tight text-[30px] leading-[1.25] md:text-[44px] md:leading-[1.2] mt-4 ${light ? "text-white" : "text-stone-900"}`}>{title}</h2>
+      {desc && <p className={`mt-5 text-base leading-relaxed ${light ? "text-stone-300" : "text-stone-600"}`}>{desc}</p>}
     </Reveal>
   );
 }
@@ -153,6 +153,8 @@ export default function LandingPage() {
 
   const inputCls = "w-full rounded-xl border border-stone-200 bg-stone-50/60 px-4 py-3.5 text-[15px] text-stone-900 placeholder:text-stone-400 outline-none focus:bg-white focus:border-emerald-green focus:ring-4 focus:ring-emerald-green/10 transition";
   const btnPrimary = "inline-flex items-center justify-center gap-2 rounded-full bg-emerald-green px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-green/25 hover:bg-emerald-green-dark transition";
+  const tabCls = (active: boolean) =>
+    `shrink-0 whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-semibold transition ${active ? "border-emerald-green text-emerald-green" : "border-transparent text-stone-500 hover:text-stone-900"}`;
   const chip = (active: boolean) =>
     `rounded-full border px-4 py-2 text-[13px] font-medium transition ${active ? "border-emerald-green bg-emerald-green text-white" : "border-stone-200 bg-white text-stone-700 hover:border-emerald-green/60"}`;
 
@@ -187,14 +189,14 @@ export default function LandingPage() {
         {hero.image && <img src={hero.image} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover object-[70%_center] opacity-60" />}
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-stone-950 via-stone-950/85 to-stone-950/40" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-stone-950/80 to-transparent" />
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-24 grid lg:grid-cols-[1.25fr_0.75fr] gap-10 lg:gap-16 items-center">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-28 grid lg:grid-cols-[1.25fr_0.75fr] gap-10 lg:gap-16 items-center">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             {hero.badge && (
-              <span className="inline-flex items-center gap-2 rounded-full bg-emerald-green/20 border border-emerald-green/40 px-4 py-1.5 text-[11px] md:text-xs font-bold tracking-wider uppercase text-[#F4B8C8]">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-satin-gold/40 px-4 py-1.5 text-[11px] md:text-xs font-semibold tracking-[0.2em] uppercase text-satin-gold">
 {hero.badge}
               </span>
             )}
-            <h1 className="mt-6 font-serif font-bold text-white text-[36px] leading-[1.18] sm:text-5xl lg:text-[60px] lg:leading-[1.12] tracking-tight">
+            <h1 className="mt-6 font-serif font-semibold text-white text-[34px] leading-[1.22] sm:text-5xl sm:leading-[1.2] lg:text-[56px] lg:leading-[1.15] tracking-tight">
               {hero.titleBefore} {hero.titleHighlight && <span className={GOLD_TEXT}>{hero.titleHighlight}</span>} {hero.titleAfter}
             </h1>
             {hero.subtitle && <p className="mt-6 max-w-xl text-[15px] md:text-base leading-relaxed text-stone-300">{hero.subtitle}</p>}
@@ -205,11 +207,11 @@ export default function LandingPage() {
               </a>
             </div>
             {hero.stats.length > 0 && (
-              <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-white/15 pt-6 max-w-lg">
+              <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-satin-gold/30 pt-7 max-w-xl">
                 {hero.stats.slice(0, 3).map((s, i) => (
                   <div key={i}>
-                    <dt className="font-serif font-bold text-2xl md:text-3xl text-white">{s.value}</dt>
-                    <dd className="mt-1 text-[11px] md:text-xs uppercase tracking-wide text-stone-400">{s.label}</dd>
+                    <dt className="font-serif font-semibold text-3xl md:text-4xl text-satin-gold leading-none">{s.value}</dt>
+                    <dd className="mt-2 text-[11px] md:text-xs uppercase tracking-[0.14em] text-stone-300">{s.label}</dd>
                   </div>
                 ))}
               </dl>
@@ -218,12 +220,12 @@ export default function LandingPage() {
 
           {hero.steps.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
-              className="rounded-3xl border border-white/15 bg-white/10 backdrop-blur-md p-5 md:p-6">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-satin-gold">{hero.stepsTitle}</p>
+              className="rounded-sm border border-white/15 bg-stone-950/55 backdrop-blur-md p-6 md:p-8">
+              <p className="eyebrow !text-satin-gold">{hero.stepsTitle}</p>
               <ol className="mt-4 space-y-2">
                 {hero.steps.map((s, i) => (
-                  <li key={i} className="flex items-center gap-3.5 rounded-2xl bg-white/5 border border-white/10 px-3.5 py-2.5">
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-emerald-green text-xs font-bold text-white">{pad(i + 1)}</span>
+                  <li key={i} className="flex items-center gap-4 border-b border-white/10 py-3.5 last:border-b-0">
+                    <span className="w-8 shrink-0 font-serif text-xl text-satin-gold">{pad(i + 1)}</span>
                     <span>
                       <span className="block text-sm font-semibold text-white">{s.title}</span>
                       <span className="block text-xs text-stone-400">{s.desc}</span>
@@ -232,7 +234,7 @@ export default function LandingPage() {
                 ))}
               </ol>
               {hero.trustTitle && (
-                <div className="mt-4 flex items-center gap-3 rounded-2xl bg-white px-4 py-3">
+                <div className="mt-5 flex items-center gap-3 rounded-sm bg-white px-4 py-3.5">
                   <ShieldCheck className="w-8 h-8 shrink-0 text-emerald-green" />
                   <span className="text-[13px] leading-snug text-stone-700"><b className="text-stone-900">{hero.trustTitle}</b><br />{hero.trustDesc}</span>
                 </div>
@@ -244,38 +246,38 @@ export default function LandingPage() {
 
       {/* Danh mục */}
       {!categories.hidden && cat && (
-        <section id="danh-muc" className="py-16 md:py-24">
+        <section id="danh-muc" className="py-20 md:py-28">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <SectionHead eyebrow={categories.eyebrow} title={categories.title} desc={categories.desc} />
 
             {/* Tabs: cuộn ngang trên mobile */}
-            <div className="mt-10 -mx-4 px-4 md:mx-0 md:px-0 flex md:flex-wrap md:justify-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="mt-12 -mx-4 px-4 md:mx-0 md:px-0 flex md:justify-center gap-7 border-b border-stone-200 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {categories.items.map((c, i) => (
                 <button key={i} type="button" onClick={() => setActiveCat(i)} aria-pressed={catIndex === i}
-                  className={`shrink-0 ${chip(catIndex === i)}`}>{c.title}</button>
+                  className={tabCls(catIndex === i)}>{c.title}</button>
               ))}
             </div>
 
             <motion.div key={catIndex} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-              className="mt-6 grid md:grid-cols-2 overflow-hidden rounded-3xl bg-white border border-stone-100 shadow-sm">
-              <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[440px] bg-stone-100">
+              className="mt-10 grid md:grid-cols-2 gap-8 md:gap-14 items-center">
+              <div className="relative aspect-[4/3] bg-stone-100 rounded-sm overflow-hidden">
                 {cat.image && <img src={cat.image} alt={cat.title} className="absolute inset-0 h-full w-full object-cover" />}
-                <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-emerald-green">{pad(catIndex + 1)} / {pad(categories.items.length)}</span>
+                <span className="absolute left-0 top-5 bg-stone-950/90 px-4 py-2 text-[11px] font-semibold tracking-[0.18em] text-satin-gold">{pad(catIndex + 1)} / {pad(categories.items.length)}</span>
               </div>
-              <div className="p-6 md:p-10">
-                <h3 className="font-serif font-bold text-2xl md:text-[28px] leading-snug text-stone-900">{cat.title}</h3>
+              <div>
+                <h3 className="font-serif font-semibold text-3xl md:text-4xl leading-tight text-stone-900">{cat.title}</h3>
                 {cat.description && <p className="mt-3 text-[15px] leading-relaxed text-stone-600">{cat.description}</p>}
                 <ul className="mt-6 space-y-3">
                   {cat.points.map((s, i) => (
                     <li key={i} className="flex gap-3 text-sm leading-snug text-stone-800">
-                      <CheckCircle2 className="w-[18px] h-[18px] mt-px shrink-0 text-emerald-green" />{s}
+                      <Check className="w-4 h-4 mt-1 shrink-0 text-satin-gold-dark" />{s}
                     </li>
                   ))}
                 </ul>
                 {cat.tags.length > 0 && (
                   <div className="mt-6 flex flex-wrap gap-2">
                     {cat.tags.map((f, i) => (
-                      <span key={i} className="rounded-full bg-satin-gold-light px-3 py-1 text-xs font-medium text-amber-900">{f}</span>
+                      <span key={i} className="rounded-full border border-satin-gold/50 px-3.5 py-1 text-xs font-medium text-satin-gold-dark">{f}</span>
                     ))}
                   </div>
                 )}
@@ -290,15 +292,15 @@ export default function LandingPage() {
 
       {/* Nhà máy */}
       {!factory.hidden && (
-        <section id="nha-may" className="bg-gradient-to-br from-stone-950 via-stone-900 to-[#2a0f18] py-16 md:py-24 text-white">
+        <section id="nha-may" className="relative grain bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 py-20 md:py-28 text-white">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <SectionHead light eyebrow={factory.eyebrow} title={factory.title} desc={factory.desc} />
 
             {factory.capacity.length > 0 && (
-              <Reveal className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              <Reveal className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-y-8 lg:gap-0 lg:divide-x divide-white/10">
                 {factory.capacity.map((c, i) => (
-                  <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
-                    <p className="font-serif font-bold text-3xl md:text-4xl text-satin-gold">{c.value}<span className="ml-1.5 font-sans text-xs font-medium text-stone-400">{c.unit}</span></p>
+                  <div key={i} className="px-4 md:px-8 text-center">
+                    <p className="font-serif font-semibold text-4xl md:text-5xl text-satin-gold">{c.value}<span className="ml-1.5 font-sans text-xs font-medium text-stone-400">{c.unit}</span></p>
                     <p className="mt-1.5 text-[13px] md:text-sm text-stone-300">{c.label}</p>
                   </div>
                 ))}
@@ -324,9 +326,9 @@ export default function LandingPage() {
             )}
 
             {factory.strengths.length > 0 && (
-              <Reveal className="mt-10 grid md:grid-cols-2 gap-3">
+              <Reveal className="mt-14 grid md:grid-cols-2 gap-x-12 gap-y-4 border-t border-white/10 pt-10">
                 {factory.strengths.map((s, i) => (
-                  <p key={i} className="flex gap-3 rounded-2xl bg-white/5 border border-white/10 p-4 text-sm leading-relaxed text-stone-300">
+                  <p key={i} className="flex gap-3 text-[15px] leading-relaxed text-stone-300">
                     <ShieldCheck className="w-5 h-5 shrink-0 text-satin-gold" />{s}
                   </p>
                 ))}
@@ -338,20 +340,20 @@ export default function LandingPage() {
 
       {/* R&D */}
       {!rnd.hidden && (
-        <section id="rnd" className="py-16 md:py-24">
+        <section id="rnd" className="py-20 md:py-28">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <SectionHead eyebrow={rnd.eyebrow} title={rnd.title} desc={rnd.desc} />
-            <Reveal className="mt-10 grid lg:grid-cols-[0.8fr_1.2fr] overflow-hidden rounded-3xl bg-white border border-stone-100 shadow-sm">
-              <div className="relative aspect-[4/3.4] lg:aspect-auto bg-gradient-to-br from-emerald-green-light to-stone-100">
+            <Reveal className="mt-12 grid lg:grid-cols-[0.8fr_1.2fr] gap-10 lg:gap-16 items-center">
+              <div className="relative aspect-[4/4.4] bg-gradient-to-br from-emerald-green-light to-stone-100 rounded-sm overflow-hidden">
                 {rnd.image || researcherImage ? (
                   <img src={rnd.image || researcherImage} alt={rnd.name} className="absolute inset-0 h-full w-full object-cover object-top" />
                 ) : (
                   <div className="absolute inset-0 grid place-items-center font-serif font-bold text-7xl text-emerald-green/25">HBC</div>
                 )}
               </div>
-              <div className="p-6 md:p-10">
+              <div>
                 {rnd.badge && <span className="inline-block rounded-full bg-emerald-green-light px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-green">{rnd.badge}</span>}
-                <h3 className="mt-3 font-serif font-bold text-2xl md:text-3xl text-stone-900">{rnd.name}</h3>
+                <h3 className="mt-4 font-serif font-semibold text-3xl md:text-4xl text-stone-900">{rnd.name}</h3>
                 {rnd.role && <p className="mt-1 text-sm font-medium text-satin-gold-dark">{rnd.role}</p>}
                 {rnd.intro && <p className="mt-4 text-[15px] leading-relaxed text-stone-600">{rnd.intro}</p>}
                 {rnd.bullets.length > 0 && (
@@ -362,7 +364,7 @@ export default function LandingPage() {
                   </ul>
                 )}
                 {rnd.awards.length > 0 && (
-                  <div className="mt-6 rounded-2xl bg-[#FAF8F5] border border-stone-100 p-4 space-y-2">
+                  <div className="mt-8 border-t border-stone-200 pt-6 space-y-3">
                     {rnd.awards.map((a, i) => (
                       <p key={i} className="flex gap-2.5 text-[13px] leading-snug text-stone-700"><Award className="w-4 h-4 shrink-0 text-satin-gold" />{a}</p>
                     ))}
@@ -377,17 +379,19 @@ export default function LandingPage() {
 
       {/* Vì sao chọn */}
       {!services.hidden && (
-        <section className="bg-white border-y border-stone-100 py-16 md:py-24">
+        <section className="bg-white border-y border-stone-100 py-20 md:py-28">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <SectionHead eyebrow={services.eyebrow} title={services.title} desc={services.desc} />
-            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+            <div className="mt-14 grid md:grid-cols-2 gap-x-14 border-t border-stone-200">
               {services.items.map((s, i) => {
                 const Icon = SERVICE_ICONS[i % SERVICE_ICONS.length];
                 return (
-                  <Reveal key={String(i)} delay={(i % 3) * 0.06} className="group rounded-3xl border border-stone-100 bg-[#FAF8F5] p-6 md:p-7 hover:bg-white hover:shadow-xl hover:shadow-stone-900/5 hover:-translate-y-1 transition duration-300">
-                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-green-light text-emerald-green group-hover:bg-emerald-green group-hover:text-white transition"><Icon className="w-5 h-5" /></span>
-                    <h3 className="mt-5 font-serif font-bold text-lg md:text-xl text-stone-900">{s.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-stone-600">{s.description}</p>
+                  <Reveal key={String(i)} delay={(i % 2) * 0.06} className="group flex gap-5 border-b border-stone-200 py-8">
+                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-satin-gold/50 text-satin-gold-dark"><Icon className="w-5 h-5" /></span>
+                    <span>
+                      <h3 className="font-serif font-semibold text-lg md:text-xl text-stone-900">{s.title}</h3>
+                      <p className="mt-2 text-[15px] leading-relaxed text-stone-600">{s.description}</p>
+                    </span>
                   </Reveal>
                 );
               })}
@@ -398,7 +402,7 @@ export default function LandingPage() {
 
       {/* Quy trình */}
       {!process.hidden && process.steps.length > 0 && (
-        <section id="quy-trinh" className="py-16 md:py-24">
+        <section id="quy-trinh" className="py-20 md:py-28">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <SectionHead eyebrow={process.eyebrow} title={process.title} desc={process.desc} />
             {/* Mobile: timeline dọc — Desktop: các cột ngang */}
@@ -407,10 +411,10 @@ export default function LandingPage() {
               <span className="hidden lg:block absolute left-[8%] right-[8%] top-[22px] h-px bg-emerald-green/20" aria-hidden />
               {process.steps.map((s, i) => (
                 <li key={i} className="relative flex lg:flex-col lg:items-center lg:text-center gap-4 pb-7 lg:pb-0">
-                  <span className="relative z-10 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-green text-sm font-bold text-white ring-4 ring-[#FAF8F5]">{pad(i + 1)}</span>
+                  <span className="relative z-10 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-stone-950 text-sm font-semibold text-satin-gold ring-4 ring-[#FAF8F5]">{pad(i + 1)}</span>
                   <div className="lg:mt-2">
-                    <h3 className="font-serif font-bold text-lg text-stone-900">{s.title}</h3>
-                    <p className="mt-1 text-sm leading-relaxed text-stone-600">{s.detail}</p>
+                    <h3 className="font-serif font-semibold text-lg text-stone-900">{s.title}</h3>
+                    <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">{s.detail}</p>
                   </div>
                 </li>
               ))}
@@ -421,14 +425,14 @@ export default function LandingPage() {
 
       {/* Chứng nhận — danh sách lấy từ mục "Chứng nhận" trong admin */}
       {!content.certifications.hidden && certs.length > 0 && (
-        <section id="chung-nhan" className="bg-white border-y border-stone-100 py-16 md:py-24">
+        <section id="chung-nhan" className="bg-white border-y border-stone-100 py-20 md:py-28">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <SectionHead eyebrow={content.certifications.eyebrow} title={content.certifications.title} desc={content.certifications.desc} />
             <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
               {certs.map((c, i) => {
                 const Icon = CERT_ICONS[i % CERT_ICONS.length];
                 return (
-                  <Reveal key={c.name + i} delay={i * 0.05} className="rounded-3xl border border-stone-100 bg-[#FAF8F5] p-6">
+                  <Reveal key={c.name + i} delay={i * 0.05} className="border-t-2 border-satin-gold pt-6">
                     {c.image ? (
                       <button type="button" onClick={() => setViewCert(i)} className="group relative mb-5 block w-full cursor-zoom-in" aria-label={`Xem ${c.name}`}>
                         <img src={c.image} alt={c.name} loading="lazy" className="aspect-[3/4] w-full rounded-xl object-cover object-top bg-white border border-stone-100" />
@@ -437,7 +441,7 @@ export default function LandingPage() {
                     ) : (
                       <span className="grid h-12 w-12 place-items-center rounded-2xl bg-satin-gold-light text-satin-gold-dark"><Icon className="w-5 h-5" /></span>
                     )}
-                    <h3 className="mt-4 font-serif font-bold text-lg leading-snug text-stone-900">{c.name}</h3>
+                    <h3 className="mt-4 font-serif font-semibold text-lg leading-snug text-stone-900">{c.name}</h3>
                     {c.issuer && <p className="mt-1 text-xs font-semibold text-emerald-green">{c.issuer}</p>}
                     {c.description && <p className="mt-2 text-sm leading-relaxed text-stone-600">{c.description}</p>}
                   </Reveal>
@@ -449,7 +453,7 @@ export default function LandingPage() {
       )}
 
       {/* Form tư vấn */}
-      <section id="tu-van" className="py-16 md:py-24 scroll-mt-16">
+      <section id="tu-van" className="py-20 md:py-28 scroll-mt-16">
         <div className="max-w-7xl mx-auto px-4 md:px-8 grid lg:grid-cols-[0.85fr_1.15fr] gap-8 lg:gap-12 items-start">
           <div className="lg:sticky lg:top-28">
             <SectionHead center={false} eyebrow={formText.eyebrow} title={formText.title} desc={formText.desc} />
@@ -461,7 +465,7 @@ export default function LandingPage() {
                 })}
               </ul>
             )}
-            <div className="mt-8 rounded-3xl bg-stone-950 p-6 text-white">
+            <div className="mt-8 rounded-sm bg-stone-950 p-7 text-white">
               <a href={TEL} className="flex items-center gap-3">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-emerald-green"><Phone className="w-5 h-5" /></span>
                 <span><span className="block text-xs text-stone-400">Hotline tư vấn · {contact.hours}</span><span className="font-serif font-bold text-xl">{contact.hotline}</span></span>
@@ -473,7 +477,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white border border-stone-100 p-5 sm:p-8 md:p-10 shadow-xl shadow-stone-900/5">
+          <div className="rounded-sm bg-white border border-stone-200 p-6 sm:p-9 md:p-12 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.25)]">
             {formState === "done" ? (
               <div className="py-14 text-center">
                 <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-green-light"><Check className="w-8 h-8 text-emerald-green" /></span>
@@ -546,7 +550,7 @@ export default function LandingPage() {
       {/* CTA cuối */}
       {!cta.hidden && (
         <section className="px-4 md:px-8 pb-16 md:pb-24">
-          <div className="relative max-w-7xl mx-auto overflow-hidden rounded-3xl bg-gradient-to-br from-stone-950 via-stone-900 to-emerald-green-dark px-6 py-12 md:px-14 md:py-16 text-center md:text-left">
+          <div className="relative max-w-7xl mx-auto overflow-hidden rounded-sm bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 px-6 py-14 md:px-16 md:py-20 text-center md:text-left">
             <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-emerald-green/30 blur-3xl" aria-hidden />
             <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
               <div>
