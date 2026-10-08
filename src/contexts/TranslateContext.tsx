@@ -3,7 +3,7 @@
 // text while it loads (and for Vietnamese). One request runs at a time (small batches,
 // back-off on errors); results are cached in localStorage and on the server, so every
 // text is translated once for everybody.
-import { createContext, useCallback, useContext, useRef, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { useLanguage } from "./LanguageContext";
 
 const VI = /[ăâđêôơưàáạảãằắặẳẵầấậẩẫèéẹẻẽềếệểễìíịỉĩòóọỏõồốộổỗờớợởỡùúụủũừứựửữỳýỵỷỹ]/i;
@@ -12,6 +12,14 @@ const BATCH_MAX = 10;
 const BATCH_CHARS = 5000;
 
 type Store = Record<string, string>;
+// Hand-checked translations of the current site content (products, articles, gallery,
+// certificates, partners, researcher). Loaded on demand per language; anything not in
+// here (e.g. content an admin adds later) falls back to the cached machine translation.
+const DICTS: Record<string, () => Promise<{ default: Record<string, string> }>> = {
+  en: () => import("../lib/i18n/content.en.json"),
+  ko: () => import("../lib/i18n/content.ko.json"),
+};
+
 const Ctx = createContext<(text: string) => string>((t) => t);
 
 const loadStore = (): Store => { try { return JSON.parse(localStorage.getItem(LS) || "{}"); } catch { return {}; } };
@@ -24,6 +32,12 @@ export function TranslateProvider({ children }: { children: ReactNode }) {
   const running = useRef(false);
   const timer = useRef<number | null>(null);
   const [version, bump] = useState(0);
+  const dicts = useRef<Record<string, Record<string, string>>>({});
+
+  useEffect(() => {
+    if (language === "vi" || dicts.current[language] || !DICTS[language]) return;
+    DICTS[language]().then((m) => { dicts.current[language] = m.default; bump((n) => n + 1); }).catch(() => {});
+  }, [language]);
 
   const pump = useCallback(async () => {
     timer.current = null;
@@ -67,9 +81,16 @@ export function TranslateProvider({ children }: { children: ReactNode }) {
 
   const tr = useCallback((text: string): string => {
     if (!text || language === "vi" || !VI.test(text)) return text;
+    const dict = dicts.current[language];
+    if (dict) {
+      const exact = dict[text] ?? dict[text.trim()];
+      if (exact) return exact;
+    }
     const key = `${language}|${text}`;
     const hit = store.current[key];
     if (hit) return hit;
+    // Wait for the dictionary before asking the server, so known texts never cost a request.
+    if (!dict && DICTS[language]) return text;
     const failedAt = failed.current.get(key);
     if ((!failedAt || Date.now() - failedAt > 60000) && !pending.current.has(key)) {
       pending.current.add(key);

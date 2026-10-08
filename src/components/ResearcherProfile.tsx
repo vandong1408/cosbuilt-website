@@ -18,18 +18,18 @@ export default function ResearcherProfile({
   image?: string;
 }) {
   const tr = useTr();
+  const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);
   const profile = {
     ...profileRaw,
     badge: tr(profileRaw.badge),
     role: tr(profileRaw.role),
     intro: tr(profileRaw.intro),
-    experience: profileRaw.experience.map((e) => ({ year: tr(e.year), detail: tr(e.detail) })),
+    experience: profileRaw.experience.map((e) => ({ year: e.year.replace(/Nay$/, L("Nay", "Present", "현재")), detail: tr(e.detail) })),
     awards: profileRaw.awards.map((a) => tr(a)),
     achievements: profileRaw.achievements.map((a) => tr(a)),
   };
   const portrait = image || profile.image;
   const { language } = useLanguage();
-  const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);
   return (
     <div className="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
       {/* Header: portrait + intro */}

@@ -1659,11 +1659,11 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     let title = L(DEFAULT_TITLE, "Cosbuilt - Korean OEM/ODM Cosmetics Manufacturer (CGMP ASEAN)", "코스빌트 - 한국 OEM/ODM 화장품 제조 (CGMP ASEAN)");
     let desc = "";
     if (activeTab === "categories" && selectedProductDetails) {
-      title = `${selectedProductDetails.title} | ${SITE}`;
-      desc = (selectedProductDetails as { description?: string }).description || "";
+      title = `${tr(selectedProductDetails.title).replace(/\s*\([^)]*(?:Mẫu thử|[Ss]ample|샘플)[^)]*\)/, "")} | ${SITE}`;
+      desc = tr((selectedProductDetails as { description?: string }).description || "");
     } else if (activeTab === "news" && selectedBlog) {
-      title = `${selectedBlog.title} | ${SITE}`;
-      desc = selectedBlog.summary || "";
+      title = `${tr(selectedBlog.title)} | ${SITE}`;
+      desc = tr(selectedBlog.summary || "");
     } else if (titles[activeTab]) {
       title = `${titles[activeTab]} | ${SITE}`;
     }
@@ -1673,43 +1673,49 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
       if (!meta.dataset.default) meta.dataset.default = meta.content;
       meta.content = (desc || meta.dataset.default).replace(/\s+/g, " ").trim().slice(0, 160);
     }
-  }, [activeTab, selectedProductDetails, selectedBlog, language]);
+  }, [activeTab, selectedProductDetails, selectedBlog, language, tr]);
 
   // ---- Site-wide search index (products, articles, services, categories, About, pricing, pages) ----
   const SERVICE_TAB_IDS = ["oem-odm", "formula-development", "packaging-print", "legal-service", "logistics", "cooperation-process", "cooperation-benefits"];
   const searchItems = useMemo<SearchItem[]>(() => {
     const items: SearchItem[] = [];
-    const add = (id: string, type: SearchItem["type"], title: string, summary: string, text: string, ref: unknown) =>
-      items.push(prepare({ id, type, title: title || "", summary: summary || "", text: (text || "").replace(/\s+/g, " ").trim(), ref }));
+    // Titles/summaries are shown in the visitor's language (tr is a dictionary lookup);
+    // the original Vietnamese stays in the searchable text so both languages match.
+    const add = (id: string, type: SearchItem["type"], title: string, summary: string, text: string, ref: unknown) => {
+      const tt = tr(title || "");
+      const ts = tr(summary || "").slice(0, 140);
+      const extra = [tt !== title ? tt : "", ts !== summary ? ts : ""].filter(Boolean).join(" ");
+      items.push(prepare({ id, type, title: tt, summary: ts, text: `${(text || "").replace(/\s+/g, " ").trim()} ${title || ""} ${extra}`.trim(), ref }));
+    };
 
     customProducts.forEach((p, i) =>
-      add(`prod-${p.id || i}`, "product", p.title, (p.description || "").slice(0, 140),
+      add(`prod-${p.id || i}`, "product", p.title, (p.description || ""),
         [p.description, p.ingredients, p.guidelines, p.badge, p.lab, p.category, (p.skinTypes || []).join(" ")].join(" "), p));
 
     customBlogPosts.filter(isPublishedPost).forEach((a, i) =>
-      add(`art-${a.slug || i}`, "article", a.title, (a.summary || "").slice(0, 140),
+      add(`art-${a.slug || i}`, "article", a.title, (a.summary || ""),
         [a.summary, stripHtml(a.content).slice(0, 5000), a.category, a.author].join(" "), a));
 
     localizedServices.forEach((srv, i) =>
-      add(`srv-${i}`, "service", srv.title, (srv.description || "").slice(0, 140),
+      add(`srv-${i}`, "service", srv.title, (srv.description || ""),
         [srv.description, ...(srv.details || [])].join(" "), SERVICE_TAB_IDS[i] || "oem-odm"));
 
     localizedCategories.forEach((cat) =>
-      add(`cat-${cat.id}`, "category", cat.title, (cat.description || "").slice(0, 140),
+      add(`cat-${cat.id}`, "category", cat.title, (cat.description || ""),
         [cat.description, ...(cat.subCategories || []), ...(cat.features || [])].join(" "), cat.id));
 
     const ab = localizedAboutSections as any;
-    add("about-us", "about", ab.intro.title || "Về Cosbuilt", (ab.intro.content || "").slice(0, 140), collectText(ab.intro), "about-us");
-    add("about-factory", "about", ab.factory.title, (ab.factory.subtitle || "").slice(0, 140), collectText(ab.factory), "factory-capacity");
-    add("about-cert", "about", ab.certifications.title, (ab.certifications.subtitle || "").slice(0, 140), collectText(customCertifications), "certifications");
+    add("about-us", "about", ab.intro.title || "Về Cosbuilt", (ab.intro.content || ""), collectText(ab.intro), "about-us");
+    add("about-factory", "about", ab.factory.title, (ab.factory.subtitle || ""), collectText(ab.factory), "factory-capacity");
+    add("about-cert", "about", ab.certifications.title, (ab.certifications.subtitle || ""), collectText(customCertifications), "certifications");
     customCertifications.forEach((c: any, i: number) =>
-      add(`cert-${i}`, "about", c.name, (c.issuer || "").slice(0, 140), collectText(c), "certifications"));
-    add("about-rd", "about", ab.rdTeam.title, (ab.rdTeam.subtitle || "").slice(0, 140), collectText(ab.rdTeam) + " " + collectText(RESEARCHER_HUR), "rd-team");
+      add(`cert-${i}`, "about", c.name, (c.issuer || ""), collectText(c), "certifications"));
+    add("about-rd", "about", ab.rdTeam.title, (ab.rdTeam.subtitle || ""), collectText(ab.rdTeam) + " " + collectText(RESEARCHER_HUR), "rd-team");
     add("about-researcher", "about", RESEARCHER_HUR.name, RESEARCHER_HUR.role, collectText(RESEARCHER_HUR), "rd-team");
-    add("about-partners", "about", ab.partners.title, (ab.partners.subtitle || "").slice(0, 140), collectText(customLogos.length ? customLogos.map((l: any) => [l.name, l.type]) : ab.partners.logos), "partners");
+    add("about-partners", "about", ab.partners.title, (ab.partners.subtitle || ""), collectText(customLogos.length ? customLogos.map((l: any) => [l.name, l.type]) : ab.partners.logos), "partners");
 
     localizedPricingList.forEach((pr: any, i: number) =>
-      add(`price-${i}`, "pricing", pr.productType, [pr.priceRange, pr.unit].filter(Boolean).join(" · "),
+      add(`price-${i}`, "pricing", pr.productType, [money(pr.priceRange), pr.unit].filter(Boolean).join(" · "),
         [pr.minOrder, pr.priceRange, pr.unit, pr.timeframe].join(" "), ["pricing"]));
 
     const contactText = [t("footer_office_address"), t("footer_factory_address"), t("footer_working_hours"), "hotline 0966 373 686 +84 966 373 686 email info@cosbuilt.com zalo đăng ký báo giá mẫu thử liên hệ tư vấn"].join(" ");
@@ -1721,7 +1727,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
     add("page-contact", "page", L("Liên hệ & nhận báo giá", "Contact & get a quote", "문의 및 견적"), L("Hotline 0966 373 686 · info@cosbuilt.com", "Hotline +84 966 373 686 · info@cosbuilt.com", "핫라인 +84 966 373 686 · info@cosbuilt.com"), contactText, ["contact"]);
     return items;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customProducts, customBlogPosts, customCertifications, customLogos, language]);
+  }, [customProducts, customBlogPosts, customCertifications, customLogos, language, tr, currency]);
 
   const handleSelectSearchItem = (item: SearchItem) => {
     setSearchQuery("");
@@ -2557,7 +2563,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               return 0; // Default
             });
 
-            const selectedCatDetails = MANUFACTURING_CATEGORIES.find(cat => cat.id === selectedCategory);
+            const selectedCatDetails = localizedCategories.find(cat => cat.id === selectedCategory);
 
             return (
               <motion.div
@@ -2626,9 +2632,9 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                                   <p className="text-xs font-semibold tracking-[0.16em] uppercase text-stone-500 mb-3">{L("Bao bì đề xuất cho mẫu thử", "Suggested packaging", "제안 용기")}</p>
                                   <div className="grid grid-cols-5 gap-3">
                                     {gallery.map((pkg: any, idx: number) => (
-                                      <button key={idx} onClick={() => setSelectedPackagingIndex(idx)} aria-label={pkg.name || "packaging"}
+                                      <button key={idx} onClick={() => setSelectedPackagingIndex(idx)} aria-label={tr(pkg.name || "") || "packaging"}
                                         className={`aspect-square overflow-hidden rounded-sm border-2 transition-all cursor-pointer ${selectedPackagingIndex === idx ? "border-emerald-green" : "border-transparent opacity-70 hover:opacity-100"}`}>
-                                        <img src={pkg.image} alt={pkg.name || "packaging"} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                        <img src={pkg.image} alt={tr(pkg.name || "") || "packaging"} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                                       </button>
                                     ))}
                                   </div>
@@ -3364,7 +3370,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                           },
                           { 
                             id: "standard", 
-                            name: language === "en" ? "Full MOH Notification Dossier (Recommended)" : language === "ko" ? "보건부(MOH) 화장 phẩm 신고 수리 및 대행 (적극 권장)" : "Công bố Sở Y Tế trọn gói (Khuyên dùng)", 
+                            name: language === "en" ? "Full MOH Notification Dossier (Recommended)" : language === "ko" ? "보건부(MOH) 화장품 신고 수리 및 대행 (적극 권장)" : "Công bố Sở Y Tế trọn gói (Khuyên dùng)", 
                             desc: `+${fmt(4500000)}` 
                           },
                           { 
@@ -3985,7 +3991,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <MapPin className="w-5 h-5 text-emerald-green shrink-0 mt-0.5" />
                       <div className="space-y-0.5">
                         <strong className="text-stone-900 block">{L("Địa chỉ văn phòng:", "Office address:", "사무소 주소:")}</strong>
-                        <span className="text-stone-500 leading-relaxed font-light">Văn phòng số 2.40 khu văn phòng, tòa nhà The Prince Residence, số 19-21 Nguyễn Văn Trỗi, Phường Phú Nhuận, Thành phố Hồ Chí Minh, Việt Nam.</span>
+                        <span className="text-stone-500 leading-relaxed font-light">{t("footer_office_address")}</span>
                       </div>
                     </div>
 
@@ -4012,7 +4018,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                     <div className="flex items-center justify-between gap-3 px-4 py-3 text-xs">
                       <span className="flex items-start gap-2 text-stone-600 min-w-0">
                         <MapPin className="w-4 h-4 text-emerald-green shrink-0 mt-0.5" />
-                        <span>The Prince Residence, 19-21 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM</span>
+                        <span>{L("The Prince Residence, 19-21 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM", "The Prince Residence, 19-21 Nguyen Van Troi, Phu Nhuan, HCMC", "더 프린스 레지던스, 응웬반쪼이 19-21, 푸뉴언, 호치민시")}</span>
                       </span>
                       <a
                         href="https://www.google.com/maps/search/?api=1&query=The+Prince+Residence+19-21+Nguy%E1%BB%85n+V%C4%83n+Tr%E1%BB%97i+Ph%C3%BA+Nhu%E1%BA%ADn+TP.HCM"
@@ -4422,7 +4428,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
         <a 
           href="tel:0966373686" 
           className="w-13 h-13 sm:w-14 sm:h-14 bg-[#FF0000] rounded-full shadow-lg text-white hover:bg-red-600 transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
-          title="Gọi 0966 373 686"
+          title={`${L("Gọi", "Call", "전화")} 0966 373 686`}
         >
           <Phone className="w-7 h-7 fill-white text-white" />
         </a>

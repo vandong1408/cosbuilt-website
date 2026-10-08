@@ -177,8 +177,8 @@ export default function SearchBox({ items, onSelect, onSubmitQuery, onContact, v
                             <span className="font-semibold text-[13px] text-stone-900 sm:truncate"><Marked text={h.item.title} query={query} /></span>
                             <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-stone-500 bg-stone-100 rounded px-1.5 py-0.5">{label}</span>
                           </span>
-                          {h.snippet && (
-                            <span className="block text-[11px] text-stone-500 leading-snug mt-0.5 line-clamp-2"><Marked text={h.snippet} query={query} /></span>
+                          {(language === "vi" ? h.snippet : h.item.summary) && (
+                            <span className="block text-[11px] text-stone-500 leading-snug mt-0.5 line-clamp-2"><Marked text={language === "vi" ? h.snippet : h.item.summary} query={query} /></span>
                           )}
                         </span>
                       </button>

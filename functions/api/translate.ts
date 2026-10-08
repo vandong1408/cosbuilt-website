@@ -9,7 +9,9 @@ const LANGS: Record<string, string> = { en: "English", ko: "Korean" };
 const MAX_STRINGS = 40;
 const MAX_CHARS = 8000;          // per string
 const MAX_TOTAL = 40000;         // per request
-const DAILY_LIMIT = 6000;        // uncached strings per IP per day
+const DAILY_LIMIT = 600;         // uncached strings per IP per day
+const GLOBAL_CALLS_PER_DAY = 80; // Gemini calls per day across all visitors (keeps the free quota for the AI advisor)
+const MODEL = "gemini-2.5-flash-lite"; // separate quota bucket from the formula advisor
 
 async function sha(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -60,6 +62,10 @@ const handle: PagesFunction<Env> = async ({ request, env }) => {
     const used = Number((await env.DB.prepare("SELECT value FROM kv_store WHERE key = ?").bind(quotaKey).first<{ value: string }>())?.value || 0);
     if (used + uniqMiss.length > DAILY_LIMIT) return Response.json({ error: "daily limit" }, { status: 429 });
     if (!env.GEMINI_API_KEY) return Response.json({ error: "translation unavailable" }, { status: 503 });
+    const globalKey = `trg:${new Date().toISOString().slice(0, 10)}`;
+    const calls = Number((await env.DB.prepare("SELECT value FROM kv_store WHERE key = ?").bind(globalKey).first<{ value: string }>())?.value || 0);
+    if (calls >= GLOBAL_CALLS_PER_DAY) return Response.json({ error: "daily capacity reached" }, { status: 429 });
+    await env.DB.prepare("INSERT INTO kv_store (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").bind(globalKey, String(calls + 1)).run();
 
     const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY, httpOptions: { headers: { "User-Agent": "aistudio-build" } } });
     const prompt =
@@ -72,7 +78,7 @@ const handle: PagesFunction<Env> = async ({ request, env }) => {
     for (let attempt = 1; attempt <= 2 && !out; attempt++) {
       try {
         const resp = await ai.models.generateContent({
-          model: "gemini-3.5-flash",
+          model: MODEL,
           contents: prompt,
           config: { responseMimeType: "application/json", responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } }, maxOutputTokens: 16384, temperature: 0.2 },
         });
