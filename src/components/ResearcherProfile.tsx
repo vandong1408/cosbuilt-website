@@ -18,6 +18,7 @@ export default function ResearcherProfile({
   image?: string;
 }) {
   const tr = useTr();
+  const { language } = useLanguage();
   const L = (vi: string, en: string, ko: string) => (language === "en" ? en : language === "ko" ? ko : vi);
   const profile = {
     ...profileRaw,
@@ -29,7 +30,6 @@ export default function ResearcherProfile({
     achievements: profileRaw.achievements.map((a) => tr(a)),
   };
   const portrait = image || profile.image;
-  const { language } = useLanguage();
   return (
     <div className="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
       {/* Header: portrait + intro */}
