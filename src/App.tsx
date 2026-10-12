@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, FormEvent } from "react";
+import { useState, useEffect, useMemo, useRef, FormEvent, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
@@ -50,7 +50,8 @@ import {
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AIFormulaAdvisor from "./components/AIFormulaAdvisor";
-import CRMDashboard from "./components/CRMDashboard";
+// Admin CRM (with Firebase + Quill) is only needed on /admin, so it is loaded on demand.
+const CRMDashboard = lazy(() => import("./components/CRMDashboard"));
 import ResearcherProfile from "./components/ResearcherProfile";
 import CertificateViewer from "./components/CertificateViewer";
 import { useLanguage } from "./contexts/LanguageContext";
@@ -4201,6 +4202,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
+              <Suspense fallback={null}>
               <CRMDashboard
                 customBlogPosts={customBlogPosts}
                 customImages={customImages}
@@ -4227,6 +4229,7 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                   localStorage.removeItem("cosbuilt_admin_mode");
                 }}
               />
+              </Suspense>
             </motion.div>
           )}
 
