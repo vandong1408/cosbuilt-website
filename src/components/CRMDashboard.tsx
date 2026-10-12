@@ -1726,7 +1726,7 @@ export default function CRMDashboard({
                     <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/png,image/jpeg,image/gif,image/webp"
                       className="hidden"
                       disabled={isUploading}
                       onChange={async (e) => {
@@ -1878,7 +1878,7 @@ export default function CRMDashboard({
                     {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-green" /> : <Upload className="w-3.5 h-3.5" />}
                     <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                     <input
-                      type="file" accept="image/*" className="hidden" disabled={isUploading}
+                      type="file" accept="image/png,image/jpeg,image/gif,image/webp" className="hidden" disabled={isUploading}
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -1981,7 +1981,7 @@ export default function CRMDashboard({
                     <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/png,image/jpeg,image/gif,image/webp"
                       className="hidden"
                       disabled={isUploading}
                       onChange={async (e) => {
@@ -3699,7 +3699,7 @@ export default function CRMDashboard({
                                 <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                                 <input
                                   type="file"
-                                  accept="image/*"
+                                  accept="image/png,image/jpeg,image/gif,image/webp"
                                   className="hidden"
                                   disabled={isUploading}
                                   onChange={async (e) => {
@@ -3811,7 +3811,7 @@ export default function CRMDashboard({
                                 <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                                 <input
                                   type="file"
-                                  accept="image/*"
+                                  accept="image/png,image/jpeg,image/gif,image/webp"
                                   className="hidden"
                                   disabled={isUploading}
                                   onChange={async (e) => {
@@ -4159,7 +4159,7 @@ export default function CRMDashboard({
                       <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/png,image/jpeg,image/gif,image/webp"
                         className="hidden"
                         disabled={isUploading}
                         onChange={async (e) => {
@@ -4329,7 +4329,7 @@ export default function CRMDashboard({
                       <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/png,image/jpeg,image/gif,image/webp"
                         className="hidden"
                         disabled={isUploading}
                         onChange={async (e) => {
@@ -4417,7 +4417,7 @@ export default function CRMDashboard({
                       <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/png,image/jpeg,image/gif,image/webp"
                         className="hidden"
                         disabled={isUploading}
                         onChange={async (e) => {
@@ -4622,7 +4622,7 @@ export default function CRMDashboard({
                       <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/png,image/jpeg,image/gif,image/webp"
                         className="hidden"
                         disabled={isUploading}
                         onChange={async (e) => {
@@ -4668,7 +4668,7 @@ export default function CRMDashboard({
                               <Upload className="w-3 h-3" />
                               <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/png,image/jpeg,image/gif,image/webp"
                                 className="hidden"
                                 disabled={isUploading}
                                 onChange={async (e) => {
@@ -4824,7 +4824,7 @@ export default function CRMDashboard({
                             <span>{isUploading ? "Đang tải..." : "Tải lên"}</span>
                             <input
                               type="file"
-                              accept="image/*"
+                              accept="image/png,image/jpeg,image/gif,image/webp"
                               className="hidden"
                               disabled={isUploading}
                               onChange={async (e) => {

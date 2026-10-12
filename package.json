@@ -7,7 +7,7 @@
     "dev": "vite --port=3000",
     "build": "vite build",
     "preview": "npm run build && wrangler pages dev dist",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name=cosbuilt-website",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=cosbuilt-website --branch=main --commit-dirty=true",
     "db:migrate:local": "wrangler d1 execute cosbuilt-db --local --file=migrations/0001_init.sql && wrangler d1 execute cosbuilt-db --local --file=migrations/0002_seed.sql",
     "db:migrate:remote": "wrangler d1 execute cosbuilt-db --remote --file=migrations/0001_init.sql && wrangler d1 execute cosbuilt-db --remote --file=migrations/0002_seed.sql",
     "clean": "rm -rf dist",
