@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Env } from "../../_shared/types";
+import { allowDaily, tooManyRequests } from "../../_shared/rateLimit";
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,
@@ -54,9 +55,23 @@ const RESPONSE_SCHEMA = {
   ]
 };
 
+const FORMULA_PER_DAY = 10; // per IP: each call spends Gemini quota
+
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  if (!(await allowDaily(env, request, "formula", FORMULA_PER_DAY))) return tooManyRequests();
   try {
-    const { productType, targetEffect, budgetTier, volume, targetAudience, extraDemands, language } = await request.json<any>();
+    let input: Record<string, unknown>;
+    try { input = await request.json(); } catch { return Response.json({ error: "Dữ liệu không hợp lệ" }, { status: 400 }); }
+    // Plain strings only, capped in length: these values go straight into the prompt.
+    const text = (v: unknown, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+    const productType = text(input.productType, 100);
+    const targetEffect = text(input.targetEffect);
+    const budgetTier = text(input.budgetTier, 100);
+    const targetAudience = text(input.targetAudience);
+    const extraDemands = text(input.extraDemands, 1000);
+    const volumeNum = Number(input.volume);
+    const volume = Number.isFinite(volumeNum) && volumeNum > 0 ? Math.min(Math.round(volumeNum), 10_000_000) : 5000;
+    const language = input.language;
     const outLang = language === "en" ? "English" : language === "ko" ? "Korean" : "Vietnamese";
 
     if (!env.GEMINI_API_KEY) {
