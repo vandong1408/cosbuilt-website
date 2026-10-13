@@ -192,6 +192,15 @@ nav button[class*="tracking-wider"] { position: relative; }
   main * { animation: none !important; }
 }
 
+/* Motion feedback. Only when the visitor has not asked for reduced motion:
+   images fade in once loaded (imageFade.ts sets .img-ready), and buttons give a
+   light press so taps feel acknowledged. */
+@media (prefers-reduced-motion: no-preference) {
+  img { transition: opacity 0.5s ease-out; }
+  img:not(.img-ready) { opacity: 0; }
+  main button:not(:disabled):active { transform: scale(0.97); }
+}
+
 /* The search pill already shows focus via its own ring */
 input[role="combobox"]:focus-visible { outline: none; }
 

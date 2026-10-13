@@ -51,6 +51,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AIFormulaAdvisor from "./components/AIFormulaAdvisor";
 // Admin CRM (with Firebase + Quill) is only needed on /admin, so it is loaded on demand.
+import ReadingProgress from "./components/ReadingProgress";
 const CRMDashboard = lazy(() => import("./components/CRMDashboard"));
 import ResearcherProfile from "./components/ResearcherProfile";
 import CertificateViewer from "./components/CertificateViewer";
@@ -3683,6 +3684,8 @@ Vui lòng liên hệ để gửi mẫu thử vật lý miễn phí.`
                       <ArrowLeft className="w-4 h-4" />
                       {language === "en" ? "Back to Articles" : language === "ko" ? "글 목록으로 가기" : "Quay lại danh sách bài viết"}
                     </button>
+
+                    <ReadingProgress />
 
                     {/* Header metadata */}
                     <div className="space-y-4">

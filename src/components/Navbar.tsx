@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { 
   Phone, 
   ChevronDown, 
@@ -374,8 +375,14 @@ export default function Navbar({
       </nav>
 
       {/* Mobile Drawer Menu */}
+      <AnimatePresence>
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-stone-200 p-4 space-y-4 absolute w-full left-0 top-full shadow-lg z-50">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+          className="lg:hidden bg-white border-t border-stone-200 p-4 space-y-4 absolute w-full left-0 top-full shadow-lg z-50">
           {/* Mobile search bar */}
           <SearchBox
             variant="mobile"
@@ -447,8 +454,9 @@ export default function Navbar({
           </div>
 
           {/* No promotional button */}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 }

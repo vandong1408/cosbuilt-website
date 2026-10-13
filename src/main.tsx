@@ -7,6 +7,9 @@ import { LanguageProvider } from './contexts/LanguageContext.tsx';
 import { CurrencyProvider } from './contexts/CurrencyContext.tsx';
 import { TranslateProvider } from './contexts/TranslateContext.tsx';
 import './index.css';
+import { installImageFadeIn } from './lib/imageFade';
+
+installImageFadeIn();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
